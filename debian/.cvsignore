@@ -1,8 +1,0 @@
-Makefile
-Makefile.in
-conglomerate
-conglomerate.postinst.debhelper
-conglomerate.postrm.debhelper
-conglomerate.substvars
-files
-patched

@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -x
-xmlto txt README.xml
-echo ignore the those warnings from XMLTO.
-mv README.txt README
-
-# eof
