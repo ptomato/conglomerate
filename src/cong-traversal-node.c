@@ -29,9 +29,7 @@
 #include "cong-eel.h"
 #include "cong-marshal.h"
 
-#define PRIVATE(x) ((x)->private)
-
-struct CongTraversalNodeDetails
+struct CongTraversalNodePrivate
 {
 	CongDocumentTraversal *doc_traversal;
 	CongNodePtr xml_node;
@@ -39,11 +37,12 @@ struct CongTraversalNodeDetails
 };
 
 /* Exported function definitions: */
-GNOME_CLASS_BOILERPLATE(CongTraversalNode, 
-			cong_traversal_node,
-			GObject,
-			G_TYPE_OBJECT );
-
+CONG_DEFINE_CLASS(CongTraversalNode, 
+		  cong_traversal_node,
+		  CONG_TRAVERSAL_NODE,
+		  GObject,
+		  G_TYPE_OBJECT);
+#if 0
 static void
 cong_traversal_node_class_init (CongTraversalNodeClass *klass)
 {
@@ -54,6 +53,7 @@ cong_traversal_node_instance_init (CongTraversalNode *traversal_node)
 {
 	traversal_node->private = g_new0(CongTraversalNodeDetails,1);
 }
+#endif
 
 CongTraversalNode*
 cong_traversal_node_construct (CongTraversalNode *traversal_node,

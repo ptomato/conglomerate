@@ -1,5 +1,9 @@
 2004-03-10  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* cong-traversal-node.c, cong-traversal-node.h, cong-document.h
+
+	Ported CongTraversalNode over to cong-object macros in order to track reference leaks
+
 	* cong-document-traversal.c
 
 	Fixed a leak of the CongTraversalNode subtree (and hence of CongEditorNode objects) when doing an add node before/after operation; was happening when undoing an apply span tag operation.

@@ -43,7 +43,6 @@ typedef struct CongDocumentTraversal CongDocumentTraversal;
 typedef struct CongDocumentTraversalClass CongDocumentTraversalClass;
 
 typedef struct CongTraversalNode CongTraversalNode;
-typedef struct CongTraversalNodeClass CongTraversalNodeClass;
 
 typedef struct CongCommand CongCommand;
 typedef struct CongCommandClass CongCommandClass;

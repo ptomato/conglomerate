@@ -26,12 +26,9 @@
 #define __CONG_TRAVERSAL_NODE_H__
 
 #include "cong-document.h"
+#include "cong-object.h"
 
 G_BEGIN_DECLS
-
-#define DEBUG_TRAVERSAL_NODE_LIFETIMES 0
-
-typedef struct CongTraversalNodeDetails CongTraversalNodeDetails;
 
 #define CONG_TRAVERSAL_NODE_TYPE	      (cong_traversal_node_get_type ())
 #define CONG_TRAVERSAL_NODE(obj)         G_TYPE_CHECK_INSTANCE_CAST (obj, CONG_TRAVERSAL_NODE_TYPE, CongTraversalNode)
@@ -51,20 +48,7 @@ typedef struct CongTraversalNodeDetails CongTraversalNodeDetails;
  * and new ones are created, rather than trying to move the traversal node somehow.
  *
  */
-struct CongTraversalNode
-{
-	GObject object;
-
-	CongTraversalNodeDetails *private;
-};
-
-struct CongTraversalNodeClass
-{
-	GObjectClass klass;
-};
-
-GType
-cong_traversal_node_get_type (void);
+CONG_DECLARE_CLASS(CongTraversalNode, cong_traversal_node, GObject)
 
 CongTraversalNode*
 cong_traversal_node_construct (CongTraversalNode *area,
