@@ -1,5 +1,9 @@
 2004-03-04  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* Makefile.am
+
+	Missed this one when merging changes from HEAD into this branch
+
 	* cong-editor-line-manager-simple.c, cong-editor-node-element-span.c, cong-object.h
 
 	Fixed warnings; this branch now compiles with -Wall -Werror

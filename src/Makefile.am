@@ -1,6 +1,12 @@
 
 NULL =
 
+## for bugzilla 134747 and 123003
+##CFLAGS += -Wall
+##if ENABLE_WERROR
+##  CFLAGS += -Werror
+##endif
+
 bin_PROGRAMS = conglomerate
 
 if ENABLE_PRINTING
@@ -123,6 +129,7 @@ conglomerate_SOURCES =      \
   cong-text-cache.h         \
   cong-traversal-node.h     \
   cong-tree-view.h          \
+  cong-ui-hooks.h           \
   cong-util.h               \
   cong-vfs.h                \
   cong-view.h               \
@@ -152,6 +159,7 @@ conglomerate_SOURCES =      \
   cong-dom-view.c           \
   cong-dtd.c                \
   cong-edit-find-and-replace.c \
+  cong-edit-preferences.c   \
   cong-editor-area.c        \
   cong-editor-area-bin.c    \
   cong-editor-area-border.c \
@@ -271,6 +279,7 @@ conglomerate_SOURCES =      \
   xmledit.c                 \
   xmlload.c                 \
   xmlview.c                 \
+  plugin-abiword.c          \
   plugin-admonition.c       \
   plugin-admonition-node-element.h \
   plugin-admonition-node-element.c \
@@ -281,6 +290,7 @@ conglomerate_SOURCES =      \
   plugin-dtd.c              \
   plugin-empty.c            \
   plugin-fo.c               \
+  plugin-html.c             \
   plugin-lists.c            \
   plugin-lists-area-listitem.h \
   plugin-lists-area-listitem.c \
@@ -292,10 +302,12 @@ conglomerate_SOURCES =      \
   plugin-paragraph-node-element-paragraph.h \
   plugin-paragraph-node-element-paragraph.c \
   plugin-print-source.c     \
-  plugin-random.c    \
+  plugin-random.c           \
+  plugin-relaxng.c          \
   plugin-save-dispspec.c    \
   plugin-sgml.c             \
   plugin-tests.c            \
+  plugin-tei.c              \
   plugin-validate.c         \
   plugin-website.c          \
   plugin-xsl.c              \
@@ -316,4 +328,6 @@ conglomerate_LDADD  = $(CONGLOMERATE_LIBS) \
 	$(GTKSOURCEVIEW_LIBS) \
 	$(NULL)
 
-## reminder: include Makefile.win into the dist.tar.gz
+EXTRA_DIST = Makefile.win
+
+## Last Line
