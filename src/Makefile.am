@@ -47,6 +47,7 @@ conglomerate_SOURCES =      \
   cong-editor-area-expander.h \
   cong-editor-area-labelled.h \
   cong-editor-area-line.h \
+  cong-editor-area-lines.h \
   cong-editor-area-pixbuf.h \
   cong-editor-area-spacer.h \
   cong-editor-area-text.h   \
@@ -158,6 +159,7 @@ conglomerate_SOURCES =      \
   cong-editor-area-expander.c \
   cong-editor-area-labelled.c \
   cong-editor-area-line.c \
+  cong-editor-area-lines.c \
   cong-editor-area-pixbuf.c \
   cong-editor-area-spacer.c \
   cong-editor-area-text.c   \

@@ -1,3 +1,9 @@
+2004-01-19  Dave Malcolm  <david@davemalcolm.demon.co.uk>
+
+	* cong-editor-area-lines.c, cong-editor-area-lines.h, Makefile.am
+
+	New files: subclass of CongEditorArea representing a collection of lines
+
 2004-01-18  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
 	* cong-editor-line-manager-span-wrapper.c, cong-editor-line-manager-span-wrapper.h, cong-editor-line-manager.h, cong-editor-node-comment.c, cong-editor-node-document.c, cong-editor-node-dtd.c, cong-editor-node-element-span.c, cong-editor-node-element-structural.c, cong-editor-node-element-unknown.c, cong-editor-node-entity-decl.c, cong-editor-node-entity-ref.c, cong-editor-node-unimplemented.c, cong-editor-node.c, cong-editor-node.h, plugin-admonition-node-element.c, plugin-lists-node-element-listitem.c, plugin-paragraph-node-element-paragraph.c
