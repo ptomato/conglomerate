@@ -301,6 +301,21 @@ cong_editor_area_composer_set_child_packing (CongEditorAreaComposer *area_compos
 						  PRIVATE(area_composer)->orientation);
 }
 
+GList*
+cong_editor_area_composer_get_child_area_iter_first (CongEditorAreaComposer *area_composer)
+{
+	return PRIVATE (area_composer)->list_of_child_details;
+}
+
+CongEditorArea*
+cong_editor_area_composer_get_child_area (CongEditorAreaComposer *area_composer,
+					  GList *iter)
+{
+	CongEditorAreaComposerChildDetails *child_details = (CongEditorAreaComposerChildDetails*)iter->data;
+
+	return child_details->child;
+}
+
 /* Method implementation definitions: */
 static gint
 calc_requisition (CongEditorArea *area, 

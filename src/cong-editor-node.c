@@ -49,6 +49,7 @@
 #include "cong-editor-area-composer.h"
 #include "cong-editor-area-border.h"
 #include "cong-editor-area-lines.h"
+#include "cong-editor-line-iter.h"
 
 #define PRIVATE(x) ((x)->priv)
 
@@ -367,6 +368,50 @@ cong_editor_node_private_set_selected (CongEditorNode *editor_node,
 	}	
 }
 
+gboolean
+cong_editor_node_needs_area_regeneration (CongEditorNode *editor_node,
+					  const CongAreaCreationGeometry *old_creation_geometry,
+					  const CongAreaCreationGeometry *new_creation_geometry)
+{
+	gboolean result;
+
+	g_return_val_if_fail (IS_CONG_EDITOR_NODE (editor_node), FALSE);
+	g_return_val_if_fail (old_creation_geometry, FALSE);
+	g_return_val_if_fail (new_creation_geometry, FALSE);
+
+#if 0
+	g_assert (CONG_EDITOR_NODE_CLASS (G_OBJECT_GET_CLASS (editor_node))->needs_area_regeneration != NULL);
+	
+	result = CONG_EEL_CALL_METHOD_WITH_RETURN_VALUE (CONG_EDITOR_NODE_CLASS,
+							 editor_node,
+							 needs_area_regeneration, 
+							 (editor_node, old_creation_geometry, new_creation_geometry));
+#else
+	/* For now, always regenerate everything (expensive): */
+	/* FIXME: we can't hope to interpret these iter objects;
+	   probably should be being passed some simple structure containing line ptr, width, indent etc */
+	result = TRUE;
+#endif
+
+#if 1
+	{
+		gchar *desc = cong_node_debug_description (cong_editor_node_get_node (editor_node));
+
+		g_message ("cong_editor_node_needs_area_regeneration returning %s old:(line %p, width: %i indent: %i) new: (line %p, width: %i indent: %i), node: %s",
+			   (result?"TRUE":"FALSE"),
+			   old_creation_geometry->area_line, old_creation_geometry->line_width, old_creation_geometry->line_indent, 
+			   new_creation_geometry->area_line, new_creation_geometry->line_width, new_creation_geometry->line_indent, 
+			   desc);
+
+		g_free (desc);
+		
+	}
+#endif
+
+
+	return result;
+}
+
 #if 0
 CongEditorArea*
 cong_editor_node_generate_block_area (CongEditorNode *editor_node)
@@ -597,10 +642,12 @@ cong_editor_node_set_line_manager_for_children (CongEditorNode *editor_node,
 	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
 
-	g_assert (NULL==PRIVATE(editor_node)->line_manager_for_children);
+	if (PRIVATE(editor_node)->line_manager_for_children) {
+		g_object_unref (G_OBJECT (PRIVATE(editor_node)->line_manager_for_children));
+	}
 
 	PRIVATE(editor_node)->line_manager_for_children = line_manager;
-	/* assume there already is a reference on the line_manager */
+	g_object_ref (G_OBJECT (line_manager));
 }
 #else
 CongEditorChildPolicy*
@@ -672,6 +719,9 @@ set_up_line_manager (CongEditorNode *editor_node,
 							    CONG_EDITOR_AREA_LINES (area_lines));
 	cong_editor_node_set_line_manager_for_children (editor_node,
 							line_manager);
+	g_object_unref (G_OBJECT (line_manager));
+
+	/* FIXME: If this area is removed, we need to destroy the line manager: */
 }
 
 void

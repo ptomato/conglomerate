@@ -145,6 +145,42 @@ cong_editor_area_line_get_width_limit (CongEditorAreaLine *area_line)
 }
 
 gint
+cong_editor_area_line_get_width_used_up_to (CongEditorAreaLine *area_line,
+					    CongEditorArea *child_area)
+{
+	g_return_val_if_fail (IS_CONG_EDITOR_AREA_LINE (area_line), 0);
+
+	if (child_area) {
+		GList *iter;
+		gint width = 0;
+
+		g_return_val_if_fail (IS_CONG_EDITOR_AREA (child_area), 0);
+
+		iter = cong_editor_area_composer_get_child_area_iter_first (PRIVATE (area_line)->outer_compose);
+
+		while (iter) {
+			CongEditorArea *iter_child_area = cong_editor_area_composer_get_child_area (PRIVATE (area_line)->outer_compose,
+												    iter);
+			g_assert (iter_child_area);
+
+			width += cong_editor_area_get_requisition_width (iter_child_area,
+									 PRIVATE(area_line)->width_limit);
+			
+			if (child_area==iter_child_area) {
+				return width;
+			}
+
+			iter=iter->next;
+		}
+
+		g_error ("child_area not found in CongEditorAreaLine");
+		return 0;
+	} else {
+		return 0;
+	}
+}
+
+gint
 cong_editor_area_line_get_width_used (CongEditorAreaLine *area_line)
 {
 	g_return_val_if_fail (IS_CONG_EDITOR_AREA_LINE (area_line), 0);

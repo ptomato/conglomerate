@@ -321,7 +321,8 @@ get_current_indent (CongEditorLineManager *line_manager,
 
 #if 1
 	if (line_iter_simple->current_line) {
-		return cong_editor_area_line_get_width_used (line_iter_simple->current_line);
+		return cong_editor_area_line_get_width_used_up_to (line_iter_simple->current_line,
+								   line_iter_simple->current_prev_area);
 	} else {
 		return 0;
 	}

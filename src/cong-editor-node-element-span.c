@@ -138,6 +138,7 @@ create_areas (CongEditorNode *editor_node,
 
 	cong_editor_node_set_line_manager_for_children (editor_node,
 							line_manager);
+	g_object_unref (G_OBJECT (line_manager));
 }
 #else
 static CongEditorArea*

@@ -32,6 +32,24 @@
 
 #define DEBUG_LOG 0
 
+#if 0
+#define LOG_EVENT(msg,node) log_event (msg, node)
+static void log_event (const gchar *msg, 
+		       CongEditorNode *editor_node);
+
+static void log_event (const gchar *msg, 
+		       CongEditorNode *editor_node)
+{
+	gchar *desc = cong_node_debug_description (cong_editor_node_get_node (editor_node));
+
+	g_message ("%s: %s", msg, desc);
+
+	g_free (desc);
+}
+#else
+#define LOG_EVENT(msg,node) ((void)0)
+#endif
+
 struct CongEditorLineManagerPrivate
 {
 	CongEditorWidget3* widget;
@@ -43,16 +61,53 @@ struct CongEditorLineManagerPrivate
 CONG_DEFINE_CLASS_BEGIN (CongEditorLineManager, cong_editor_line_manager, CONG_EDITOR_LINE_MANAGER, GObject, G_TYPE_OBJECT)
 CONG_DEFINE_CLASS_END ()
 
+CongAreaCreationGeometry*
+cong_area_creation_geometry_new (CongEditorLineManager *line_manager,
+			      CongEditorLineIter *line_iter);
+
+void
+cong_area_creation_geometry_free (CongAreaCreationGeometry *creation_geometry);
+
+CongAreaCreationGeometry*
+cong_area_creation_geometry_new (CongEditorLineManager *line_manager,
+			      CongEditorLineIter *line_iter)
+{
+	CongAreaCreationGeometry *creation_geometry;
+	
+	g_return_val_if_fail (line_manager, NULL);
+	g_return_val_if_fail (line_iter, NULL);
+	
+	creation_geometry = g_new0 (CongAreaCreationGeometry,1);
+
+	creation_geometry->area_line = cong_editor_line_iter_get_line (line_iter);
+	if (creation_geometry->area_line) {
+		g_object_ref (G_OBJECT (creation_geometry->area_line));
+	}
+	creation_geometry->line_width = cong_editor_line_manager_get_line_width (line_manager,
+									      line_iter);
+	creation_geometry->line_indent = cong_editor_line_manager_get_current_indent (line_manager,
+										   line_iter);
+	return creation_geometry;	
+}
+
+void
+cong_area_creation_geometry_free (CongAreaCreationGeometry *creation_geometry)
+{
+	g_return_if_fail (creation_geometry);
+
+	if (creation_geometry->area_line) {
+		g_object_unref (G_OBJECT (creation_geometry->area_line));
+	}
+	g_free (creation_geometry);
+}
+
+
 /* Data stored about each editor node: */
 typedef struct PerNodeData PerNodeData;
 struct PerNodeData
 {
-#if 0
-	/* Cache of data that the areas of this node were created with; if changes occur then the areas may need to be regenerated: */
-	gint line_width;
-	gint line_indent;
-	/* FIXME: perhaps these ought to be added to struct CongAreaCreationInfo ? */
-#endif
+	CongAreaCreationGeometry *start_creation_geometry;
+	CongAreaCreationGeometry *end_creation_geometry;
 
 	/* Record of insertion position at the start of this node: */
 	CongEditorLineIter *start_line_iter;
@@ -63,6 +118,7 @@ struct PerNodeData
 	CongEditorCreationRecord *creation_record;
 };
 
+/* Internal function declarations: */
 static void
 hash_value_destroy_func (gpointer data);
 
@@ -70,7 +126,27 @@ static PerNodeData*
 get_data_for_node (CongEditorLineManager *line_manager,
 		   CongEditorNode *editor_node);
 
+static void
+create_areas_for_node (CongEditorLineManager *line_manager,
+		       CongEditorNode *editor_node,
+		       CongEditorLineIter *start_line_iter);
 
+static void
+destroy_areas_for_node (CongEditorLineManager *line_manager,
+			CongEditorNode *editor_node);
+
+static void
+regenerate_areas_for_node (CongEditorLineManager *line_manager,
+			   CongEditorNode *editor_node,
+			   CongEditorLineIter *start_line_iter);
+
+static void
+regenerate_successor_nodes (CongEditorLineManager *line_manager,
+			    CongEditorNode *successor_node,
+			    CongEditorLineIter *new_start_iter,
+			    CongAreaCreationGeometry *new_start_creation_geometry);
+
+/* Exported function implementations: */
 void
 cong_editor_line_manager_construct (CongEditorLineManager *line_manager,
 				    CongEditorWidget3 *widget)
@@ -106,58 +182,46 @@ cong_editor_line_manager_add_node (CongEditorLineManager *line_manager,
 {
 	CongEditorNode *editor_node_prev = cong_editor_node_get_prev (editor_node);
 	PerNodeData *per_node_data;
+	CongEditorLineIter *start_line_iter;
 
 	/* Set up per_node_data for the new editor node: */
 	{
 		per_node_data = g_new0 (PerNodeData, 1);
 
-		/* Set up the line_iter: */
-		{
-			if (editor_node_prev) {
-				PerNodeData *per_node_data_prev = get_data_for_node (line_manager,
-										     editor_node_prev);
-				
-				per_node_data->start_line_iter = cong_editor_line_iter_clone (per_node_data_prev->end_line_iter);
-			} else {
-				/* We have a start node; use the factory method: */
-				per_node_data->start_line_iter = CONG_EEL_CALL_METHOD_WITH_RETURN_VALUE (CONG_EDITOR_LINE_MANAGER_CLASS,
-													 line_manager,
-													 make_iter,
-													 (line_manager));
-			}
-			per_node_data->end_line_iter = cong_editor_line_iter_clone (per_node_data->start_line_iter);
-			g_assert (per_node_data->start_line_iter);
-			g_assert (per_node_data->end_line_iter);
-		}
-
-		/* Set up creation record: */
-		per_node_data->creation_record = cong_editor_creation_record_new (line_manager);
-		
 		/* We're done; add this to the hash table: */
 		g_hash_table_insert (PRIVATE (line_manager)->hash_of_editor_node_to_data,
 				     editor_node,
 				     per_node_data);
 	}
-		
-	/* Invoke "create_areas" method for node: */
+
+
+	/* Set up the line_iter: */
 	{
-		CongAreaCreationInfo creation_info;
-
-		creation_info.line_manager = line_manager;
-		creation_info.creation_record = per_node_data->creation_record;
-		creation_info.line_iter = per_node_data->end_line_iter; /* note that this will be modified */
-
-		CONG_EEL_CALL_METHOD (CONG_EDITOR_NODE_CLASS,
-				      editor_node,
-				      create_areas,
-				      (editor_node, &creation_info));
+		if (editor_node_prev) {
+			PerNodeData *per_node_data_prev = get_data_for_node (line_manager,
+									     editor_node_prev);
+			
+			start_line_iter = cong_editor_line_iter_clone (per_node_data_prev->end_line_iter);
+		} else {
+			/* We have a start node; use the factory method: */
+			start_line_iter = CONG_EEL_CALL_METHOD_WITH_RETURN_VALUE (CONG_EDITOR_LINE_MANAGER_CLASS,
+										  line_manager,
+										  make_iter,
+										  (line_manager));
+		}
 	}
+	
+	LOG_EVENT ("create areas for new node", editor_node);
 
-	/* Potentially update successor nodes' area creation info, recreating areas as necessary, which may trigger further updates: */
-	{
-		/* FIXME: unwritten */
-	}
+	create_areas_for_node (line_manager,
+			       editor_node,
+			       start_line_iter);
 
+	/* Potentially regenerate successors; starting at this new node's end point: */
+	regenerate_successor_nodes (line_manager,
+				    cong_editor_node_get_next (editor_node),
+				    per_node_data->end_line_iter,
+				    per_node_data->end_creation_geometry);
 }
 
 void
@@ -169,24 +233,20 @@ cong_editor_line_manager_remove_node (CongEditorLineManager *line_manager,
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
 	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
 
+	LOG_EVENT ("remove areas for dead node", editor_node);
+
 	per_node_data = get_data_for_node (line_manager,
 					   editor_node);
 	g_assert (per_node_data);
 
-#if 1
-	/* Delete all areas recorded for this node: */
-	cong_editor_creation_record_undo_changes (per_node_data->creation_record);
-	g_object_unref (G_OBJECT (per_node_data->creation_record));
-	per_node_data->creation_record = NULL;
+	destroy_areas_for_node (line_manager,
+				editor_node);
 
-	/* Potentially update successor nodes' area creation info, recreating areas as necessary, which may trigger further updates: */
-	{
-		/* FIXME: unwritten */
-
-	}
-#else
-	/* Go backwards, deleting all sibling's areas (recursaively?) including this one, then regenerate siblings forwards? */ 
-#endif
+	/* Potentially regenerate successors; starting at this node's old start point: */
+	regenerate_successor_nodes (line_manager,
+				    cong_editor_node_get_next (editor_node),
+				    per_node_data->start_line_iter,
+				    per_node_data->start_creation_geometry);
 
 	/* Remove from hash: */
 	{
@@ -413,10 +473,21 @@ cong_editor_line_manager_get_current_width_available (CongEditorLineManager *lin
 	return line_width - current_indent;
 }
 
+/* Internal function implementations: */
 static void
 hash_value_destroy_func (gpointer data)
 {
 	PerNodeData *per_node_data = (PerNodeData*)data;
+
+	if (per_node_data->start_creation_geometry) {
+		cong_area_creation_geometry_free (per_node_data->start_creation_geometry);
+		per_node_data->start_creation_geometry = NULL;
+	}
+
+	if (per_node_data->end_creation_geometry) {
+		cong_area_creation_geometry_free (per_node_data->end_creation_geometry);
+		per_node_data->end_creation_geometry = NULL;
+	}
 
 	if (per_node_data->start_line_iter) {
 		g_object_unref (G_OBJECT (per_node_data->start_line_iter));
@@ -447,3 +518,142 @@ get_data_for_node (CongEditorLineManager *line_manager,
 						  editor_node);
 }
 
+static void
+create_areas_for_node (CongEditorLineManager *line_manager,
+		       CongEditorNode *editor_node,
+		       CongEditorLineIter *start_line_iter)
+{
+	PerNodeData *per_node_data;
+
+	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
+
+	per_node_data = get_data_for_node (line_manager,
+					   editor_node);
+	g_assert (per_node_data);
+
+	/* Set up creation record: */
+	g_assert (NULL==per_node_data->creation_record);
+	per_node_data->creation_record = cong_editor_creation_record_new (line_manager);
+
+	/* Set up line iters: */
+	{
+		if (per_node_data->start_line_iter) {
+			g_object_unref (G_OBJECT (per_node_data->start_line_iter));		
+		}
+		per_node_data->start_line_iter = start_line_iter;
+		g_object_ref (G_OBJECT (per_node_data->start_line_iter));
+		
+		if (per_node_data->end_line_iter) {
+			g_object_unref (G_OBJECT (per_node_data->end_line_iter));		
+		}
+		per_node_data->end_line_iter = cong_editor_line_iter_clone (start_line_iter);
+	}
+		
+	/* Set up start_creation_geometry: */
+	if (per_node_data->start_creation_geometry) {
+		cong_area_creation_geometry_free (per_node_data->start_creation_geometry);
+	}
+	per_node_data->start_creation_geometry = cong_area_creation_geometry_new (line_manager,
+										  per_node_data->end_line_iter);
+
+	/* Invoke "create_areas" method for node: */
+	{
+		CongAreaCreationInfo creation_info;
+		
+		creation_info.line_manager = line_manager;
+		creation_info.creation_record = per_node_data->creation_record;
+		creation_info.line_iter = per_node_data->end_line_iter; /* note that this will be modified */
+		
+		CONG_EEL_CALL_METHOD (CONG_EDITOR_NODE_CLASS,
+				      editor_node,
+				      create_areas,
+				      (editor_node, &creation_info));
+	}
+
+	/* Set up end_creation_geometry: */
+	if (per_node_data->end_creation_geometry) {
+		cong_area_creation_geometry_free (per_node_data->end_creation_geometry);
+	}
+	per_node_data->end_creation_geometry = cong_area_creation_geometry_new (line_manager,
+										per_node_data->end_line_iter);
+}
+
+static void
+destroy_areas_for_node (CongEditorLineManager *line_manager,
+			CongEditorNode *editor_node)
+{
+	PerNodeData *per_node_data;
+
+	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
+
+	per_node_data = get_data_for_node (line_manager,
+					   editor_node);
+	g_assert (per_node_data);
+
+	g_assert (per_node_data->creation_record);
+	g_assert (per_node_data->start_creation_geometry);
+	g_assert (per_node_data->end_creation_geometry);
+
+	/* Delete all areas recorded for this node: */
+	cong_editor_creation_record_undo_changes (per_node_data->creation_record);
+	g_object_unref (G_OBJECT (per_node_data->creation_record));
+	per_node_data->creation_record = NULL;
+}
+
+static void
+regenerate_areas_for_node (CongEditorLineManager *line_manager,
+			   CongEditorNode *editor_node,
+			   CongEditorLineIter *start_line_iter)
+{
+	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
+
+	LOG_EVENT ("regenerating areas for node", editor_node);
+
+	/* Regenerate areas for this node: */
+	destroy_areas_for_node (line_manager,
+				editor_node);
+	create_areas_for_node (line_manager,
+			       editor_node,
+			       start_line_iter);
+}
+
+static void
+regenerate_successor_nodes (CongEditorLineManager *line_manager,
+			    CongEditorNode *successor_node,
+			    CongEditorLineIter *new_start_iter,
+			    CongAreaCreationGeometry *new_start_creation_geometry)
+{
+	/* Potentially update successor nodes' area creation info, recreating areas as necessary, which may trigger further updates: */
+	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (IS_CONG_EDITOR_LINE_ITER (new_start_iter));
+	g_return_if_fail (new_start_creation_geometry);
+
+	while (successor_node) {
+		PerNodeData *per_node_data_successor = get_data_for_node (line_manager,
+									  successor_node);	
+		g_assert (per_node_data_successor);
+
+		/* Compare old and new line iters for the successor: */
+		if (cong_editor_node_needs_area_regeneration (successor_node,
+							      per_node_data_successor->start_creation_geometry,
+							      new_start_creation_geometry)) {
+			/* Do the regeneration: */
+			regenerate_areas_for_node (line_manager,
+						   successor_node,
+						   new_start_iter);
+
+			/* Iterate onto next node: */
+			new_start_iter = per_node_data_successor->end_line_iter;
+			new_start_creation_geometry = per_node_data_successor->end_creation_geometry;
+			successor_node = cong_editor_node_get_next (successor_node);
+
+			/* FIXME: what about subtrees; should we recurse??? */
+		} else {
+			/* no regeneration necessary for this node; stop the iteration: */
+			return;
+		}
+	}
+}

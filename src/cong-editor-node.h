@@ -32,6 +32,7 @@
 G_BEGIN_DECLS
 
 typedef struct CongAreaCreationInfo CongAreaCreationInfo;
+typedef struct CongAreaCreationGeometry CongAreaCreationGeometry;
 
 #define DEBUG_EDITOR_NODE_LIFETIMES 0
 
@@ -64,6 +65,11 @@ CONG_DECLARE_CLASS_BEGIN(CongEditorNode, cong_editor_node, GObject)
 #if 1
 	void (*create_areas) (CongEditorNode *editor_node,
 			      const CongAreaCreationInfo *creation_info);
+
+	gboolean
+	(*needs_area_regeneration) (CongEditorNode *editor_node,
+				    const CongAreaCreationGeometry *old_creation_geometry,
+				    const CongAreaCreationGeometry *new_creation_geometry);
 #else
 	/* Simplistic interface for now: */
 	CongEditorArea* (*generate_block_area) (CongEditorNode *editor_node);
@@ -92,6 +98,15 @@ struct CongAreaCreationInfo
 	   The line_iter will get modified as actions are performed on it; it represents the "current" position.
 	*/
 	CongEditorLineIter *line_iter;
+};
+
+
+struct CongAreaCreationGeometry
+{
+	/* Cache of data that the areas of a node were created with; if changes occur then the areas may need to be regenerated: */
+	CongEditorAreaLine *area_line;
+	gint line_width;
+	gint line_indent;
 };
 
 CongEditorNode*
@@ -136,6 +151,18 @@ cong_editor_node_private_set_selected (CongEditorNode *editor_node,
 void 
 cong_editor_node_create_areas (CongEditorNode *editor_node,
 			       const CongAreaCreationInfo *creation_info);
+
+/*
+  Function to decide if the areas for this node should be regenerated, based upon pertinent information such as
+  current line, width of line and current indent etc.
+  
+  Typically a block-style area won't be affected by its start position; it always starts a newline etc.
+  But inline flow stuff might look at this stuff and reflow when needed...
+*/
+gboolean
+cong_editor_node_needs_area_regeneration (CongEditorNode *editor_node,
+					  const CongAreaCreationGeometry *old_creation_geometry,
+					  const CongAreaCreationGeometry *new_creation_geometry);
 #else
 CongEditorArea*
 cong_editor_node_generate_block_area (CongEditorNode *editor_node);

@@ -1,5 +1,9 @@
 2004-03-11  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* cong-editor-area-composer.c, cong-editor-area-composer.h, cong-editor-area-line.c, cong-editor-area-line.h, cong-editor-line-manager-simple.c, cong-editor-line-manager.c, cong-editor-node-element-span.c, cong-editor-node.c, cong-editor-node.h
+
+	Added CongAreaCreationGeometry to handle information relating to area creation (e.g. line width and initial indent) that might be relevant when deciding if areas needs regenerating; added an area regeneration when nodes are added/removed that can be invoked upon the successor nodes (eventually we will optimise and only do it when necessary based upon CongAreaCreationGeometry before/after each change).
+
 	* cong-editor-widget3.c, cong-plugin.c
 
 	Suppressing more debug log spewage
