@@ -120,7 +120,7 @@ static void
 create_areas (CongEditorNode *editor_node,
 	      const CongAreaCreationInfo *creation_info)
 {
-	g_assert_not_reached (); /* FIXME */
+	/* Do nothing; the children will add their areas via our LineManager, and this will create the wrapper areas */
 }
 #else
 static CongEditorArea*

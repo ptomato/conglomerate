@@ -104,7 +104,33 @@ static void
 create_areas (CongEditorNode *editor_node,
 	      const CongAreaCreationInfo *creation_info)
 {
-	g_assert_not_reached (); /* FIXME */
+	CongEditorArea *block_area;
+	CongDispspecElement *ds_element;
+	GdkPixbuf *pixbuf;
+	gchar *title_text;
+
+	g_return_if_fail (editor_node);
+
+	ds_element = cong_editor_node_element_get_dispspec_element (CONG_EDITOR_NODE_ELEMENT (editor_node));
+	pixbuf = cong_dispspec_element_get_icon (ds_element);
+	title_text = cong_dispspec_element_get_section_header_text (ds_element,
+								    cong_editor_node_get_node (editor_node));
+
+	block_area = cong_editor_area_structural_tag_new (cong_editor_node_get_widget (editor_node),
+							  ds_element,
+							  pixbuf,
+							  title_text);
+	if (pixbuf) {
+		g_object_unref (G_OBJECT(pixbuf));
+	}
+	g_free (title_text);
+
+	cong_editor_area_connect_node_signals (block_area,
+					       editor_node);
+
+	cong_editor_node_create_block_area (editor_node,
+					    creation_info,
+					    block_area);
 }
 #else
 static CongEditorArea*

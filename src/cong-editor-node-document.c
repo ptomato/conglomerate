@@ -98,7 +98,8 @@ static void
 create_areas (CongEditorNode *editor_node,
 	      const CongAreaCreationInfo *creation_info)
 {
-	g_assert_not_reached (); /* FIXME */
+	cong_editor_node_empty_create_area (editor_node,
+					    creation_info);
 }
 #else
 static CongEditorArea*

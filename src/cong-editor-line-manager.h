@@ -42,14 +42,40 @@ CONG_DECLARE_CLASS_BEGIN (CongEditorLineManager, cong_editor_line_manager, GObje
 
      /* FIXME: all of these methods are temporary for now: */
 
-     gint (*get_line_width) (CongEditorLineManager *line_manager);
-     gint (*get_width_used) (CongEditorLineManager *line_manager);
+     /* Manipulating the lines: */
+     void (*begin_line) (CongEditorLineManager *line_manager);
+     void (*add_to_line) (CongEditorLineManager *line_manager,
+			  CongEditorArea *area);
+     void (*end_line) (CongEditorLineManager *line_manager);
 
-     void (*create_line) (CongEditorLineManager *line_manager);
-     void (*add_to_line) (CongEditorLineManager *line_manager);
+     /* Getting data about the lines: */
+     gint (*get_line_width) (CongEditorLineManager *line_manager);
+     gint (*get_current_indent) (CongEditorLineManager *line_manager);
 
 CONG_DECLARE_CLASS_END ()
 
+void
+cong_editor_line_manager_construct (CongEditorLineManager *line_manager,
+				    CongEditorWidget3 *widget);
+
+CongEditorWidget3*
+cong_editor_line_manager_get_widget (CongEditorLineManager *line_manager);
+
+void
+cong_editor_line_manager_begin_line (CongEditorLineManager *line_manager);
+
+void
+cong_editor_line_manager_add_to_line (CongEditorLineManager *line_manager,
+				      CongEditorArea *area);
+
+void
+cong_editor_line_manager_end_line (CongEditorLineManager *line_manager);
+
+gint
+cong_editor_line_manager_get_line_width (CongEditorLineManager *line_manager);
+
+gint
+cong_editor_line_manager_get_current_indent (CongEditorLineManager *line_manager);
 
 G_END_DECLS
 

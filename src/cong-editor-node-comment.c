@@ -133,7 +133,18 @@ static void
 create_areas (CongEditorNode *editor_node,
 	      const CongAreaCreationInfo *creation_info)
 {
-	g_assert_not_reached (); /* FIXME */
+	CongEditorNodeComment *node_comment = CONG_EDITOR_NODE_COMMENT(editor_node);
+
+	CongEditorArea *block_area = cong_editor_area_text_comment_new (cong_editor_node_get_widget (editor_node),
+									cong_app_get_font (cong_app_singleton(),
+											   CONG_FONT_ROLE_BODY_TEXT), 
+									NULL,
+									cong_text_cache_get_output_text (PRIVATE(node_comment)->text_cache),
+									FALSE);
+	cong_editor_node_create_block_area (editor_node,
+					    creation_info,
+					    block_area);
+	/* FIXME: should we attach signals, or store the area anywhere? */
 }
 #else
 static CongEditorArea*

@@ -101,7 +101,16 @@ static void
 create_areas (CongEditorNode *editor_node,
 	      const CongAreaCreationInfo *creation_info)
 {
-	g_assert_not_reached (); /* FIXME */
+	CongEditorArea *block_area;
+
+	g_return_if_fail (editor_node);
+
+	block_area = cong_editor_area_paragraph_new (cong_editor_node_get_widget (editor_node));
+
+	cong_editor_node_create_block_area (editor_node,
+					    creation_info,
+					    block_area);
+	/* FIXME: should we attach signals, or store the area anywhere? */
 }
 #else
 static CongEditorArea*

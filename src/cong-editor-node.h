@@ -39,9 +39,9 @@ G_BEGIN_DECLS
 
 typedef struct CongEditorNodeDetails CongEditorNodeDetails;
 
-typedef struct CongAreaCreationCreationInfo CongAreaCreationInfo;
+typedef struct CongAreaCreationInfo CongAreaCreationInfo;
 
-struct CongAreaCreationCreationInfo
+struct CongAreaCreationInfo
 {
 	CongEditorLineManager *line_manager;
 };
@@ -180,6 +180,10 @@ cong_editor_node_get_next (CongEditorNode *editor_node);
 #if 1
 CongEditorLineManager*
 cong_editor_node_get_line_manager_for_children (CongEditorNode *editor_node);
+
+void
+cong_editor_node_set_line_manager_for_children (CongEditorNode *editor_node,
+						CongEditorLineManager *line_manager);
 #else
 /* Get the child policy; should only be needed by internals of widget implementation: */
 CongEditorChildPolicy*
@@ -200,6 +204,26 @@ cong_editor_node_set_parents_child_policy (CongEditorNode *editor_node,
 					   CongEditorChildPolicy *child_policy);
 #endif
 
+
+/**
+ * cong_editor_node_create_block_area:
+ *
+ * @editor_node: the #CongEditorNode
+ * @creation_info:
+ * @block_area: the block-style area that will represent this editor node.
+ *
+ * Utility function for implementing the create_areas function for node subclasses that expect to create a single block area.
+ */
+void
+cong_editor_node_create_block_area (CongEditorNode *editor_node,
+				    const CongAreaCreationInfo *creation_info,
+				    CongEditorArea *block_area);
+
+/* Utility placeholder function for node subclasses that don't really create an area themselves (e.g. for the document, for DTDs etc;
+   might be empty, might not; not sure yet. */
+void
+cong_editor_node_empty_create_area (CongEditorNode *editor_node,
+				    const CongAreaCreationInfo *creation_info);
 
 G_END_DECLS
 

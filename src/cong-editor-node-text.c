@@ -444,7 +444,79 @@ static void
 create_areas (CongEditorNode *editor_node,
 	      const CongAreaCreationInfo *creation_info)
 {
-	g_assert_not_reached (); /* FIXME */
+	CongEditorNodeText *node_text = CONG_EDITOR_NODE_TEXT(editor_node);
+
+#if 0
+	g_message("CongEditorNodeText::create_areas, cached text =\"%s\"", 
+		  cong_text_cache_get_text (PRIVATE(node_text)->text_cache));
+#endif
+
+	/* Set the "geometry" of the PangoLayout: */
+	pango_layout_set_width (PRIVATE(node_text)->pango_layout,
+				cong_editor_line_manager_get_line_width (creation_info->line_manager)*PANGO_SCALE);
+
+	pango_layout_set_indent (PRIVATE(node_text)->pango_layout,
+				cong_editor_line_manager_get_current_indent (creation_info->line_manager)*PANGO_SCALE);
+
+	/* Add areas for the PangoLayoutLines: */
+	{
+		int index;
+		PangoLayoutIter *layout_iter = pango_layout_get_iter (PRIVATE(node_text)->pango_layout);
+
+
+		/* CAUTION: this is internal data of the PangoLayout */
+		for (index=0; index<pango_layout_get_line_count(PRIVATE(node_text)->pango_layout); index++, pango_layout_iter_next_line(layout_iter)) {
+			PangoLayoutLine *line = pango_layout_iter_get_line (layout_iter);
+			CongEditorArea *text_fragment;
+			PangoRectangle ink_rect;
+			PangoRectangle logical_rect;
+			
+			g_assert(line);
+
+			pango_layout_line_get_pixel_extents (line,
+							     &ink_rect,
+							     &logical_rect);
+
+#if 0
+			g_message("baseline = %i, logical rect.y = %i",
+				  (pango_layout_iter_get_baseline(layout_iter)/PANGO_SCALE),
+				  logical_rect.y);
+#endif
+
+			text_fragment = cong_editor_area_text_fragment_new (cong_editor_node_get_widget (editor_node),
+									    node_text,
+									    PRIVATE(node_text)->pango_layout,
+									    index,
+									    - logical_rect.y);
+			/* FIXME: the calculation of how to offset each baseline is a hack, and might break */
+
+			g_signal_connect (text_fragment,
+					  "button_press_event",
+					  G_CALLBACK(on_signal_button_press),
+					  editor_node);
+			
+			g_signal_connect (text_fragment,
+					  "motion_notify_event",
+					  G_CALLBACK(on_signal_motion_notify),
+					  editor_node);
+			
+#if 0
+			g_signal_connect (text_fragment,
+					  "key_press_event",
+					  G_CALLBACK(on_signal_key_press),
+					  editor_node);
+#endif
+
+			cong_editor_line_manager_add_to_line (creation_info->line_manager,
+							      text_fragment);
+			/* FIXME: will eventually need to end the lines if we're preserving whitespace */
+		}
+
+		pango_layout_iter_free (layout_iter);
+			     
+	}
+
+
 }
 #else
 static CongEditorArea*

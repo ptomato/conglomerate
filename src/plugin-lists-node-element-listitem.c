@@ -428,7 +428,28 @@ static void
 create_areas (CongEditorNode *editor_node,
 	      const CongAreaCreationInfo *creation_info)
 {
-	g_assert_not_reached (); /* FIXME */
+	CongEditorArea *block_area;
+	CongEditorNodeElementListitem *editor_node_element_listitem = CONG_EDITOR_NODE_ELEMENT_LISTITEM (editor_node);
+
+	g_return_if_fail (editor_node);
+
+	block_area = cong_editor_area_listitem_new (cong_editor_node_get_widget (editor_node),
+						    PRIVATE(editor_node_element_listitem)->cached_label);
+
+	/* Connect to signal: */
+	g_signal_connect (G_OBJECT (editor_node),
+			  "label_changed",
+			  G_CALLBACK (on_label_changed),
+			  block_area);
+
+	cong_editor_node_create_block_area (editor_node,
+					    creation_info,
+					    block_area);
+
+	/* FIXME: should we call this: */
+	cong_editor_area_connect_node_signals (block_area,
+					       editor_node);
+
 }
 #else
 static CongEditorArea*

@@ -43,6 +43,11 @@
 #include "cong-editor-node-unimplemented.h"
 #include "cong-plugin-manager.h"
 #include "cong-traversal-node.h"
+#include "cong-editor-area.h"
+#include "cong-editor-line-manager.h"
+#include "cong-editor-line-manager-simple.h"
+#include "cong-editor-area-composer.h"
+#include "cong-editor-area-bin.h"
 
 #define PRIVATE(x) ((x)->priv)
 
@@ -63,7 +68,7 @@ struct CongEditorNodeDetails
 	CongTraversalNode *traversal_node;
 
 #if 1
-	CongEditorLineManager *line_manager;
+	CongEditorLineManager *line_manager_for_children;
 #else
 	CongEditorChildPolicy *child_policy;
 	CongEditorChildPolicy *parents_child_policy;
@@ -573,7 +578,27 @@ cong_editor_node_get_next (CongEditorNode *editor_node)
 #endif
 
 
-#if 0
+#if 1
+CongEditorLineManager*
+cong_editor_node_get_line_manager_for_children (CongEditorNode *editor_node)
+{
+	g_return_val_if_fail (IS_CONG_EDITOR_NODE(editor_node), NULL);
+
+	return PRIVATE(editor_node)->line_manager_for_children;
+}
+
+void
+cong_editor_node_set_line_manager_for_children (CongEditorNode *editor_node,
+						CongEditorLineManager *line_manager)
+{
+	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
+	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+
+	g_assert (NULL==PRIVATE(editor_node)->line_manager_for_children);
+
+	PRIVATE(editor_node)->line_manager_for_children = line_manager;
+}
+#else
 CongEditorChildPolicy*
 cong_editor_node_get_child_policy (CongEditorNode *editor_node)
 {
@@ -608,6 +633,70 @@ cong_editor_node_set_parents_child_policy (CongEditorNode *editor_node,
 	PRIVATE(editor_node)->parents_child_policy = child_policy;
 }
 #endif
+
+static void
+set_up_line_manager (CongEditorNode *editor_node,
+		     CongEditorArea *block_area)
+{
+	CongEditorLineManager *line_manager;
+	CongEditorArea *area_lines;
+	CongEditorWidget3 *widget;
+
+	widget = cong_editor_node_get_widget (editor_node);
+
+	/* Set up area for children: */
+	area_lines = cong_editor_area_composer_new (widget,
+						    GTK_ORIENTATION_VERTICAL,
+						    10);
+
+	/* Add to the area tree below the block area: */
+	cong_editor_area_container_add_child ( CONG_EDITOR_AREA_CONTAINER (block_area),
+					       area_lines);
+
+	/* Set up line manager: */
+	line_manager = cong_editor_line_manager_simple_new (widget,
+							    area_lines);
+	cong_editor_node_set_line_manager_for_children (editor_node,
+							line_manager);
+}
+
+void
+cong_editor_node_create_block_area (CongEditorNode *editor_node,
+				    const CongAreaCreationInfo *creation_info,
+				    CongEditorArea *block_area)
+{
+	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
+	g_return_if_fail (creation_info);
+	g_return_if_fail (IS_CONG_EDITOR_AREA (block_area));
+
+	g_assert (IS_CONG_EDITOR_LINE_MANAGER (creation_info->line_manager));
+
+	cong_editor_line_manager_begin_line (creation_info->line_manager);
+	cong_editor_line_manager_add_to_line (creation_info->line_manager,
+					      block_area);
+	cong_editor_line_manager_end_line (creation_info->line_manager);
+
+	set_up_line_manager (editor_node,
+			     block_area);
+}
+
+void
+cong_editor_node_empty_create_area (CongEditorNode *editor_node,
+				    const CongAreaCreationInfo *creation_info)
+{
+	CongEditorArea *dummy_area;
+
+	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
+	g_return_if_fail (creation_info);
+
+	dummy_area = cong_editor_area_bin_new (cong_editor_node_get_widget (editor_node));
+
+	cong_editor_line_manager_add_to_line (creation_info->line_manager,
+					      dummy_area);
+
+	set_up_line_manager (editor_node,
+			     dummy_area);
+}
 
 static enum CongFlowType
 get_flow_type(CongEditorNode *editor_node)

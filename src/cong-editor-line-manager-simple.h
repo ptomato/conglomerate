@@ -38,6 +38,9 @@ G_BEGIN_DECLS
 CONG_DECLARE_CLASS_BEGIN (CongEditorLineManagerSimple, cong_editor_line_manager_simple, CongEditorLineManager)
 CONG_DECLARE_CLASS_END ()
 
+CongEditorLineManager*
+cong_editor_line_manager_simple_new (CongEditorWidget3 *widget,
+				     CongEditorArea *area_lines);
 
 G_END_DECLS
 

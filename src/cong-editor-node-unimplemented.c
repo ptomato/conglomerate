@@ -106,7 +106,19 @@ static void
 create_areas (CongEditorNode *editor_node,
 	      const CongAreaCreationInfo *creation_info)
 {
-	g_assert_not_reached (); /* FIXME */
+	CongEditorNodeUnimplemented *editor_node_unimplemented = CONG_EDITOR_NODE_UNIMPLEMENTED(editor_node);
+	CongEditorArea *block_area;
+	
+	block_area = cong_editor_area_text_new (cong_editor_node_get_widget (editor_node),
+						cong_app_get_font (cong_app_singleton(),
+								   CONG_FONT_ROLE_TITLE_TEXT),
+						NULL,
+						PRIVATE(editor_node_unimplemented)->description,
+						FALSE);
+
+	cong_editor_node_create_block_area (editor_node,
+					    creation_info,
+					    block_area);
 }
 #else
 static CongEditorArea*
