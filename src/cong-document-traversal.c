@@ -94,6 +94,16 @@ on_signal_make_orphan_notify_before (CongDocument *doc,
 				     CongNodePtr node, 
 				     gpointer user_data);
 static void 
+on_signal_add_after_notify_before (CongDocument *doc, 
+				   CongNodePtr node, 
+				   CongNodePtr older_sibling, 
+				   gpointer user_data);
+static void 
+on_signal_add_before_notify_before (CongDocument *doc, 
+				    CongNodePtr node, 
+				    CongNodePtr younger_sibling, 
+				    gpointer user_data);
+static void 
 on_signal_set_parent_notify_before (CongDocument *doc, 
 				    CongNodePtr node, 
 				    CongNodePtr adoptive_parent, 
@@ -117,7 +127,7 @@ on_signal_set_parent_notify_after (CongDocument *doc,
 				   gpointer user_data);
 
 
-#define LOG_TRAVERSAL_NODES 0
+#define LOG_TRAVERSAL_NODES 1
 
 #if LOG_TRAVERSAL_NODES
 #define LOG_TRAVERSAL_NODE1(x) g_message(x)
@@ -127,8 +137,8 @@ on_signal_set_parent_notify_after (CongDocument *doc,
 #define LOG_TRAVERSAL_NODE2(x, a) ((void)0)
 #endif
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
-
 
 struct CongDocumentTraversalDetails
 {
@@ -195,7 +205,9 @@ cong_document_traversal_construct (CongDocumentTraversal *doc_traversal,
 
 	/* Connect to signals: */
 	g_signal_connect (G_OBJECT(doc), "node_make_orphan", G_CALLBACK(on_signal_make_orphan_notify_before), doc_traversal);
+	g_signal_connect (G_OBJECT(doc), "node_add_after", G_CALLBACK(on_signal_add_after_notify_before), doc_traversal);
 	g_signal_connect_after (G_OBJECT(doc), "node_add_after", G_CALLBACK(on_signal_add_after_notify_after), doc_traversal);
+	g_signal_connect (G_OBJECT(doc), "node_add_before", G_CALLBACK(on_signal_add_before_notify_before), doc_traversal);
 	g_signal_connect_after (G_OBJECT(doc), "node_add_before", G_CALLBACK(on_signal_add_before_notify_after), doc_traversal);
 	g_signal_connect (G_OBJECT(doc), "node_set_parent", G_CALLBACK(on_signal_set_parent_notify_before), doc_traversal);
 	g_signal_connect_after (G_OBJECT(doc), "node_set_parent", G_CALLBACK(on_signal_set_parent_notify_after), doc_traversal);
@@ -720,6 +732,41 @@ on_signal_make_orphan_notify_before (CongDocument *doc,
 #endif
 	}
 
+}
+
+static void 
+on_signal_add_after_notify_before (CongDocument *doc, 
+				   CongNodePtr node, 
+				   CongNodePtr older_sibling, 
+				   gpointer user_data)
+{
+	CongDocumentTraversal *doc_traversal = CONG_DOCUMENT_TRAVERSAL (user_data);
+
+	g_assert (node);
+
+	/* Remove any traversal node: */
+	if (should_have_traversal_node(node)) {
+		recursive_destroy_traversal_nodes_for_xml_node (doc_traversal, 
+								node);
+	}
+
+}
+
+static void 
+on_signal_add_before_notify_before (CongDocument *doc, 
+				    CongNodePtr node, 
+				    CongNodePtr younger_sibling, 
+				    gpointer user_data)
+{
+	CongDocumentTraversal *doc_traversal = CONG_DOCUMENT_TRAVERSAL (user_data);
+
+	g_assert (node);
+
+	/* Remove any traversal node: */
+	if (should_have_traversal_node(node)) {
+		recursive_destroy_traversal_nodes_for_xml_node (doc_traversal, 
+								node);
+	}
 }
 
 static void 

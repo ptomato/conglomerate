@@ -1,3 +1,9 @@
+2004-03-10  Dave Malcolm  <david@davemalcolm.demon.co.uk>
+
+	* cong-document-traversal.c
+
+	Fixed a leak of the CongTraversalNode subtree (and hence of CongEditorNode objects) when doing an add node before/after operation; was happening when undoing an apply span tag operation.
+
 2004-03-09  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
 	* cong-editor-widget3.c, cong-menus.c, cong-object.c, cong-object.h
