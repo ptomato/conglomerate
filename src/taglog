@@ -8,3 +8,4 @@ bz-134966-0  link to website in the application
 bz-134966-1  Patch applied
 bz-131746-0  xml:space
 bz-131746-1  Patch applied
+-        that g_free(modified_file_name) in plugin-admotions, is also in HEAD
