@@ -26,6 +26,7 @@
 #include "cong-editor-line-manager-simple.h"
 #include "cong-editor-area.h"
 #include "cong-editor-area-line.h"
+#include "cong-editor-area-composer.h"
 
 static void 
 begin_line (CongEditorLineManager *line_manager);
@@ -102,8 +103,11 @@ begin_line (CongEditorLineManager *line_manager)
 								     300)); /* FIXME */
 	PRIVATE (simple)->current_line = new_line;
 
-	cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (PRIVATE (simple)->area_lines),
-					      CONG_EDITOR_AREA (new_line));
+	cong_editor_area_composer_pack_end (CONG_EDITOR_AREA_COMPOSER (PRIVATE (simple)->area_lines),
+					    CONG_EDITOR_AREA (new_line),
+					    FALSE,
+					    TRUE,
+					    0);
 }
 
 static void

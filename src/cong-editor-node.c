@@ -47,7 +47,8 @@
 #include "cong-editor-line-manager.h"
 #include "cong-editor-line-manager-simple.h"
 #include "cong-editor-area-composer.h"
-#include "cong-editor-area-bin.h"
+#include "cong-editor-area-border.h"
+#include "cong-editor-area-lines.h"
 
 #define PRIVATE(x) ((x)->priv)
 
@@ -640,6 +641,7 @@ set_up_line_manager (CongEditorNode *editor_node,
 {
 	CongEditorLineManager *line_manager;
 	CongEditorArea *area_lines;
+	CongEditorArea *area_border;
 	CongEditorWidget3 *widget;
 
 	g_assert (IS_CONG_EDITOR_AREA_CONTAINER (block_area));
@@ -647,12 +649,25 @@ set_up_line_manager (CongEditorNode *editor_node,
 	widget = cong_editor_node_get_widget (editor_node);
 
 	/* Set up area for children: */
+#if 1
+	area_lines = cong_editor_area_lines_new (widget);
+#else
 	area_lines = cong_editor_area_composer_new (widget,
 						    GTK_ORIENTATION_VERTICAL,
 						    10);
+#endif
 
-	/* Add to the area tree below the block area: */
+	/* Add a border between the block_area and the area_lines in the hierarchy */
+	area_border = cong_editor_area_border_new (widget, 
+						   5,
+						   0,
+						   5,
+						   5);
+
 	cong_editor_area_container_add_child ( CONG_EDITOR_AREA_CONTAINER (block_area),
+					       area_border);
+
+	cong_editor_area_container_add_child ( CONG_EDITOR_AREA_CONTAINER (area_border),
 					       area_lines);
 
 	/* Set up line manager: */
@@ -697,7 +712,7 @@ cong_editor_node_empty_create_area (CongEditorNode *editor_node,
 	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
 	g_return_if_fail (creation_info);
 
-	dummy_area = cong_editor_area_bin_new (cong_editor_node_get_widget (editor_node));
+	dummy_area = cong_editor_area_lines_new (cong_editor_node_get_widget (editor_node));
 
 	cong_editor_line_manager_add_to_line (creation_info->line_manager,
 					      dummy_area);
