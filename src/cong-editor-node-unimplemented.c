@@ -30,6 +30,7 @@
 #include "cong-app.h"
 #include "cong-editor-area-text.h"
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 struct CongEditorNodeUnimplementedDetails

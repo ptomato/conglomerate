@@ -29,6 +29,7 @@
 
 #include "cong-editor-area-unknown-tag.h"
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 struct CongEditorNodeElementUnknownDetails

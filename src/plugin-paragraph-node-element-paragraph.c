@@ -30,6 +30,7 @@
 
 #include "plugin-paragraph-area-paragraph.h"
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 struct CongEditorNodeElementParagraphDetails

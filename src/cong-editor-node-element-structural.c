@@ -31,6 +31,7 @@
 #include "cong-editor-area-structural-tag.h"
 #include "cong-dispspec-element.h"
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 struct CongEditorNodeElementStructuralDetails

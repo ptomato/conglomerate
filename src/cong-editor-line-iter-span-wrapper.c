@@ -35,9 +35,6 @@ CONG_DEFINE_CLASS_PUBLIC_DATA (CongEditorLineIterSpanWrapper, cong_editor_line_i
 			       CONG_EDITOR_LINE_ITER_CLASS (klass)->clone = clone;
 			       CONG_EDITOR_LINE_ITER_CLASS (klass)->get_line = get_line;)
 
-CONG_DEFINE_EMPTY_DISPOSE(cong_editor_line_iter_span_wrapper)
-
-
 /* Implementation of CongLineEditorIterSpanWrapper: */
 CongEditorLineIterSpanWrapper*
 cong_editor_line_iter_span_wrapper_construct (CongEditorLineIterSpanWrapper *line_iter,
@@ -49,6 +46,7 @@ cong_editor_line_iter_span_wrapper_construct (CongEditorLineIterSpanWrapper *lin
 
 #if 1
 	line_iter->outer_iter = outer_iter;
+	g_object_ref (G_OBJECT (outer_iter));
 #else
 	line_iter->outer_iter = cong_editor_line_iter_clone (outer_iter);
 #endif
@@ -69,6 +67,18 @@ cong_editor_line_iter_span_wrapper_new (CongEditorLineManagerSpanWrapper *span_w
 							     outer_iter);
 }
 
+static void 
+cong_editor_line_iter_span_wrapper_dispose (GObject *object)
+{
+	CongEditorLineIterSpanWrapper *span_wrapper_iter = CONG_EDITOR_LINE_ITER_SPAN_WRAPPER (object);
+
+	if (span_wrapper_iter->outer_iter) {
+		g_object_ref (G_OBJECT (span_wrapper_iter->outer_iter));
+		span_wrapper_iter->outer_iter = NULL;
+	}
+	
+}
+
 static CongEditorLineIter*
 clone (CongEditorLineIter *line_iter)
 {
@@ -82,6 +92,7 @@ clone (CongEditorLineIter *line_iter)
 	cong_editor_line_iter_construct (CONG_EDITOR_LINE_ITER (new_iter),
 					 CONG_EDITOR_LINE_MANAGER (cong_editor_line_iter_get_line_manager (line_iter)));
 	new_iter->outer_iter = span_wrapper_iter->outer_iter; /* I believe we shouldn't clone this; we use it directly */
+	g_object_ref (G_OBJECT (new_iter->outer_iter));
 #else
 	new_iter = cong_editor_line_iter_span_wrapper_new (CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (cong_editor_line_iter_get_line_manager (line_iter)));
 #endif

@@ -33,6 +33,7 @@
 
 #include "plugin-lists-area-listitem.h"
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 struct CongEditorNodeElementListitemDetails

@@ -27,8 +27,11 @@
 
 #include "cong-document.h"
 #include "cong-editor-widget.h"
+#include "cong-object.h"
 
 G_BEGIN_DECLS
+
+typedef struct CongAreaCreationInfo CongAreaCreationInfo;
 
 #define DEBUG_EDITOR_NODE_LIFETIMES 0
 
@@ -36,26 +39,6 @@ G_BEGIN_DECLS
 #define CONG_EDITOR_NODE(obj)         G_TYPE_CHECK_INSTANCE_CAST (obj, CONG_EDITOR_NODE_TYPE, CongEditorNode)
 #define CONG_EDITOR_NODE_CLASS(klass) G_TYPE_CHECK_CLASS_CAST (klass, CONG_EDITOR_NODE_TYPE, CongEditorNodeClass)
 #define IS_CONG_EDITOR_NODE(obj)      G_TYPE_CHECK_INSTANCE_TYPE (obj, CONG_EDITOR_NODE_TYPE)
-
-typedef struct CongEditorNodeDetails CongEditorNodeDetails;
-
-typedef struct CongAreaCreationInfo CongAreaCreationInfo;
-
-struct CongAreaCreationInfo
-{
-	CongEditorLineManager *line_manager;
-
-	/* record of the various nodes added, lines begun and ended: */
-	CongEditorCreationRecord *creation_record;
-
-	/* Position at which to add areas (so that when a node is inserted between two existing nodes, 
-	   we can add the areas between their areas.  Note, though that subsequent areas may well need regenerating
-	   since the word-wrap will often start at a different place).
-
-	   The line_iter will get modified as actions are performed on it; it represents the "current" position.
-	*/
-	CongEditorLineIter *line_iter;
-};
 
 /**
  * CongEditorNode
@@ -76,17 +59,7 @@ struct CongAreaCreationInfo
  * The traversal parent is stored as a pointer to the relevant CongEditorNode, rather than a CongNodePtr.
  *
  */
-struct CongEditorNode
-{
-	GObject object;
-
-	CongEditorNodeDetails *priv;
-};
-
-struct CongEditorNodeClass
-{
-	GObjectClass klass;
-
+CONG_DECLARE_CLASS_BEGIN(CongEditorNode, cong_editor_node, GObject)
 	/* Methods? */
 #if 1
 	void (*create_areas) (CongEditorNode *editor_node,
@@ -103,10 +76,23 @@ struct CongEditorNodeClass
 	void (*line_regeneration_required) (CongEditorNode *editor_node);
 	
 	enum CongFlowType (*get_flow_type) (CongEditorNode *editor_node);
-};
+CONG_DECLARE_CLASS_END()
 
-GType
-cong_editor_node_get_type (void);
+struct CongAreaCreationInfo
+{
+	CongEditorLineManager *line_manager;
+
+	/* record of the various nodes added, lines begun and ended: */
+	CongEditorCreationRecord *creation_record;
+
+	/* Position at which to add areas (so that when a node is inserted between two existing nodes, 
+	   we can add the areas between their areas.  Note, though that subsequent areas may well need regenerating
+	   since the word-wrap will often start at a different place).
+
+	   The line_iter will get modified as actions are performed on it; it represents the "current" position.
+	*/
+	CongEditorLineIter *line_iter;
+};
 
 CongEditorNode*
 cong_editor_node_construct (CongEditorNode *editor_node,

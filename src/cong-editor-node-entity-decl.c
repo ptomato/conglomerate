@@ -30,6 +30,7 @@
 #include "cong-editor-area-entity-decl.h"
 #include "cong-editor-area-structural-tag.h"
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 struct CongEditorNodeEntityDeclDetails

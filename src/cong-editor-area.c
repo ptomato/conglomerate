@@ -32,6 +32,7 @@
 #include "cong-selection.h"
 #include "cong-ui-hooks.h"
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 #define DEBUG_REQUISITIONS 0

@@ -43,10 +43,24 @@ cong_editor_flow_event_new (enum CongEditorCreationEvent event,
 	CongEditorFlowEvent *flow_event = g_new0 (CongEditorFlowEvent, 1);
 	
 	flow_event->event = event;
+
 	flow_event->iter_before = iter_before;
+	g_object_ref (G_OBJECT (flow_event->iter_before));
+
 	flow_event->iter_after = iter_after;
+	g_object_ref (G_OBJECT (flow_event->iter_after));
 
 	return flow_event;
+}
+
+void
+cong_editor_flow_event_free (CongEditorFlowEvent *flow_event)
+{
+	g_return_if_fail (flow_event);
+
+	g_object_unref (G_OBJECT (flow_event->iter_before));
+	g_object_unref (G_OBJECT (flow_event->iter_after));
+	g_free (flow_event);
 }
 
 struct CongEditorCreationRecordPrivate
@@ -56,7 +70,8 @@ struct CongEditorCreationRecordPrivate
 	GList *list_of_flow_events;
 };
 
-CONG_DEFINE_CLASS (CongEditorCreationRecord, cong_editor_creation_record, CONG_EDITOR_CREATION_RECORD, GObject, G_TYPE_OBJECT)
+CONG_DEFINE_CLASS_BEGIN (CongEditorCreationRecord, cong_editor_creation_record, CONG_EDITOR_CREATION_RECORD, GObject, G_TYPE_OBJECT)
+CONG_DEFINE_CLASS_END ()
 
 /* Implementation of CongEditorCreationRecord: */
 CongEditorCreationRecord*
@@ -68,6 +83,20 @@ cong_editor_creation_record_construct (CongEditorCreationRecord *creation_record
 	PRIVATE (creation_record)->line_manager = line_manager;
 
 	return creation_record;
+}
+
+static void 
+cong_editor_creation_record_dispose (GObject *object)
+{
+	CongEditorCreationRecord *creation_record = CONG_EDITOR_CREATION_RECORD (object);
+	GList *iter;
+
+	for (iter = PRIVATE (creation_record)->list_of_flow_events; iter; iter=iter->next) {
+		cong_editor_flow_event_free ((CongEditorFlowEvent*)iter->data);
+	}
+	
+	g_list_free (PRIVATE (creation_record)->list_of_flow_events);
+	PRIVATE (creation_record)->list_of_flow_events = NULL;
 }
 
 CongEditorCreationRecord*

@@ -29,6 +29,7 @@
 
 #include "cong-editor-area-bin.h"
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 struct CongEditorNodeDtdDetails

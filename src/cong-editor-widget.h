@@ -67,7 +67,6 @@ typedef struct CongEditorAreaLineClass CongEditorAreaLineClass;
 
 /* CongEditorNode and some common subclasses: */
 typedef struct CongEditorNode CongEditorNode;
-typedef struct CongEditorNodeClass CongEditorNodeClass;
 
 typedef struct CongEditorNodeElement CongEditorNodeElement;
 typedef struct CongEditorNodeElementClass CongEditorNodeElementClass;

@@ -40,7 +40,6 @@ struct CongEditorLineManagerPrivate
 
 CONG_DEFINE_CLASS_BEGIN (CongEditorLineManager, cong_editor_line_manager, CONG_EDITOR_LINE_MANAGER, GObject, G_TYPE_OBJECT)
 CONG_DEFINE_CLASS_END ()
-CONG_DEFINE_EMPTY_DISPOSE(cong_editor_line_manager)
 
 /* Data stored about each editor node: */
 typedef struct PerNodeData PerNodeData;
@@ -81,6 +80,14 @@ cong_editor_line_manager_construct (CongEditorLineManager *line_manager,
 										     g_direct_equal,
 										     NULL,
 										     hash_value_destroy_func);
+}
+
+static void 
+cong_editor_line_manager_dispose (GObject *object)
+{
+	CongEditorLineManager *line_manager = CONG_EDITOR_LINE_MANAGER (object);
+
+	g_hash_table_destroy (PRIVATE (line_manager)->hash_of_editor_node_to_data);
 }
 
 CongEditorWidget3*
@@ -168,6 +175,7 @@ cong_editor_line_manager_remove_node (CongEditorLineManager *line_manager,
 	/* Delete all areas recorded for this node: */
 	cong_editor_creation_record_undo_changes (per_node_data->creation_record);
 	g_object_unref (G_OBJECT (per_node_data->creation_record));
+	per_node_data->creation_record = NULL;
 
 	/* Potentially update successor nodes' area creation info, recreating areas as necessary, which may trigger further updates: */
 	{
@@ -397,8 +405,20 @@ hash_value_destroy_func (gpointer data)
 {
 	PerNodeData *per_node_data = (PerNodeData*)data;
 
-	g_object_unref (G_OBJECT (per_node_data->start_line_iter));
-	g_object_unref (G_OBJECT (per_node_data->end_line_iter));
+	if (per_node_data->start_line_iter) {
+		g_object_unref (G_OBJECT (per_node_data->start_line_iter));
+		per_node_data->start_line_iter = NULL;
+	}
+
+	if (per_node_data->end_line_iter) {
+		g_object_unref (G_OBJECT (per_node_data->end_line_iter));
+		per_node_data->end_line_iter = NULL;
+	}
+
+	if (per_node_data->creation_record) {
+		g_object_unref (G_OBJECT (per_node_data->creation_record));
+		per_node_data->creation_record = NULL;
+	}
 
 	g_free (per_node_data);
 }

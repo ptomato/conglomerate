@@ -39,6 +39,7 @@
 #include "cong-app.h"
 
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 struct CongEditorNodeElementAdmonitionDetails

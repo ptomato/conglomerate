@@ -119,7 +119,6 @@ CONG_DEFINE_CLASS_BEGIN (CongEditorLineManagerSpanWrapper, cong_editor_line_mana
 	lm_klass->get_current_indent = get_current_indent;
 }
 CONG_DEFINE_CLASS_END ()
-CONG_DEFINE_EMPTY_DISPOSE(cong_editor_line_manager_span_wrapper)
 
 CongEditorLineManager*
 cong_editor_line_manager_span_wrapper_construct (CongEditorLineManagerSpanWrapper *line_manager,
@@ -139,7 +138,9 @@ cong_editor_line_manager_span_wrapper_construct (CongEditorLineManagerSpanWrappe
 	PRIVATE (line_manager)->editor_node = editor_node;
 	PRIVATE (line_manager)->outer_line_manager = outer_line_manager;
 	PRIVATE (line_manager)->outer_creation_record = outer_creation_record;
+	
 	PRIVATE (line_manager)->outer_iter = outer_iter;
+	g_object_ref (G_OBJECT (PRIVATE (line_manager)->outer_iter));
 
 	PRIVATE (line_manager)->hash_of_line_to_data = g_hash_table_new_full (g_direct_hash,
 									      g_direct_equal,
@@ -147,6 +148,22 @@ cong_editor_line_manager_span_wrapper_construct (CongEditorLineManagerSpanWrappe
 									      hash_value_destroy_func);
 
 	return CONG_EDITOR_LINE_MANAGER (line_manager);
+}
+
+static void 
+cong_editor_line_manager_span_wrapper_dispose (GObject *object)
+{
+	CongEditorLineManagerSpanWrapper *line_manager = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (object);
+
+	if (PRIVATE (line_manager)->outer_iter) {
+		g_object_unref (G_OBJECT (PRIVATE (line_manager)->outer_iter));
+		PRIVATE (line_manager)->outer_iter = NULL;
+	}
+
+	if (PRIVATE (line_manager)->hash_of_line_to_data) {
+		g_hash_table_destroy (PRIVATE (line_manager)->hash_of_line_to_data);
+		PRIVATE (line_manager)->hash_of_line_to_data = NULL;
+	}
 }
 
 

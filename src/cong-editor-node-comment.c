@@ -32,6 +32,7 @@
 #include "cong-editor-area-text-comment.h"
 #include "cong-traversal-node.h"
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 struct CongEditorNodeCommentDetails

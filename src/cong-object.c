@@ -46,15 +46,17 @@ static CongObjectDebugData*
 cong_object_debug_get_global_data (void);
 
 static CongObjectClassDebugData*
-cong_object_debug_get_class_data (GObjectClass *klass);
+cong_object_debug_get_class_data (GType type);
 
 static void
 cong_object_debug_log_event (GObject *object,
+			     GType type,
 			     const gchar *msg);
 
 /* Exported function definitions: */
 void 
-cong_object_debug_instance_init (GObject *object)
+cong_object_debug_instance_init (GObject *object,
+				 GType type)
 {
 	CongObjectDebugData *debug_data;
 	CongObjectClassDebugData *class_debug_data;
@@ -62,7 +64,7 @@ cong_object_debug_instance_init (GObject *object)
 	g_assert (object);
 
 	debug_data = cong_object_debug_get_global_data ();
-	class_debug_data = cong_object_debug_get_class_data (G_OBJECT_GET_CLASS (object));
+	class_debug_data = cong_object_debug_get_class_data (type);
 	g_assert (debug_data);
 	g_assert (class_debug_data);
 
@@ -70,11 +72,13 @@ cong_object_debug_instance_init (GObject *object)
 	class_debug_data->instance_count++;
 
 	cong_object_debug_log_event (object,
+				     type,
 				     "instance_init");
 }
 
 void
-cong_object_debug_finalize (GObject *object)
+cong_object_debug_finalize (GObject *object,
+			    GType type)
 {
 	CongObjectDebugData *debug_data;
 	CongObjectClassDebugData *class_debug_data;
@@ -82,14 +86,18 @@ cong_object_debug_finalize (GObject *object)
 	g_assert (object);
 
 	debug_data = cong_object_debug_get_global_data ();
-	class_debug_data = cong_object_debug_get_class_data (G_OBJECT_GET_CLASS (object));
+	class_debug_data = cong_object_debug_get_class_data (type);
 	g_assert (debug_data);
 	g_assert (class_debug_data);
 
+	g_assert (debug_data->instance_count>0);
 	debug_data->instance_count--;
+
+	g_assert (class_debug_data->instance_count>0);
 	class_debug_data->instance_count--;
 
 	cong_object_debug_log_event (object,
+				     type,
 				     "finalize");
 }
 
@@ -107,7 +115,13 @@ cong_object_debug_get_instance_count (void)
 guint32
 cong_object_debug_get_instance_count_for_class (GObjectClass *klass)
 {
-	CongObjectClassDebugData *class_data = cong_object_debug_get_class_data (klass);
+	return cong_object_debug_get_instance_count_for_type (G_OBJECT_CLASS_TYPE (klass));
+}
+
+guint32
+cong_object_debug_get_instance_count_for_type (GType type)
+{
+	CongObjectClassDebugData *class_data = cong_object_debug_get_class_data (type);
 	g_assert (class_data);
 	
 	return class_data->instance_count;
@@ -131,21 +145,20 @@ cong_object_debug_get_global_data (void)
 
 
 static CongObjectClassDebugData*
-cong_object_debug_get_class_data (GObjectClass *klass)
+cong_object_debug_get_class_data (GType type)
 {
 	CongObjectDebugData *debug_data;
 	CongObjectClassDebugData *class_debug_data;
-	g_return_val_if_fail (klass, NULL);
 
 	debug_data = cong_object_debug_get_global_data ();
 	class_debug_data = g_hash_table_lookup (debug_data->hash_of_classes,
-						klass);
+						GINT_TO_POINTER (type));
 
 	if (NULL==class_debug_data) {
 		class_debug_data = g_new0 (CongObjectClassDebugData, 1);
 		
 		g_hash_table_insert (debug_data->hash_of_classes,
-				     klass,
+				     GINT_TO_POINTER (type),
 				     class_debug_data);		
 	}
 
@@ -154,6 +167,7 @@ cong_object_debug_get_class_data (GObjectClass *klass)
 
 static void
 cong_object_debug_log_event (GObject *object,
+			     GType type,
 			     const gchar *msg)
 {
 	g_assert (object);
@@ -162,7 +176,7 @@ cong_object_debug_log_event (GObject *object,
 	g_message ("%s: now %i objects (%i of %s)", 
 		   msg,
 		   cong_object_debug_get_instance_count (),
-		   cong_object_debug_get_instance_count_for_class (G_OBJECT_GET_CLASS (object)),
-		   G_OBJECT_TYPE_NAME (object));	
+		   cong_object_debug_get_instance_count_for_type (type),
+		   g_type_name (type));	
 }
 

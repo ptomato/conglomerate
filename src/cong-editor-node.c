@@ -62,7 +62,7 @@ enum {
 
 static guint signals[LAST_SIGNAL] = {0};
 
-struct CongEditorNodeDetails
+struct CongEditorNodePrivate
 {
 	CongEditorWidget3 *widget;
 
@@ -88,14 +88,11 @@ CONG_EEL_IMPLEMENT_MUST_OVERRIDE_SIGNAL (cong_editor_node, generate_line_areas_r
 
 
 /* Exported function definitions: */
-GNOME_CLASS_BOILERPLATE(CongEditorNode, 
+CONG_DEFINE_CLASS_BEGIN(CongEditorNode, 
 			cong_editor_node,
+			CONG_EDITOR_NODE,
 			GObject,
-			G_TYPE_OBJECT );
-
-static void
-cong_editor_node_class_init (CongEditorNodeClass *klass)
-{
+			G_TYPE_OBJECT )
 #if 0
 	CONG_EEL_ASSIGN_MUST_OVERRIDE_SIGNAL (klass,
 					      cong_editor_node,
@@ -124,13 +121,7 @@ cong_editor_node_class_init (CongEditorNodeClass *klass)
 						     0);
 
 	klass->get_flow_type = get_flow_type;
-}
-
-static void
-cong_editor_node_instance_init (CongEditorNode *node)
-{
-	node->priv = g_new0(CongEditorNodeDetails,1);
-}
+CONG_DEFINE_CLASS_END()
 
 CongEditorNode*
 cong_editor_node_construct (CongEditorNode *editor_node,
@@ -141,6 +132,17 @@ cong_editor_node_construct (CongEditorNode *editor_node,
 	PRIVATE(editor_node)->traversal_node = traversal_node;
 
 	return editor_node;
+}
+
+static void
+cong_editor_node_dispose (GObject *object)
+{
+	CongEditorNode *editor_node = CONG_EDITOR_NODE (object);
+
+	if (PRIVATE (editor_node)->line_manager_for_children) {
+		g_object_unref (G_OBJECT (PRIVATE (editor_node)->line_manager_for_children));
+		PRIVATE (editor_node)->line_manager_for_children = NULL;
+	}	
 }
 
 CongEditorNode*
@@ -598,6 +600,7 @@ cong_editor_node_set_line_manager_for_children (CongEditorNode *editor_node,
 	g_assert (NULL==PRIVATE(editor_node)->line_manager_for_children);
 
 	PRIVATE(editor_node)->line_manager_for_children = line_manager;
+	/* assume there already is a reference on the line_manager */
 }
 #else
 CongEditorChildPolicy*
