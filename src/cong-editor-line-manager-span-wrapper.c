@@ -312,7 +312,8 @@ add_to_line (CongEditorLineManager *line_manager,
 						      CONG_EDITOR_AREA (line_data->span_area));
 
 		cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (line_data->span_area),
-						      line_data->inner_line);
+						      line_data->inner_line,
+						      TRUE);
 	}
 	g_assert (line_data->span_area);
 	g_assert (line_data->inner_line);
@@ -322,9 +323,10 @@ add_to_line (CongEditorLineManager *line_manager,
 							    area,
 							    span_wrapper_iter->prev_area_on_current_line);
 	} else {
-		/* FIXME: shouldn't we be adding to the start, not the end? */
+		/* Add to the front of the line: */
 		cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (line_data->inner_line),
-						      area);
+						      area,
+						      FALSE);
 	}
 
 	span_wrapper_iter->prev_area_on_current_line = area;

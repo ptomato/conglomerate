@@ -873,10 +873,12 @@ set_up_line_manager (CongEditorNode *editor_node,
 						   5);
 
 	cong_editor_area_container_add_child ( CONG_EDITOR_AREA_CONTAINER (block_area),
-					       area_border);
+					       area_border,
+					       TRUE);
 
 	cong_editor_area_container_add_child ( CONG_EDITOR_AREA_CONTAINER (area_border),
-					       area_lines);
+					       area_lines,
+					       TRUE);
 
 	/* Set up line manager: */
 	line_manager = cong_editor_line_manager_simple_new (widget,

@@ -56,7 +56,8 @@ for_all (CongEditorArea *editor_area,
 
 static void
 add_child (CongEditorAreaContainer *area_container,
-	   CongEditorArea *child);
+	   CongEditorArea *child,
+	   gboolean add_to_end);
 
 static void
 add_child_after (CongEditorAreaContainer *area_container,
@@ -306,7 +307,8 @@ for_all (CongEditorArea *editor_area,
 
 static void
 add_child (CongEditorAreaContainer *area_container,
-	   CongEditorArea *child)
+	   CongEditorArea *child,
+	   gboolean add_to_end)
 {
 	CongEditorAreaLine *line = CONG_EDITOR_AREA_LINE(area_container);
 
@@ -318,13 +320,19 @@ add_child (CongEditorAreaContainer *area_container,
 				  PRIVATE(line)->outer_compose);
 	
 	/* Make the new child expand to fill to the end of the line: */
-	cong_editor_area_composer_pack_end (CONG_EDITOR_AREA_COMPOSER (PRIVATE(line)->outer_compose),
-					    child,
-					    TRUE,
-					    TRUE,
-					    0);
-
-
+	if (add_to_end) {
+		cong_editor_area_composer_pack_end (CONG_EDITOR_AREA_COMPOSER (PRIVATE(line)->outer_compose),
+						    child,
+						    TRUE,
+						    TRUE,
+						    0);
+	} else {
+		cong_editor_area_composer_pack_start (CONG_EDITOR_AREA_COMPOSER (PRIVATE(line)->outer_compose),
+						      child,
+						      TRUE,
+						      TRUE,
+						      0);
+	}
 }	
 
 static void

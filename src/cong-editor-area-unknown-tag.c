@@ -60,7 +60,8 @@ for_all (CongEditorArea *editor_area,
 
 static void
 add_child (CongEditorAreaContainer *area_container,
-	   CongEditorArea *child);
+	   CongEditorArea *child,
+	   gboolean add_to_end);
 
 /* GObject boilerplate stuff: */
 GNOME_CLASS_BOILERPLATE(CongEditorAreaUnknownTag, 
@@ -134,24 +135,27 @@ cong_editor_area_unknown_tag_construct (CongEditorAreaUnknownTag *area_unknown_t
 											     CONG_FONT_ROLE_TITLE_TEXT),
 									  NULL,
 									  tag_string_begin,
-									  TRUE)
-					       );
+									  TRUE),
+					       TRUE);
 	
 	PRIVATE(area_unknown_tag)->inner_row = cong_editor_area_composer_new (editor_widget,
 						   GTK_ORIENTATION_HORIZONTAL,
 						   0);
 	
 	cong_editor_area_container_add_child ( CONG_EDITOR_AREA_CONTAINER(PRIVATE(area_unknown_tag)->outer_vcompose),
-					       PRIVATE(area_unknown_tag)->inner_row);	
+					       PRIVATE(area_unknown_tag)->inner_row,
+					       TRUE);	
 
 	cong_editor_area_container_add_child ( CONG_EDITOR_AREA_CONTAINER(PRIVATE(area_unknown_tag)->inner_row),
 					       cong_editor_area_spacer_new (editor_widget,
 									    GTK_ORIENTATION_HORIZONTAL,
-									    50));
+									    50),
+					       TRUE);
 
 	PRIVATE(area_unknown_tag)->inner_area = cong_editor_area_bin_new (editor_widget);
 	cong_editor_area_container_add_child ( CONG_EDITOR_AREA_CONTAINER(PRIVATE(area_unknown_tag)->inner_row),
-					       PRIVATE(area_unknown_tag)->inner_area);	
+					       PRIVATE(area_unknown_tag)->inner_area,
+					       TRUE);	
 	
 	cong_editor_area_container_add_child ( CONG_EDITOR_AREA_CONTAINER(PRIVATE(area_unknown_tag)->outer_vcompose),
 					       cong_editor_area_text_new (editor_widget,
@@ -159,8 +163,8 @@ cong_editor_area_unknown_tag_construct (CongEditorAreaUnknownTag *area_unknown_t
 											     CONG_FONT_ROLE_TITLE_TEXT), 
 									  NULL,
 									  tag_string_end,
-									  TRUE)
-					       );
+									  TRUE),
+					       TRUE);
 
 	g_free (tag_string_begin);
 	g_free (tag_string_end);
@@ -257,12 +261,14 @@ for_all (CongEditorArea *editor_area,
 
 static void
 add_child (CongEditorAreaContainer *area_container,
-	   CongEditorArea *child)
+	   CongEditorArea *child,
+	   gboolean add_to_end)
 {
 	CongEditorAreaUnknownTag *unknown_tag = CONG_EDITOR_AREA_UNKNOWN_TAG(area_container);
 
 	g_assert(PRIVATE(unknown_tag)->inner_area);
 
 	cong_editor_area_container_add_child ( CONG_EDITOR_AREA_CONTAINER( PRIVATE(unknown_tag)->inner_area),
-					       child);
+					       child,
+					       add_to_end);
 }

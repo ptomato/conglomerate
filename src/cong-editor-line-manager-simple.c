@@ -191,9 +191,10 @@ add_to_line (CongEditorLineManager *line_manager,
 							    area,
 							    line_iter_simple->current_prev_area);
 	} else {
-		/* FIXME: shouldn't we be adding at the start, rather than the end? */
+		/* Add to the front of the line: */
 		cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (line_iter_simple->current_line),
-						      area);
+						      area,
+						      FALSE);
 	}
 
 	line_iter_simple->current_prev_area = area;

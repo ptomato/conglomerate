@@ -64,7 +64,8 @@ for_all (CongEditorArea *editor_area,
 
 static void
 add_child (CongEditorAreaContainer *area_container,
-	   CongEditorArea *child);
+	   CongEditorArea *child,
+	   gboolean add_to_end);
 static void
 add_child_after (CongEditorAreaContainer *area_container,
 		 CongEditorArea *new_child,
@@ -595,15 +596,24 @@ for_all (CongEditorArea *editor_area,
 
 static void
 add_child ( CongEditorAreaContainer *area_container,
-	    CongEditorArea *child)
+	    CongEditorArea *child,
+	    gboolean add_to_end)
 {
 	CongEditorAreaComposer *area_composer = CONG_EDITOR_AREA_COMPOSER(area_container);
 
-	cong_editor_area_composer_pack_end (area_composer,
-					    child,
-					    TRUE,
-					    TRUE,
-					    0);
+	if (add_to_end) {
+		cong_editor_area_composer_pack_end (area_composer,
+						    child,
+						    TRUE,
+						    TRUE,
+						    0);
+	} else {
+		cong_editor_area_composer_pack_start (area_composer,
+						      child,
+						      TRUE,
+						      TRUE,
+						      0);
+	}
 	
 }
 
