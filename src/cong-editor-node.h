@@ -285,11 +285,17 @@ cong_editor_node_empty_create_area (CongEditorNode *editor_node,
 #define CONG_EDITOR_NODE_DECLARE_HOOKS \
         static void \
         create_areas (CongEditorNode *editor_node, \
-	      const CongAreaCreationInfo *creation_info);
+	              const CongAreaCreationInfo *creation_info); \
+        \
+	static gboolean \
+	needs_area_regeneration (CongEditorNode *editor_node, \
+				 const CongAreaCreationGeometry *old_creation_geometry, \
+				 const CongAreaCreationGeometry *new_creation_geometry);
 
 #define CONG_EDITOR_NODE_CONNECT_HOOKS \
 	CongEditorNodeClass *node_klass = CONG_EDITOR_NODE_CLASS(klass); \
-	node_klass->create_areas = create_areas;
+	node_klass->create_areas = create_areas; \
+	node_klass->needs_area_regeneration = needs_area_regeneration;
 
 #else
 
@@ -332,6 +338,114 @@ cong_editor_node_empty_create_area (CongEditorNode *editor_node,
 
 #define CONG_EDITOR_NODE_IMPLEMENT_EMPTY_DISPOSE(subclass_name) \
      CONG_DEFINE_EMPTY_DISPOSE(cong_editor_node_##subclass_name)
+
+#define CONG_EDITOR_NODE_DEFINE_BLOCK_AREA_REGENERATION_HOOK \
+     static gboolean \
+     needs_area_regeneration (CongEditorNode *editor_node, \
+			      const CongAreaCreationGeometry *old_creation_geometry, \
+			      const CongAreaCreationGeometry *new_creation_geometry) \
+     { \
+	     /* Changes to creation geometry never force a regeneration of a block area: */ \
+	     return FALSE; \
+     }
+
+#define CONG_EDITOR_NODE_DEFINE_EMPTY_AREA_REGENERATION_HOOK \
+     static gboolean \
+     needs_area_regeneration (CongEditorNode *editor_node, \
+			      const CongAreaCreationGeometry *old_creation_geometry, \
+			      const CongAreaCreationGeometry *new_creation_geometry) \
+     { \
+	     /* Empty areas never need regenerating: */ \
+	     return FALSE; \
+     }
+
+#if 1
+#define CONG_EDITOR_NODE_DEFINE_BLOCK_AREA_CREATION_HOOK(block_area_creation_function) \
+      static void \
+      create_areas (CongEditorNode *editor_node,\
+		    const CongAreaCreationInfo *creation_info)\
+      {\
+      	CongEditorArea *block_area;\
+      	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));\
+      	block_area = block_area_creation_function (cong_editor_node_get_widget (editor_node));\
+      	cong_editor_node_create_block_area (editor_node,\
+      					    creation_info,\
+      					    block_area,\
+      					    TRUE);\
+      	/* FIXME: should we attach signals, or store the area anywhere? */\
+      }
+#else
+#define CONG_EDITOR_NODE_DEFINE_BLOCK_AREA_CREATION_HOOK(block_area_creation_function) \
+      static CongEditorArea*\
+      generate_block_area (CongEditorNode *editor_node)\
+      {\
+      	CongEditorArea *new_area;\
+      	g_return_val_if_fail (editor_node, NULL);\
+      	new_area = block_area_creation_function (cong_editor_node_get_widget (editor_node));\
+      	cong_editor_area_connect_node_signals (new_area,\
+      					       editor_node);\
+      	return new_area;\
+      }
+#endif
+
+/* Macros for creating CongEditorNodeElement subclasses: */
+#define CONG_EDITOR_NODE_DECLARE_PLUGIN_SUBCLASS(SubclassName, subclass_name) \
+     CONG_EDITOR_NODE_DECLARE_SUBCLASS(Element##SubclassName, element_##subclass_name)
+
+#define CONG_EDITOR_NODE_ELEMENT_DEFINE_EMPTY_CONSTRUCT(SubclassName, subclass_name) \
+      CongEditorNodeElement##SubclassName* \
+      cong_editor_node_element_##subclass_name##_construct (CongEditorNodeElement##SubclassName *editor_node_element_##subclass_name,\
+      					                    CongEditorWidget3* editor_widget,\
+      					                    CongTraversalNode *traversal_node)\
+      {\
+      	cong_editor_node_element_construct (CONG_EDITOR_NODE_ELEMENT (editor_node_element_##subclass_name),\
+      					    editor_widget,\
+      					    traversal_node);\
+      	return editor_node_element_##subclass_name;\
+      }
+
+#define CONG_EDITOR_NODE_ELEMENT_DEFINE_SUBCLASS(SubclassName, subclass_name, SUBCLASS_MACRO, PrivateData) \
+     struct CongEditorNodeElement##SubclassName##Private { \
+	     PrivateData \
+     }; \
+     CONG_EDITOR_NODE_DECLARE_HOOKS \
+     CONG_DEFINE_CLASS_BEGIN(CongEditorNodeElement##SubclassName, cong_editor_node_element_##subclass_name, SUBCLASS_MACRO, CongEditorNodeElement, CONG_EDITOR_NODE_ELEMENT_TYPE ) \
+        CONG_EDITOR_NODE_CONNECT_HOOKS \
+     CONG_DEFINE_CLASS_END() \
+     CONG_EDITOR_NODE_IMPLEMENT_NEW(element_##subclass_name)
+
+/* A macro to make it easier to create a plugin CongEditorNodeElement given a block area creation function: */
+#define CONG_EDITOR_NODE_DEFINE_PLUGIN_SUBCLASS(SubclassName, subclass_name, SUBCLASS_MACRO, block_area_creation_function) \
+     CONG_EDITOR_NODE_ELEMENT_DEFINE_SUBCLASS(SubclassName, subclass_name, SUBCLASS_MACRO, int dummy;) \
+     CONG_EDITOR_NODE_ELEMENT_DEFINE_EMPTY_CONSTRUCT(SubclassName, subclass_name) \
+     CONG_EDITOR_NODE_IMPLEMENT_EMPTY_DISPOSE(element_##subclass_name) \
+     CONG_EDITOR_NODE_DEFINE_BLOCK_AREA_CREATION_HOOK(block_area_creation_function) \
+     CONG_EDITOR_NODE_DEFINE_BLOCK_AREA_REGENERATION_HOOK
+
+#define CONG_EDITOR_NODE_DEFINE_BLOCK_AREA_CREATION_HOOK_SPECIAL(SubclassName, subclass_name, SUBCLASS_MACRO) \
+      static CongEditorArea* \
+      create_block_area (CongEditorNodeElement##SubclassName *editor_node_element_##subclass_name); \
+      static void \
+      create_areas (CongEditorNode *editor_node,\
+		    const CongAreaCreationInfo *creation_info)\
+      {\
+      	CongEditorNodeElement##SubclassName *editor_node_element_##subclass_name = SUBCLASS_MACRO(editor_node);\
+      	CongEditorArea *block_area;\
+      	g_return_if_fail (editor_node);\
+      	block_area = create_block_area (editor_node_element_##subclass_name);\
+      	cong_editor_node_create_block_area (editor_node,\
+      					    creation_info,\
+      					    block_area,\
+      					    TRUE);\
+      	/* FIXME: should we attach signals, or store the area anywhere? */\
+      }
+
+#define CONG_EDITOR_NODE_DEFINE_PLUGIN_SUBCLASS_SPECIAL(SubclassName, subclass_name, SUBCLASS_MACRO) \
+     CONG_EDITOR_NODE_ELEMENT_DEFINE_SUBCLASS(SubclassName, subclass_name, SUBCLASS_MACRO, int dummy;) \
+     CONG_EDITOR_NODE_ELEMENT_DEFINE_EMPTY_CONSTRUCT(SubclassName, subclass_name) \
+     CONG_EDITOR_NODE_IMPLEMENT_EMPTY_DISPOSE(element_##subclass_name) \
+     CONG_EDITOR_NODE_DEFINE_BLOCK_AREA_CREATION_HOOK_SPECIAL(SubclassName, subclass_name, SUBCLASS_MACRO) \
+     CONG_EDITOR_NODE_DEFINE_BLOCK_AREA_REGENERATION_HOOK
 
 G_END_DECLS
 

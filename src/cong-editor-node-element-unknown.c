@@ -37,14 +37,7 @@ struct CongEditorNodeElementUnknownDetails
 	int dummy;
 };
 
-#if 1
-static void 
-create_areas (CongEditorNode *editor_node,
-	      const CongAreaCreationInfo *creation_info);
-#else
-static CongEditorArea*
-generate_block_area (CongEditorNode *editor_node);
-#endif
+CONG_EDITOR_NODE_DECLARE_HOOKS
 
 /* Exported function definitions: */
 GNOME_CLASS_BOILERPLATE(CongEditorNodeElementUnknown, 
@@ -55,13 +48,7 @@ GNOME_CLASS_BOILERPLATE(CongEditorNodeElementUnknown,
 static void
 cong_editor_node_element_unknown_class_init (CongEditorNodeElementUnknownClass *klass)
 {
-	CongEditorNodeClass *node_klass = CONG_EDITOR_NODE_CLASS(klass);
-
-#if 1
-	node_klass->create_areas = create_areas;
-#else
-	node_klass->generate_block_area = generate_block_area;
-#endif
+	CONG_EDITOR_NODE_CONNECT_HOOKS
 }
 
 static void
@@ -118,6 +105,8 @@ create_areas (CongEditorNode *editor_node,
 					    block_area,
 					    TRUE);
 }
+CONG_EDITOR_NODE_DEFINE_BLOCK_AREA_REGENERATION_HOOK
+
 #else
 static CongEditorArea*
 generate_block_area (CongEditorNode *editor_node)

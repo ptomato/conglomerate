@@ -58,6 +58,7 @@ create_areas (CongEditorNode *editor_node,
 					    creation_info,
 					    TRUE);
 }
+CONG_EDITOR_NODE_DEFINE_EMPTY_AREA_REGENERATION_HOOK
 #else
 static CongEditorArea*
 generate_block_area (CongEditorNode *editor_node)

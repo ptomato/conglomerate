@@ -107,6 +107,9 @@ create_areas (CongEditorNode *editor_node,
 					    FALSE);
 	/* FIXME: should we attach signals, or store the area anywhere? */
 }
+
+CONG_EDITOR_NODE_DEFINE_BLOCK_AREA_REGENERATION_HOOK
+
 #else
 static CongEditorArea*
 generate_block_area (CongEditorNode *editor_node)

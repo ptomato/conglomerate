@@ -3,7 +3,7 @@
 /*
  * plugin-paragraph-node-element-paragraph.c
  *
- * Copyright (C) 2003 David Malcolm
+ * Copyright (C) 2004 David Malcolm
  *
  * Conglomerate is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -20,7 +20,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * Authors: David Malcolm <david@davemalcolm.demon.co.uk>
- * Fragments of code based upon libxslt: numbers.c
  */
 
 #include "global.h"
@@ -30,103 +29,4 @@
 
 #include "plugin-paragraph-area-paragraph.h"
 
-#undef PRIVATE
-#define PRIVATE(x) ((x)->private)
-
-struct CongEditorNodeElementParagraphDetails
-{
-	int dummy;
-};
-
-#if 1
-static void 
-create_areas (CongEditorNode *editor_node,
-	      const CongAreaCreationInfo *creation_info);
-#else
-static CongEditorArea*
-generate_block_area (CongEditorNode *editor_node);
-#endif
-
-/* Exported function definitions: */
-GNOME_CLASS_BOILERPLATE(CongEditorNodeElementParagraph, 
-			cong_editor_node_element_paragraph,
-			CongEditorNodeElement,
-			CONG_EDITOR_NODE_ELEMENT_TYPE );
-
-static void
-cong_editor_node_element_paragraph_class_init (CongEditorNodeElementParagraphClass *klass)
-{
-	CongEditorNodeClass *node_klass = CONG_EDITOR_NODE_CLASS(klass);
-
-#if 1
-	node_klass->create_areas = create_areas;
-#else
-	node_klass->generate_block_area = generate_block_area;
-#endif
-}
-
-static void
-cong_editor_node_element_paragraph_instance_init (CongEditorNodeElementParagraph *node_element_paragraph)
-{
-	node_element_paragraph->private = g_new0(CongEditorNodeElementParagraphDetails,1);
-}
-
-CongEditorNodeElementParagraph*
-cong_editor_node_element_paragraph_construct (CongEditorNodeElementParagraph *editor_node_element_paragraph,
-					      CongEditorWidget3 *editor_widget,
-					      CongTraversalNode *traversal_node)
-{
-	cong_editor_node_element_construct (CONG_EDITOR_NODE_ELEMENT (editor_node_element_paragraph),
-					    editor_widget,
-					    traversal_node);
-
-	return editor_node_element_paragraph;
-}
-
-CongEditorNode*
-cong_editor_node_element_paragraph_new (CongEditorWidget3* widget,
-					CongTraversalNode *traversal_node)
-{
-#if DEBUG_EDITOR_NODE_LIFETIMES
-	g_message("cong_editor_node_element_paragraph_new(%s)", node->name);
-#endif
-
-	return CONG_EDITOR_NODE( cong_editor_node_element_paragraph_construct
-				 (g_object_new (CONG_EDITOR_NODE_ELEMENT_PARAGRAPH_TYPE, NULL),
-				  widget,
-				  traversal_node));
-}
-
-#if 1
-static void 
-create_areas (CongEditorNode *editor_node,
-	      const CongAreaCreationInfo *creation_info)
-{
-	CongEditorArea *block_area;
-
-	g_return_if_fail (editor_node);
-
-	block_area = cong_editor_area_paragraph_new (cong_editor_node_get_widget (editor_node));
-
-	cong_editor_node_create_block_area (editor_node,
-					    creation_info,
-					    block_area,
-					    TRUE);
-	/* FIXME: should we attach signals, or store the area anywhere? */
-}
-#else
-static CongEditorArea*
-generate_block_area (CongEditorNode *editor_node)
-{
-	CongEditorArea *new_area;
-
-	g_return_val_if_fail (editor_node, NULL);
-
-	new_area = cong_editor_area_paragraph_new (cong_editor_node_get_widget (editor_node));
-
-	cong_editor_area_connect_node_signals (new_area,
-					       editor_node);
-
-	return new_area;
-}
-#endif
+CONG_EDITOR_NODE_DEFINE_PLUGIN_SUBCLASS(Paragraph, paragraph, CONG_EDITOR_NODE_ELEMENT_PARAGRAPH, cong_editor_area_paragraph_new)

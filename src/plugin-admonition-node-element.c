@@ -3,7 +3,7 @@
 /*
  * plugin-admonition-node-element.c
  *
- * Copyright (C) 2003 David Malcolm
+ * Copyright (C) 2004 David Malcolm
  *
  * Conglomerate is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -20,7 +20,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * Authors: David Malcolm <david@davemalcolm.demon.co.uk>
- * Fragments of code based upon libxslt: numbers.c
  */
 
 #include "global.h"
@@ -38,30 +37,7 @@
 
 #include "cong-app.h"
 
-
-#undef PRIVATE
-#define PRIVATE(x) ((x)->private)
-
-struct CongEditorNodeElementAdmonitionDetails
-{
-	int dummy;
-};
-
-/* Internal function declarations: */
-static void
-finalize (GObject *object);
-
-static void
-dispose (GObject *object);
-
-#if 1
-static void 
-create_areas (CongEditorNode *editor_node,
-	      const CongAreaCreationInfo *creation_info);
-#else
-static CongEditorArea*
-generate_block_area (CongEditorNode *editor_node);
-#endif
+CONG_EDITOR_NODE_DEFINE_PLUGIN_SUBCLASS_SPECIAL(Admonition, admonition, CONG_EDITOR_NODE_ELEMENT_ADMONITION)
 
 static const gchar*
 get_icon_filename (CongEditorNodeElementAdmonition *editor_node_element_admonition);
@@ -69,83 +45,27 @@ get_icon_filename (CongEditorNodeElementAdmonition *editor_node_element_admoniti
 static GdkPixbuf*
 load_icon (const gchar *icon_filename);
 
-/* Exported function definitions: */
-GNOME_CLASS_BOILERPLATE(CongEditorNodeElementAdmonition, 
-			cong_editor_node_element_admonition,
-			CongEditorNodeElement,
-			CONG_EDITOR_NODE_ELEMENT_TYPE );
-
-static void
-cong_editor_node_element_admonition_class_init (CongEditorNodeElementAdmonitionClass *klass)
+static CongEditorArea*
+create_block_area (CongEditorNodeElementAdmonition *editor_node_element_admonition)
 {
-	CongEditorNodeClass *node_klass = CONG_EDITOR_NODE_CLASS(klass);
+	CongEditorArea *area_label;
+	GdkPixbuf* pixbuf;
 
-	G_OBJECT_CLASS (klass)->finalize = finalize;
-	G_OBJECT_CLASS (klass)->dispose = dispose;
+	/* FIXME cache the pixbufs; only load once */
+	pixbuf = load_icon (get_icon_filename (editor_node_element_admonition));
 
-#if 1
-	node_klass->create_areas = create_areas;
-#else
-	node_klass->generate_block_area = generate_block_area;
-#endif
+	area_label = cong_editor_area_pixbuf_new (cong_editor_node_get_widget (CONG_EDITOR_NODE (editor_node_element_admonition)),
+						  pixbuf);
+	g_object_unref (G_OBJECT (pixbuf));
+
+	return cong_editor_area_labelled_new (cong_editor_node_get_widget (CONG_EDITOR_NODE (editor_node_element_admonition)),
+					      area_label);
 }
 
-static void
-cong_editor_node_element_admonition_instance_init (CongEditorNodeElementAdmonition *node_element_admonition)
-{
-	node_element_admonition->private = g_new0(CongEditorNodeElementAdmonitionDetails,1);
-}
-
-CongEditorNodeElementAdmonition*
-cong_editor_node_element_admonition_construct (CongEditorNodeElementAdmonition *editor_node_element_admonition,
-					       CongEditorWidget3* editor_widget,
-					       CongTraversalNode *traversal_node)
-{
-	cong_editor_node_element_construct (CONG_EDITOR_NODE_ELEMENT (editor_node_element_admonition),
-					    editor_widget,
-					    traversal_node);
-
-	return editor_node_element_admonition;
-}
-
-CongEditorNode*
-cong_editor_node_element_admonition_new (CongEditorWidget3* widget,
-					 CongTraversalNode *traversal_node)
-{
-#if DEBUG_EDITOR_NODE_LIFETIMES
-	g_message("cong_editor_node_element_admonition_new(%s)", node->name);
-#endif
-
-	return CONG_EDITOR_NODE( cong_editor_node_element_admonition_construct
-				 (g_object_new (CONG_EDITOR_NODE_ELEMENT_ADMONITION_TYPE, NULL),
-				  widget,
-				  traversal_node));
-}
-/* Internal function definitions: */
-static void
-finalize (GObject *object)
-{
-	CongEditorNodeElementAdmonition *editor_node_element_admonition = CONG_EDITOR_NODE_ELEMENT_ADMONITION (object);
-
-	g_free (editor_node_element_admonition->private);
-	editor_node_element_admonition->private = NULL;
-	
-	G_OBJECT_CLASS (parent_class)->finalize (object);
-
-}
-
-static void
-dispose (GObject *object)
-{
-	CongEditorNodeElementAdmonition *editor_node_element_admonition = CONG_EDITOR_NODE_ELEMENT_ADMONITION (object);
-
-	g_assert (editor_node_element_admonition->private);
-	
-	/* Cleanup: */
-
-	/* Call the parent method: */		
-	GNOME_CALL_PARENT (G_OBJECT_CLASS, dispose, (object));
-}
+#if 0
+static CongEditorArea*
+create_block_area (CongEditorNodeElementAdmonition *editor_node_element_admonition);
+		   
 
 #if 1
 static void 
@@ -154,20 +74,10 @@ create_areas (CongEditorNode *editor_node,
 {
 	CongEditorNodeElementAdmonition *editor_node_element_admonition = CONG_EDITOR_NODE_ELEMENT_ADMONITION (editor_node);
 	CongEditorArea *block_area;
-	CongEditorArea *area_label;
-	GdkPixbuf* pixbuf;
 
 	g_return_if_fail (editor_node);
 
-	/* FIXME cache the pixbufs; only load once */
-	pixbuf = load_icon (get_icon_filename (editor_node_element_admonition));
-
-	area_label = cong_editor_area_pixbuf_new (cong_editor_node_get_widget (editor_node),
-						  pixbuf);
-	g_object_unref (G_OBJECT (pixbuf));
-
-	block_area = cong_editor_area_labelled_new (cong_editor_node_get_widget (editor_node),
-						    area_label);
+	block_area = create_block_area (editor_node_element_admonition);
 
 	cong_editor_node_create_block_area (editor_node,
 					    creation_info,
@@ -186,22 +96,14 @@ generate_block_area (CongEditorNode *editor_node)
 
 	g_return_val_if_fail (editor_node, NULL);
 
-	/* FIXME cache the pixbufs; only load once */
-	pixbuf = load_icon (get_icon_filename (editor_node_element_admonition));
-
-	area_label = cong_editor_area_pixbuf_new (cong_editor_node_get_widget (editor_node),
-						  pixbuf);
-
-	g_object_unref (G_OBJECT (pixbuf));	
-
-	new_area = cong_editor_area_labelled_new (cong_editor_node_get_widget (editor_node),
-						  area_label);
+	block_area = create_block_area (editor_node_element_admonition);
 
 	cong_editor_area_connect_node_signals (new_area,
 					       editor_node);
 
 	return new_area;
 }
+#endif
 #endif
 
 static const gchar*

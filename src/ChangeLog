@@ -1,5 +1,9 @@
 2004-03-11  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* cong-editor-node-comment.c, cong-editor-node-document.c, cong-editor-node-dtd.c, cong-editor-node-element-structural.c, cong-editor-node-element-unknown.c, cong-editor-node-entity-decl.c, cong-editor-node-entity-ref.c, cong-editor-node-text.c, cong-editor-node-unimplemented.c, cong-editor-node.h, plugin-admonition-node-element.c, plugin-admonition-node-element.h, plugin-lists-node-element-listitem.c, plugin-lists-node-element-listitem.h, plugin-paragraph-node-element-paragraph.c, plugin-paragraph-node-element-paragraph.h
+
+	Added more macros to handle the boilerplate when creating CongEditorNode subclasses; use these to implement the new hook required by the area regeneration system throughout the various subclasses.
+
 	* cong-editor-node.c, cong-menus.c, cong-plugin-manager.c, cong-plugin.c, cong-plugin.h, cong-service-exporter.h, cong-service-node-property-dialog.h, cong-service-node-tool.h, cong-service-print-method.h, plugin-admonition.c, plugin-cleanup-source.c, plugin-convert-case.c, plugin-docbook.c, plugin-dtd.c, plugin-fo.c, plugin-lists.c, plugin-paragraph.c, plugin-print-source.c, plugin-random.c, plugin-save-dispspec.c, plugin-sgml.c, plugin-templates.c, plugin-tests.c, plugin-validate.c, popup.c
 
 	Rationalise headers so that plugin code no longer depends on all service header files; stops an irritatingly big recompile every time I make small changes to the almost entirely unrelated CongEditorNode header

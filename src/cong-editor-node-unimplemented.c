@@ -38,14 +38,7 @@ struct CongEditorNodeUnimplementedDetails
 	gchar *description;
 };
 
-#if 1
-static void 
-create_areas (CongEditorNode *editor_node,
-	      const CongAreaCreationInfo *creation_info);
-#else
-static CongEditorArea*
-generate_block_area (CongEditorNode *editor_node);
-#endif
+CONG_EDITOR_NODE_DECLARE_HOOKS
 
 /* Exported function definitions: */
 GNOME_CLASS_BOILERPLATE(CongEditorNodeUnimplemented, 
@@ -56,13 +49,7 @@ GNOME_CLASS_BOILERPLATE(CongEditorNodeUnimplemented,
 static void
 cong_editor_node_unimplemented_class_init (CongEditorNodeUnimplementedClass *klass)
 {
-	CongEditorNodeClass *node_klass = CONG_EDITOR_NODE_CLASS(klass);
-
-#if 1
-	node_klass->create_areas = create_areas;
-#else
-	node_klass->generate_block_area = generate_block_area;
-#endif
+	CONG_EDITOR_NODE_CONNECT_HOOKS
 }
 
 static void
@@ -121,6 +108,14 @@ create_areas (CongEditorNode *editor_node,
 					    creation_info,
 					    block_area,
 					    FALSE);
+}
+gboolean
+needs_area_regeneration (CongEditorNode *editor_node,
+			 const CongAreaCreationGeometry *old_creation_geometry,
+			 const CongAreaCreationGeometry *new_creation_geometry)
+{
+	/* Block areas don't need regenerating: */
+	return FALSE;
 }
 #else
 static CongEditorArea*

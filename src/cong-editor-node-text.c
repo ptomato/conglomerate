@@ -79,19 +79,7 @@ struct CongEditorNodeTextSelectionState
 #endif
 };
 
-#if 1
-static void 
-create_areas (CongEditorNode *editor_node,
-	      const CongAreaCreationInfo *creation_info);
-#else
-static CongEditorArea*
-generate_block_area (CongEditorNode *editor_node);
-
-static CongEditorLineFragments*
-generate_line_areas_recursive (CongEditorNode *editor_node,
-			       gint line_width,
-			       gint initial_indent);
-#endif
+CONG_EDITOR_NODE_DECLARE_HOOKS
 
 #if 0
 static enum CongFlowType
@@ -165,25 +153,6 @@ CONG_EDITOR_NODE_DEFINE_SUBCLASS(Text,
 				 PangoLayout *pango_layout;
 				 GList *list_of_text_fragments;				 
 				 );
-
-#if 0
-static void
-cong_editor_node_text_class_init (CongEditorNodeTextClass *klass)
-{
-	CongEditorNodeClass *node_klass = CONG_EDITOR_NODE_CLASS(klass);
-
-	G_OBJECT_CLASS (klass)->finalize = finalize;
-	G_OBJECT_CLASS (klass)->dispose = dispose;
-
-#if 1
-	node_klass->create_areas = create_areas;
-#else
-	node_klass->generate_block_area = generate_block_area;
-	node_klass->generate_line_areas_recursive = generate_line_areas_recursive;
-#endif
-	node_klass->get_flow_type = get_flow_type;
-}
-#endif
 
 CongEditorNodeText*
 cong_editor_node_text_construct (CongEditorNodeText *editor_node_text,
@@ -406,6 +375,7 @@ create_areas (CongEditorNode *editor_node,
 		  cong_text_cache_get_text (PRIVATE(node_text)->text_cache));
 #endif
 
+
 	/* Set the "geometry" of the PangoLayout: */
 	pango_layout_set_width (PRIVATE(node_text)->pango_layout,
 				PANGO_SCALE * cong_editor_line_manager_get_line_width (creation_info->line_manager,
@@ -477,6 +447,23 @@ create_areas (CongEditorNode *editor_node,
 	}
 
 
+}
+gboolean
+needs_area_regeneration (CongEditorNode *editor_node,
+			 const CongAreaCreationGeometry *old_creation_geometry,
+			 const CongAreaCreationGeometry *new_creation_geometry)
+{	
+	if (old_creation_geometry->area_line==new_creation_geometry->area_line) {
+		if (old_creation_geometry->line_width==new_creation_geometry->line_width) {
+			if (old_creation_geometry->line_indent==new_creation_geometry->line_indent) {
+				/* Nothing has changed; don't need to regenerate: */
+				return TRUE;
+			}
+		}
+	}
+	
+	/* Something has changed; need to regenerate: */
+	return TRUE;
 }
 #else
 static CongEditorArea*
