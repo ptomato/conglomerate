@@ -1,3 +1,8 @@
+2004-05-02 Nickolay V. Shmyrev <nshmyrev@yandex.ru>
+
+	* plugin-admonition-node-element.c
+	Free modified_icon_filename.
+         
 2004-05-01 Nickolay V. Shmyrev <nshmyrev@yandex.ru>
 
 	* cong-node.c: When determining whitespace handling of 
