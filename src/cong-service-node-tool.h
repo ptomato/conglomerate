@@ -26,6 +26,7 @@
 #define __CONG_SERVICE_NODE_TOOL_H__
 
 #include "cong-plugin.h"
+#include "cong-service-tool.h"
 
 G_BEGIN_DECLS
 

@@ -31,6 +31,7 @@
 #include "cong-vfs.h"
 
 #include "cong-fake-plugin-hooks.h"
+#include "cong-service-exporter.h"
 
 static gboolean convert_case_exporter_document_filter(CongServiceExporter *exporter, CongDocument *doc, gpointer user_data)
 {

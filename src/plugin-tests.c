@@ -29,6 +29,7 @@
 #include "cong-error-dialog.h"
 
 #include "cong-fake-plugin-hooks.h"
+#include "cong-service-document-factory.h"
 
 struct UnicodeCreationInfo
 {

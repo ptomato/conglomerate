@@ -36,6 +36,7 @@
 #include "cong-eel.h"
 
 #include "cong-fake-plugin-hooks.h"
+#include "cong-service-document-factory.h"
 
 #define LOG_RANDOM1(x)       (g_message ((x)))
 #define LOG_RANDOM2(x, a)    (g_message ((x), (a)))

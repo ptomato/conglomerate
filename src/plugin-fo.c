@@ -33,6 +33,8 @@
 #include <glade/glade.h>
 
 #include "cong-fake-plugin-hooks.h"
+#include "cong-service-exporter.h"
+#include "cong-service-print-method.h"
 
 #define FO_NS_URI ("http://www.w3.org/1999/XSL/Format")
 

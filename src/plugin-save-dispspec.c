@@ -32,6 +32,9 @@
 #include "cong-primary-window.h"
 #include "cong-file-selection.h"
 
+#include "cong-fake-plugin-hooks.h"
+#include "cong-service-doc-tool.h"
+
 static gboolean doc_filter(CongServiceDocTool *tool, CongDocument *doc, gpointer user_data)
 {
 	/* Always appropriate: */

@@ -34,6 +34,7 @@
 #include <libxml/valid.h>
 
 #include "cong-fake-plugin-hooks.h"
+#include "cong-service-doc-tool.h"
 
 #include "cong-util.h"
 

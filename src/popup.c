@@ -15,6 +15,7 @@
 #include "cong-range.h"
 #include "cong-editor-widget.h"
 #include "cong-service-tool.h"
+#include "cong-service-node-tool.h"
 #include "cong-command.h"
 #include "cong-plugin-manager.h"
 #include "cong-util.h"

@@ -30,6 +30,7 @@
 #include "cong-dispspec.h"
 
 #include "cong-fake-plugin-hooks.h"
+#include "cong-service-importer.h"
 
 #include "cong-vfs.h"
 #include "cong-util.h"

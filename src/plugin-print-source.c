@@ -31,8 +31,10 @@
 #include "cong-document.h"
 #include "cong-app.h"
 #include "cong-util.h"
-#include "cong-fake-plugin-hooks.h"
 #include "cong-attribute-editor.h"
+
+#include "cong-fake-plugin-hooks.h"
+#include "cong-service-print-method.h"
 
 #if ENABLE_PRINTING
 gboolean 

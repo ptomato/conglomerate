@@ -41,6 +41,7 @@
 #include "cong-selection.h"
 #include "cong-range.h"
 #include "cong-ui-hooks.h"
+#include "cong-service-doc-tool.h"
 
 #if 1
 #include <libgnome/libgnome.h>

@@ -33,6 +33,16 @@
 #include "cong-util.h"
 #include "cong-vfs.h"
 #include "cong-traversal-node.h"
+#include "cong-service.h"
+#include "cong-service-doc-tool.h"
+#include "cong-service-document-factory.h"
+#include "cong-service-editor-node-factory.h"
+#include "cong-service-exporter.h"
+#include "cong-service-importer.h"
+#include "cong-service-node-property-dialog.h"
+#include "cong-service-node-tool.h"
+#include "cong-service-print-method.h"
+#include "cong-service-tool.h"
 
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>

@@ -26,6 +26,7 @@
 #define __CONG_STUB_EXPORTER_H__
 
 #include "cong-plugin.h"
+#include "cong-service.h"
 
 G_BEGIN_DECLS
 

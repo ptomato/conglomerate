@@ -30,6 +30,7 @@
 #include "cong-parser-error.h"
 
 #include "cong-fake-plugin-hooks.h"
+#include "cong-service-importer.h"
 
 gchar *cong_ui_make_what_failed_string_for_import(const gchar *uri_string)
 {

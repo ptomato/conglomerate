@@ -31,8 +31,14 @@
 #include "cong-document.h"
 #include "cong-app.h"
 #include "cong-util.h"
-#include "cong-fake-plugin-hooks.h"
 #include "cong-attribute-editor.h"
+
+#include "cong-fake-plugin-hooks.h"
+#include "cong-service-document-factory.h"
+#include "cong-service-importer.h"
+#include "cong-service-exporter.h"
+#include "cong-service-node-tool.h"
+#include "cong-service-node-property-dialog.h"
 
 /* Splits input UTF8 into a GList of nul-terminated GUnichar strings */
 static GList*

@@ -50,6 +50,7 @@
 #include "cong-editor-area-border.h"
 #include "cong-editor-area-lines.h"
 #include "cong-editor-line-iter.h"
+#include "cong-service-editor-node-factory.h"
 
 #define PRIVATE(x) ((x)->priv)
 
@@ -379,7 +380,7 @@ cong_editor_node_needs_area_regeneration (CongEditorNode *editor_node,
 	g_return_val_if_fail (old_creation_geometry, FALSE);
 	g_return_val_if_fail (new_creation_geometry, FALSE);
 
-#if 0
+#if 1
 	g_assert (CONG_EDITOR_NODE_CLASS (G_OBJECT_GET_CLASS (editor_node))->needs_area_regeneration != NULL);
 	
 	result = CONG_EEL_CALL_METHOD_WITH_RETURN_VALUE (CONG_EDITOR_NODE_CLASS,

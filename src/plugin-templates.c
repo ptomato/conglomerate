@@ -27,12 +27,14 @@
 #include "global.h"
 #include "cong-plugin.h"
 #include "cong-app.h"
-#include "cong-fake-plugin-hooks.h"
 #include "cong-dispspec.h"
 #include "cong-util.h"
 #include "cong-vfs.h"
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+
+#include "cong-fake-plugin-hooks.h"
+#include "cong-service-document-factory.h"
 
 const gchar NAMESPACE[] = "http://www.conglomerate.org/";
 

@@ -26,6 +26,7 @@
 #define __CONG_SERVICE_NODE_PROPERTY_DIALOG_H__
 
 #include "cong-plugin.h"
+#include "cong-service.h"
 
 G_BEGIN_DECLS
 

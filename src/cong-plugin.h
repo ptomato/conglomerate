@@ -27,16 +27,6 @@
 
 #include "cong-object.h"
 
-#include "cong-service-doc-tool.h"
-#include "cong-service-document-factory.h"
-#include "cong-service-editor-node-factory.h"
-#include "cong-service-exporter.h"
-#include "cong-service-importer.h"
-#include "cong-service-node-property-dialog.h"
-#include "cong-service-node-tool.h"
-#include "cong-service-print-method.h"
-#include "cong-service-tool.h"
-
 G_BEGIN_DECLS
 
 #define CONG_PLUGIN_TYPE	  (cong_plugin_get_type ())

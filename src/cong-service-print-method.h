@@ -28,6 +28,7 @@
 #if ENABLE_PRINTING
 
 #include "cong-plugin.h"
+#include "cong-service.h"
 
 G_BEGIN_DECLS
 
