@@ -1,3 +1,8 @@
+2004-04-30 hondaguru  <hondaguru@earthlink.net>
+
+	* cong-location.c:
+	Prevent cong_location_calc_word_extent to go beyond the end.
+
 2004-04-29 Nickolay V. Shmyrev <nshmyrev@yandex.ru>
 
         * cong-error-dialog.h, cong-error-dialog.c: Add new
