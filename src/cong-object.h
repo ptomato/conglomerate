@@ -154,12 +154,23 @@ cong_object_debug_get_instance_count_for_type (GType type);
   };
 
 #define CONG_DEFINE_EMPTY_DISPOSE(my_class) \
-  static void my_class##_dispose (GObject *object) {}
+  static void my_class##_dispose (GObject *object) {GNOME_CALL_PARENT (G_OBJECT_CLASS, dispose, (object));}
 
 #define CONG_DEFINE_CLASS(MyClass, my_class, MY_CLASS, BaseClass, BASE_CLASS_TYPE) \
   CONG_DEFINE_CLASS_BEGIN(MyClass, my_class, MY_CLASS, BaseClass, BASE_CLASS_TYPE) \
   CONG_DEFINE_CLASS_END() \
   CONG_DEFINE_EMPTY_DISPOSE(my_class)
+
+#define CONG_OBJECT_IMPLEMENT_DISPOSE_BEGIN(MyClass, my_class, MY_CLASS, my_object) \
+     static void my_class##_dispose (GObject *object) \
+     { \
+	  MyClass *my_object = MY_CLASS (object);
+
+#define CONG_OBJECT_IMPLEMENT_DISPOSE_END() \
+       GNOME_CALL_PARENT (G_OBJECT_CLASS, dispose, (object)); \
+     }
+
+
 
 G_END_DECLS
 

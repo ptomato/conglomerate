@@ -64,9 +64,6 @@ add_attrs_for_state (PangoAttrList *attr_list,
 		     enum FragmentState state);
 
 
-#undef PRIVATE
-#define PRIVATE(x) ((x)->private)
-
 typedef struct CongEditorNodeTextSelectionState CongEditorNodeTextSelectionState;
 
 struct CongEditorNodeTextSelectionState
@@ -82,27 +79,6 @@ struct CongEditorNodeTextSelectionState
 #endif
 };
 
-struct CongEditorNodeTextDetails
-{
-	CongTextCache* text_cache;
-
-	gboolean selection_state_valid;
-	CongEditorNodeTextSelectionState cached_selection_state;
-	
-	gulong handler_id_node_set_text;
-	gulong handler_id_selection_change;
-
-	PangoLayout *pango_layout;
-	GList *list_of_text_fragments;
-};
-
-static void
-finalize (GObject *object);
-
-static void
-dispose (GObject *object);
-
-
 #if 1
 static void 
 create_areas (CongEditorNode *editor_node,
@@ -117,8 +93,10 @@ generate_line_areas_recursive (CongEditorNode *editor_node,
 			       gint initial_indent);
 #endif
 
+#if 0
 static enum CongFlowType
 get_flow_type (CongEditorNode *editor_node);
+#endif
 
 /* FIXME:  We probably shouldn't have every text node in the doc listening to every text node change... probably should allow for a dispatch mechanism within the widget */
 /* Declarations of the CongDocument event handlers: */
@@ -173,11 +151,22 @@ static void
 refresh_pango_layout (CongEditorNodeText *editor_node_text);
 
 /* Exported function definitions: */
-GNOME_CLASS_BOILERPLATE(CongEditorNodeText, 
-			cong_editor_node_text,
-			CongEditorNode,
-			CONG_EDITOR_NODE_TYPE );
+CONG_EDITOR_NODE_DEFINE_SUBCLASS(Text, 
+				 text,
+				 CONG_EDITOR_NODE_TEXT,
+				 CongTextCache* text_cache;
 
+				 gboolean selection_state_valid;
+				 CongEditorNodeTextSelectionState cached_selection_state;
+	
+				 gulong handler_id_node_set_text;
+				 gulong handler_id_selection_change;
+				 
+				 PangoLayout *pango_layout;
+				 GList *list_of_text_fragments;				 
+				 );
+
+#if 0
 static void
 cong_editor_node_text_class_init (CongEditorNodeTextClass *klass)
 {
@@ -194,23 +183,7 @@ cong_editor_node_text_class_init (CongEditorNodeTextClass *klass)
 #endif
 	node_klass->get_flow_type = get_flow_type;
 }
-
-static void
-cong_editor_node_text_instance_init (CongEditorNodeText *node_text)
-{
-	node_text->private = g_new0(CongEditorNodeTextDetails,1);
-}
-
-static void
-finalize (GObject *object)
-{
-	CongEditorNodeText *editor_node_text = CONG_EDITOR_NODE_TEXT(object);
-
-	g_free (editor_node_text->private);
-	editor_node_text->private = NULL;
-	
-	G_OBJECT_CLASS (parent_class)->finalize (object);
-}
+#endif
 
 CongEditorNodeText*
 cong_editor_node_text_construct (CongEditorNodeText *editor_node_text,
@@ -267,33 +240,12 @@ cong_editor_node_text_construct (CongEditorNodeText *editor_node_text,
 	return editor_node_text;
 }
 
-static void
-dispose (GObject *object)
-{
-	CongEditorNodeText *editor_node_text = CONG_EDITOR_NODE_TEXT(object);
-
+CONG_EDITOR_NODE_IMPLEMENT_DISPOSE_BEGIN(Text, text, CONG_EDITOR_NODE_TEXT) \
 	g_signal_handler_disconnect (G_OBJECT(cong_editor_node_get_document(CONG_EDITOR_NODE(object))),
 				     PRIVATE(editor_node_text)->handler_id_node_set_text);	
 	g_signal_handler_disconnect (G_OBJECT(cong_editor_node_get_document(CONG_EDITOR_NODE(object))),
 				     PRIVATE(editor_node_text)->handler_id_selection_change);	
-
-	GNOME_CALL_PARENT (G_OBJECT_CLASS, dispose, (object));
-}
-
-
-CongEditorNode*
-cong_editor_node_text_new (CongEditorWidget3 *widget,
-			   CongTraversalNode *traversal_node)
-{
-#if DEBUG_EDITOR_NODE_LIFETIMES
-	g_message("cong_editor_node_text_new(%s)", node->content);
-#endif
-
-	return CONG_EDITOR_NODE( cong_editor_node_text_construct (g_object_new (CONG_EDITOR_NODE_TEXT_TYPE, NULL),
-								  widget,
-								  traversal_node)
-				 );
-}
+CONG_EDITOR_NODE_IMPLEMENT_DISPOSE_END()
 
 gboolean
 cong_editor_node_text_convert_original_byte_offset_to_stripped (CongEditorNodeText *editor_node_text,
@@ -1105,11 +1057,13 @@ on_signal_motion_notify (CongEditorArea *editor_area,
 	return FALSE;
 }
 
+#if 0
 static enum CongFlowType
 get_flow_type(CongEditorNode *editor_node)
 {
 	return CONG_FLOW_TYPE_INLINE;
 }
+#endif
 
 /* Internal utilities: */
 static const gchar*

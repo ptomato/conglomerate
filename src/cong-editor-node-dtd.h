@@ -34,35 +34,7 @@ G_BEGIN_DECLS
 #define CONG_EDITOR_NODE_DTD_CLASS(klass) G_TYPE_CHECK_CLASS_CAST (klass, CONG_EDITOR_NODE_DTD_TYPE, CongEditorNodeDtdClass)
 #define IS_CONG_EDITOR_NODE_DTD(obj)      G_TYPE_CHECK_INSTANCE_TYPE (obj, CONG_EDITOR_NODE_DTD_TYPE)
 
-typedef struct CongEditorNodeDtd CongEditorNodeDtd;
-typedef struct CongEditorNodeDtdClass CongEditorNodeDtdClass;
-typedef struct CongEditorNodeDtdDetails CongEditorNodeDtdDetails;
-
-struct CongEditorNodeDtd
-{
-	CongEditorNode node;
-
-	CongEditorNodeDtdDetails *private;
-};
-
-struct CongEditorNodeDtdClass
-{
-	CongEditorNodeClass klass;
-
-	/* Methods? */
-};
-
-GType
-cong_editor_node_dtd_get_type (void);
-
-CongEditorNodeDtd*
-cong_editor_node_dtd_construct (CongEditorNodeDtd *editor_node_dtd,
-				CongEditorWidget3* widget,
-				CongTraversalNode *traversal_node);
-
-CongEditorNode*
-cong_editor_node_dtd_new (CongEditorWidget3* widget,
-			  CongTraversalNode *traversal_node);
+CONG_EDITOR_NODE_DECLARE_SUBCLASS(Dtd, dtd)
 
 G_END_DECLS
 

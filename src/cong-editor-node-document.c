@@ -29,46 +29,12 @@
 
 #include "cong-editor-area-bin.h"
 
-#undef PRIVATE
-#define PRIVATE(x) ((x)->private)
-
-struct CongEditorNodeDocumentDetails
-{
-	int dummy;
-};
-
-#if 1
-static void 
-create_areas (CongEditorNode *editor_node,
-	      const CongAreaCreationInfo *creation_info);
-#else
-static CongEditorArea*
-generate_block_area (CongEditorNode *editor_node);
-#endif
-
 /* Exported function definitions: */
-GNOME_CLASS_BOILERPLATE(CongEditorNodeDocument, 
-			cong_editor_node_document,
-			CongEditorNode,
-			CONG_EDITOR_NODE_TYPE );
-
-static void
-cong_editor_node_document_class_init (CongEditorNodeDocumentClass *klass)
-{
-
-	CongEditorNodeClass *node_klass = CONG_EDITOR_NODE_CLASS(klass);
-#if 1
-	node_klass->create_areas = create_areas;
-#else
-	node_klass->generate_block_area = generate_block_area;
-#endif
-}
-
-static void
-cong_editor_node_document_instance_init (CongEditorNodeDocument *node_document)
-{
-	node_document->private = g_new0(CongEditorNodeDocumentDetails,1);
-}
+CONG_EDITOR_NODE_DEFINE_SUBCLASS(Document, 
+				 document,
+				 CONG_EDITOR_NODE_DOCUMENT,
+				 int dummy;
+				 )
 
 CongEditorNodeDocument*
 cong_editor_node_document_construct (CongEditorNodeDocument *editor_node_document,
@@ -81,18 +47,7 @@ cong_editor_node_document_construct (CongEditorNodeDocument *editor_node_documen
 	return editor_node_document;
 }
 
-CongEditorNode*
-cong_editor_node_document_new (CongEditorWidget3 *widget,
-			       CongTraversalNode *traversal_node)
-{
-#if DEBUG_EDITOR_NODE_LIFETIMES
-	g_message("cong_editor_node_document_new()");
-#endif
-	return CONG_EDITOR_NODE( cong_editor_node_document_construct (g_object_new (CONG_EDITOR_NODE_DOCUMENT_TYPE, NULL),
-								      widget,
-								      traversal_node)
-				 );
-}
+CONG_EDITOR_NODE_IMPLEMENT_EMPTY_DISPOSE(document)
 
 #if 1
 static void 

@@ -1,3 +1,9 @@
+2004-03-09  Dave Malcolm  <david@davemalcolm.demon.co.uk>
+
+	* cong-editor-area-text-fragment.c, cong-editor-node-comment.c, cong-editor-node-comment.h, cong-editor-node-document.c, cong-editor-node-document.h, cong-editor-node-dtd.c, cong-editor-node-dtd.h, cong-editor-node-text.c, cong-editor-node-text.h, cong-editor-node.h, cong-object.h
+
+	Created boilerplate macros for generating CongEditorNode subclasses, to help track reference leaks; fixed a bug that stops dispose functions chaining up to their parent class implementation
+
 2004-03-08  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
 	* cong-editor-area-text-fragment.c, cong-editor-area.c, cong-editor-creation-record.c, cong-editor-line-iter-span-wrapper.c, cong-editor-line-manager-span-wrapper.c, cong-editor-line-manager.c, cong-editor-node-comment.c, cong-editor-node-document.c, cong-editor-node-dtd.c, cong-editor-node-element-structural.c, cong-editor-node-element-unknown.c, cong-editor-node-element.c, cong-editor-node-entity-decl.c, cong-editor-node-entity-ref.c, cong-editor-node-unimplemented.c, cong-editor-node.c, cong-editor-node.h, cong-editor-widget.h, cong-object.c, cong-object.h, plugin-admonition-node-element.c, plugin-lists-node-element-listitem.c, plugin-paragraph-node-element-paragraph.c

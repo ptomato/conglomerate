@@ -150,8 +150,10 @@ cong_editor_node_generate_line_areas_recursive (CongEditorNode *editor_node,
 void
 cong_editor_node_line_regeneration_required (CongEditorNode *editor_node);
 
+#if 0
 enum CongFlowType
 cong_editor_node_get_flow_type (CongEditorNode *editor_node);
+#endif
 
 /**
  * cong_editor_node_is_referenced_entity_decl
@@ -224,6 +226,85 @@ void
 cong_editor_node_empty_create_area (CongEditorNode *editor_node,
 				    const CongAreaCreationInfo *creation_info,
 				    gboolean allow_children);
+
+/* Macros for creating subclasses more easily: */
+/* Macros for generating declarations: */
+#define CONG_EDITOR_NODE_DECLARE_SUBCLASS(SubclassName, subclass_name) \
+  typedef struct CongEditorNode##SubclassName CongEditorNode##SubclassName; \
+  typedef struct CongEditorNode##SubclassName##Class CongEditorNode##SubclassName##Class; \
+  typedef struct CongEditorNode##SubclassName##Private CongEditorNode##SubclassName##Private; \
+  struct CongEditorNode##SubclassName \
+  { \
+	  CongEditorNode node; \
+	  CongEditorNode##SubclassName##Private *priv; \
+  }; \
+  struct CongEditorNode##SubclassName##Class \
+  { \
+	  CongEditorNodeClass klass; \
+  }; \
+  GType \
+  cong_editor_node_##subclass_name##_get_type (void); \
+  CongEditorNode##SubclassName * \
+  cong_editor_node_##subclass_name##_construct (CongEditorNode##SubclassName *editor_node_##subclass_name, \
+						CongEditorWidget3* widget, \
+						CongTraversalNode *traversal_node); \
+  CongEditorNode* \
+  cong_editor_node_##subclass_name##_new (CongEditorWidget3* widget, \
+					  CongTraversalNode *traversal_node);
+
+/* Macros for generating implementations: */
+/* Submacros: */
+#if 1
+#define CONG_EDITOR_NODE_DECLARE_HOOKS \
+        static void \
+        create_areas (CongEditorNode *editor_node, \
+	      const CongAreaCreationInfo *creation_info);
+
+#define CONG_EDITOR_NODE_CONNECT_HOOKS \
+	CongEditorNodeClass *node_klass = CONG_EDITOR_NODE_CLASS(klass); \
+	node_klass->create_areas = create_areas;
+
+#else
+
+#define CONG_EDITOR_NODE_DECLARE_HOOKS \
+        static CongEditorArea* \
+        generate_block_area (CongEditorNode *editor_node);
+
+#define CONG_EDITOR_NODE_CONNECT_HOOKS \
+	CongEditorNodeClass *node_klass = CONG_EDITOR_NODE_CLASS(klass); \
+	node_klass->generate_block_area = generate_block_area;
+#endif
+
+#define CONG_EDITOR_NODE_IMPLEMENT_NEW(subclass_name) \
+     CongEditorNode* \
+     cong_editor_node_##subclass_name##_new (CongEditorWidget3 *widget, \
+					     CongTraversalNode *traversal_node) \
+     { \
+	     return CONG_EDITOR_NODE( cong_editor_node_##subclass_name##_construct (g_object_new (cong_editor_node_##subclass_name##_get_type (), NULL), \
+										    widget, \
+										    traversal_node) \
+				      ); \
+     }
+
+/* The macro that does it all: */
+#define CONG_EDITOR_NODE_DEFINE_SUBCLASS(SubclassName, subclass_name, SUBCLASS_MACRO, PrivateData) \
+     struct CongEditorNode##SubclassName##Private { \
+	     PrivateData \
+     }; \
+     CONG_EDITOR_NODE_DECLARE_HOOKS \
+     CONG_DEFINE_CLASS_BEGIN(CongEditorNode##SubclassName, cong_editor_node_##subclass_name, SUBCLASS_MACRO, CongEditorNode, CONG_EDITOR_NODE_TYPE ) \
+        CONG_EDITOR_NODE_CONNECT_HOOKS \
+     CONG_DEFINE_CLASS_END() \
+     CONG_EDITOR_NODE_IMPLEMENT_NEW(subclass_name)
+     
+#define CONG_EDITOR_NODE_IMPLEMENT_DISPOSE_BEGIN(SubclassName, subclass_name, SUBCLASS_MACRO) \
+     CONG_OBJECT_IMPLEMENT_DISPOSE_BEGIN(CongEditorNode##SubclassName, cong_editor_node_##subclass_name, SUBCLASS_MACRO, editor_node_##subclass_name)
+
+#define CONG_EDITOR_NODE_IMPLEMENT_DISPOSE_END() \
+     CONG_OBJECT_IMPLEMENT_DISPOSE_END()
+
+#define CONG_EDITOR_NODE_IMPLEMENT_EMPTY_DISPOSE(subclass_name) \
+     CONG_DEFINE_EMPTY_DISPOSE(cong_editor_node_##subclass_name)
 
 G_END_DECLS
 
