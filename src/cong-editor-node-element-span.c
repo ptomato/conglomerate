@@ -61,10 +61,12 @@ static enum CongFlowType
 get_flow_type(CongEditorNode *editor_node);
 
 /* Extra stuff: */
+#if 0
 static CongEditorArea*
 generate_area (CongEditorNode *editor_node,
 	       gboolean is_at_start,
 	       gboolean is_at_end);
+#endif
 
 /* Exported function definitions: */
 GNOME_CLASS_BOILERPLATE(CongEditorNodeElementSpan, 
@@ -303,6 +305,7 @@ get_flow_type(CongEditorNode *editor_node)
 }
 
 /* Extra stuff: */
+#if 0
 static CongEditorArea*
 generate_area (CongEditorNode *editor_node,
 	       gboolean is_at_start,
@@ -337,3 +340,4 @@ generate_area (CongEditorNode *editor_node,
 
 	return area;
 }
+#endif

@@ -152,7 +152,7 @@ add_to_line (CongEditorLineManager *line_manager,
 	     CongEditorLineIter *line_iter,
 	     CongEditorArea *area)
 {
-	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
+	/* CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager); */
 	CongEditorLineIterSimple *line_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (line_iter);
 
 	/* Ensure we have a line to add the area to: */
@@ -178,7 +178,7 @@ static void
 end_line (CongEditorLineManager *line_manager,
 	  CongEditorLineIter *line_iter)
 {
-	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
+	/* CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager); */
 	CongEditorLineIterSimple *line_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (line_iter);
 
 	if (line_iter_simple->current_line) {
@@ -191,8 +191,10 @@ static gint
 get_line_width (CongEditorLineManager *line_manager,
 		CongEditorLineIter *line_iter)
 {
+#if 0
 	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
 	CongEditorLineIterSimple *line_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (line_iter);
+#endif
 
 	return HACKED_WIDTH; /* FIXME */
 }
@@ -201,7 +203,7 @@ static gint
 get_current_indent (CongEditorLineManager *line_manager,
 		    CongEditorLineIter *line_iter)
 {
-	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
+	/* CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager); */
 	CongEditorLineIterSimple *line_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (line_iter);
 
 #if 1

@@ -47,6 +47,7 @@ struct MyClass##Class \
 };
 
 #define CONG_DECLARE_CLASS_PUBLIC_DATA(MyClass, my_class, BaseClass, PublicDataDecls, ClassFunctionDecls) \
+extern GType my_class##_get_type (void); \
 typedef struct MyClass##Class MyClass##Class; \
 typedef struct MyClass##Private MyClass##Private; \
 struct MyClass \
@@ -107,7 +108,7 @@ my_class##_instance_init (MyClass *obj) \
 static void \
 my_class##_finalize (GObject *object) \
 { \
-	MyClass *my_obj = MY_CLASS(object); \
+	/*MyClass *my_obj = MY_CLASS(object);*/ \
 	G_OBJECT_CLASS (parent_class)->finalize (object); \
 } \
 static void \
