@@ -112,7 +112,7 @@ regenerate_data_for_node (CongTreeView *cong_tree_view,
 static void on_document_node_make_orphan(CongView *view, gboolean before_change, CongNodePtr node, CongNodePtr former_parent);
 static void on_document_node_add_after(CongView *view, gboolean before_change, CongNodePtr node, CongNodePtr older_sibling);
 static void on_document_node_add_before(CongView *view, gboolean before_change, CongNodePtr node, CongNodePtr younger_sibling);
-static void on_document_node_set_parent(CongView *view, gboolean before_change, CongNodePtr node, CongNodePtr adoptive_parent); /* added to end of child list */
+static void on_document_node_set_parent(CongView *view, gboolean before_change, CongNodePtr node, CongNodePtr adoptive_parent, gboolean add_to_end);
 static void on_document_node_set_text(CongView *view, gboolean before_change, CongNodePtr node, const xmlChar *new_content);
 static void on_document_node_set_attribute(CongView *view, gboolean before_event, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name, const xmlChar *value);
 static void on_document_node_remove_attribute(CongView *view, gboolean before_event, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name);
@@ -134,14 +134,25 @@ static void recursive_remove_from_tree_store(CongTreeView *cong_tree_view,
 					     CongNodePtr node);
 
 /* Exported function implementations: */
+/**
+ * cong_tree_view_new:
+ * @doc:
+ * @use_markup:
+ * @node_filter:
+ * @node_creation_callback:
+ * @pixbuf_callback:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongTreeView *
 cong_tree_view_new (CongDocument *doc,
 		    gboolean use_markup,
 		    CongTreeViewNodeFilter node_filter,
 		    CongTreeViewNodeCreationCallback node_creation_callback,
 		    CongTreeViewPixbufCallback pixbuf_callback, /* can be NULL */
-		    gpointer user_data
-		    )
+		    gpointer user_data)
 {
 	CongTreeView *cong_tree_view;
 	CongTreeViewDetails *details;
@@ -251,14 +262,24 @@ cong_tree_view_new (CongDocument *doc,
 			  "destroy",
 			  G_CALLBACK (on_widget_destroy_event),
 			  cong_tree_view);
-	
+
+	/* Expand the full tree: */
+	gtk_tree_view_expand_all (details->gtk_tree_view);
+
 	/* Show the tree view: */
 	gtk_widget_show(GTK_WIDGET(details->gtk_tree_view));
 		
 	return cong_tree_view;
 }
 
-void cong_tree_view_free(CongTreeView *tree_view)
+/**
+ * cong_tree_view_free:
+ * @tree_view:
+ *
+ * TODO: Write me
+ */
+void 
+cong_tree_view_free(CongTreeView *tree_view)
 {
 	g_return_if_fail(tree_view);
 
@@ -276,13 +297,29 @@ void cong_tree_view_free(CongTreeView *tree_view)
 	g_free(tree_view);
 }
 
-GtkWidget* cong_tree_view_get_widget(CongTreeView *tree_view)
+/**
+ * cong_tree_view_get_widget:
+ * @tree_view:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GtkWidget* 
+cong_tree_view_get_widget(CongTreeView *tree_view)
 {
 	g_return_val_if_fail(tree_view, NULL);
 
 	return GTK_WIDGET(tree_view->private->gtk_tree_view);
 }
 
+/**
+ * cong_tree_view_should_show_node:
+ * @cong_tree_view:
+ * @node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_tree_view_should_show_node (CongTreeView *cong_tree_view,
 				 CongNodePtr node)
@@ -297,6 +334,13 @@ cong_tree_view_should_show_node (CongTreeView *cong_tree_view,
 						     PRIVATE(cong_tree_view)->user_data);
 }
 
+/**
+ * cong_tree_view_get_selected_node:
+ * @cong_tree_view:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongNodePtr
 cong_tree_view_get_selected_node (CongTreeView *cong_tree_view)
 {
@@ -311,6 +355,13 @@ cong_tree_view_get_selected_node (CongTreeView *cong_tree_view)
 	}
 }
 
+/**
+ * cong_tree_view_protected_get_tree_store:
+ * @tree_view:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GtkTreeStore* 
 cong_tree_view_protected_get_tree_store (CongTreeView *tree_view)
 {
@@ -319,6 +370,13 @@ cong_tree_view_protected_get_tree_store (CongTreeView *tree_view)
 	return tree_view->private->gtk_tree_store;
 }
 
+/**
+ * cong_tree_view_protected_force_node_update:
+ * @tree_view:
+ * @node:
+ *
+ * TODO: Write me
+ */
 void
 cong_tree_view_protected_force_node_update (CongTreeView *tree_view,
 					    CongNodePtr node)
@@ -422,8 +480,9 @@ on_tree_view_selection_changed (GtkTreeSelection *treeselection,
 	CongDocument *doc;
 	CongNodePtr node;
 
+	#if DEBUG_TREE_VIEW
 	g_message ("on_tree_view_selection_changed");
-
+	#endif
 
 	doc = cong_view_get_document (CONG_VIEW (cong_tree_view));
 
@@ -475,15 +534,32 @@ node_search_callback (GtkTreeModel *model,
 }
 #endif
 
-
-gint key_compare_func (gconstpointer a, 
-		       gconstpointer b, 
-		       gpointer user_data)
+/**
+ * key_compare_func:
+ * @a:
+ * @b:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gint 
+key_compare_func (gconstpointer a, 
+		  gconstpointer b, 
+		  gpointer user_data)
 {
 	return (gint)(a-b);
 }
 
-void value_destroy_func (gpointer data)
+/**
+ * value_destroy_func:
+ * @data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+void 
+value_destroy_func (gpointer data)
 {
 	g_free(data);
 }
@@ -655,7 +731,7 @@ static void on_document_node_add_before(CongView *view, gboolean before_change, 
 	}
 }
 
-static void on_document_node_set_parent(CongView *view, gboolean before_change, CongNodePtr node, CongNodePtr adoptive_parent)
+static void on_document_node_set_parent(CongView *view, gboolean before_change, CongNodePtr node, CongNodePtr adoptive_parent, gboolean add_to_end)
 {
 	CongTreeView *cong_tree_view;
 	GtkTreeIter tree_iter_parent;
@@ -679,7 +755,12 @@ static void on_document_node_set_parent(CongView *view, gboolean before_change, 
 
 		if ( get_iter_for_node(PRIVATE(cong_tree_view), adoptive_parent, &tree_iter_parent) ) {
 			GtkTreeIter new_tree_iter;
-			gtk_tree_store_append(PRIVATE(cong_tree_view)->gtk_tree_store, &new_tree_iter, &tree_iter_parent);
+
+			if (add_to_end) {
+				gtk_tree_store_append(PRIVATE(cong_tree_view)->gtk_tree_store, &new_tree_iter, &tree_iter_parent);
+			} else {
+				gtk_tree_store_prepend(PRIVATE(cong_tree_view)->gtk_tree_store, &new_tree_iter, &tree_iter_parent);
+			}
 			
 			recursive_add_to_tree_store(cong_tree_view, node, &new_tree_iter);
 		}

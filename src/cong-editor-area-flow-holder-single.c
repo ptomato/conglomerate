@@ -94,6 +94,14 @@ cong_editor_area_flow_holder_single_instance_init (CongEditorAreaFlowHolderSingl
 }
 
 /* Exported function definitions: */
+/**
+ * cong_editor_area_flow_holder_single_construct:
+ * @area_flow_holder_single:
+ * @editor_widget:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_flow_holder_single_construct (CongEditorAreaFlowHolderSingle *area_flow_holder_single,
 					CongEditorWidget3 *editor_widget)
@@ -112,6 +120,13 @@ cong_editor_area_flow_holder_single_construct (CongEditorAreaFlowHolderSingle *a
 	return CONG_EDITOR_AREA (area_flow_holder_single);
 }
 
+/**
+ * cong_editor_area_flow_holder_single_new:
+ * @editor_widget:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_flow_holder_single_new (CongEditorWidget3 *editor_widget)
 {
@@ -213,13 +228,21 @@ remove_areas_for_node (CongEditorAreaFlowHolder *area_flow_holder,
 	PRIVATE(area_flow_holder_single)->single_editor_area = NULL;
 }
 
+/**
+ * cong_editor_widget_create_child_policy_for_node_with_single_area:
+ * @editor_node:
+ * @editor_area:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorChildPolicy*
 cong_editor_widget_create_child_policy_for_node_with_single_area(CongEditorNode *editor_node,
 								 CongEditorArea *editor_area)
 {
 	if (IS_CONG_EDITOR_AREA_CONTAINER(editor_area) ) {
 		CongEditorAreaFlowHolder *flow_holder;
-		enum CongFlowType flow_type = cong_editor_node_get_flow_type (editor_node);
+		CongFlowType flow_type = cong_editor_node_get_flow_type (editor_node);
 		
 		flow_holder = cong_editor_area_flow_holder_manufacture (cong_editor_node_get_widget(editor_node),
 									flow_type);

@@ -25,6 +25,16 @@
 #include "global.h"
 #include "cong-enum-mapping.h"
 
+/**
+ * cong_enum_mapping_lookup:
+ * @enum_mapping:
+ * @num_values:
+ * @text_value:
+ * @default_value:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 guint
 cong_enum_mapping_lookup (const CongEnumMapping *enum_mapping,
 			  guint num_values,
@@ -49,6 +59,15 @@ cong_enum_mapping_lookup (const CongEnumMapping *enum_mapping,
 	return default_value;	
 }
 
+/**
+ * cong_enum_mapping_lookup_string:
+ * @enum_mapping:
+ * @num_values:
+ * @value:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_enum_mapping_lookup_string (const CongEnumMapping *enum_mapping,
 				 guint num_values,

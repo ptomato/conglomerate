@@ -29,7 +29,15 @@ struct CongDialogCategory
 	GtkWidget *inner_vbox;
 };
 
-CongDialogContent *cong_dialog_content_new(gboolean within_notebook)
+/**
+ * cong_dialog_content_new:
+ * @within_notebook:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+CongDialogContent *
+cong_dialog_content_new(gboolean within_notebook)
 {
 	CongDialogContent *content;
 
@@ -47,14 +55,31 @@ CongDialogContent *cong_dialog_content_new(gboolean within_notebook)
 	return content;
 }
 
-GtkWidget *cong_dialog_content_get_widget(CongDialogContent *dialog_content)
+/**
+ * cong_dialog_content_get_widget:
+ * @dialog_content:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GtkWidget *
+cong_dialog_content_get_widget(CongDialogContent *dialog_content)
 {
 	g_return_val_if_fail(dialog_content, NULL);
 
 	return dialog_content->vbox;	
 }
 
-CongDialogCategory *cong_dialog_content_add_category(CongDialogContent *dialog_content, const gchar *title)
+/**
+ * cong_dialog_content_add_category:
+ * @dialog_content:
+ * @title:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+CongDialogCategory *
+cong_dialog_content_add_category(CongDialogContent *dialog_content, const gchar *title)
 {
 	CongDialogCategory *category;
 	gchar *markedup_title;
@@ -107,6 +132,15 @@ CongDialogCategory *cong_dialog_content_add_category(CongDialogContent *dialog_c
 	return category;
 }
 
+/**
+ * cong_dialog_category_add_field:
+ * @category:
+ * @title:
+ * @widget:
+ * @expand:
+ *
+ * TODO: Write me
+ */
 void 
 cong_dialog_category_add_field (CongDialogCategory *category, 
 				const gchar *title, 
@@ -138,6 +172,14 @@ cong_dialog_category_add_field (CongDialogCategory *category,
 	gtk_widget_show (hbox);
 }
 
+/**
+ * cong_dialog_category_add_selflabelled_field:
+ * @category:
+ * @widget:
+ * @expand:
+ *
+ * TODO: Write me
+ */
 void 
 cong_dialog_category_add_selflabelled_field (CongDialogCategory *category, 
 					     GtkWidget *widget,
@@ -153,6 +195,15 @@ cong_dialog_category_add_selflabelled_field (CongDialogCategory *category,
 			    0);
 }
 
+/**
+ * make_dialog_message:
+ * @primary_text:
+ * @secondary_text:
+ * @tertiary_text:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 static gchar*
 make_dialog_message(const gchar* primary_text, 
 		    const gchar* secondary_text, 
@@ -175,7 +226,16 @@ make_dialog_message(const gchar* primary_text,
 	}
 }
 
-
+/**
+ * cong_alert_content_new:
+ * @stock_icon:
+ * @primary_text:
+ * @secondary_text:
+ * @tertiary_text:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GtkWidget* 
 cong_alert_content_new(const gchar* stock_icon,
 		       const gchar* primary_text, 
@@ -198,12 +258,12 @@ cong_alert_content_new(const gchar* stock_icon,
 	
 	image1 = gtk_image_new_from_stock (stock_icon, GTK_ICON_SIZE_DIALOG);
 	gtk_widget_show (image1);
-	gtk_box_pack_start (GTK_BOX (hbox1), image1, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox1), image1, FALSE, TRUE, 0);
 	gtk_misc_set_alignment (GTK_MISC (image1), 0.5, 0);
 	
 	label1 = gtk_label_new (msg);
 	gtk_widget_show (label1);
-	gtk_box_pack_start (GTK_BOX (hbox1), label1, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox1), label1, TRUE, TRUE, 0);
 	gtk_label_set_use_markup (GTK_LABEL(label1), TRUE);
 	gtk_label_set_justify (GTK_LABEL (label1), GTK_JUSTIFY_LEFT);
 	gtk_label_set_line_wrap (GTK_LABEL (label1), TRUE);
@@ -214,9 +274,19 @@ cong_alert_content_new(const gchar* stock_icon,
 	return hbox1;
 }
 
-GtkDialog *cong_dialog_save_confirmation_alert_new(GtkWindow *parent, 
-						   const gchar *document_name,
-						   glong seconds_since_last_save_or_load)
+/**
+ * cong_dialog_save_confirmation_alert_new:
+ * @parent:
+ * @document_name:
+ * @seconds_since_last_save_or_load:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GtkDialog *
+cong_dialog_save_confirmation_alert_new(GtkWindow *parent, 
+					const gchar *document_name,
+					glong seconds_since_last_save_or_load)
 {
 	GtkWidget *dialog, *content;
 	gchar *primary_text, *secondary_text;
@@ -270,10 +340,19 @@ GtkDialog *cong_dialog_save_confirmation_alert_new(GtkWindow *parent,
 	return GTK_DIALOG(dialog);
 }
 
-
-GtkDialog *cong_dialog_revert_confirmation_alert_new(GtkWindow *parent, 
-						     const gchar *document_name,
-						     glong seconds_since_last_save_or_load)
+/**
+ * cong_dialog_revert_confirmation_alert_new:
+ * @parent:
+ * @document_name:
+ * @seconds_since_last_save_or_load:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GtkDialog *
+cong_dialog_revert_confirmation_alert_new(GtkWindow *parent, 
+					  const gchar *document_name,
+					  glong seconds_since_last_save_or_load)
 {
 	GtkWidget *dialog, *content;
 	gchar *primary_text, *secondary_text;
@@ -324,8 +403,17 @@ GtkDialog *cong_dialog_revert_confirmation_alert_new(GtkWindow *parent,
 	return GTK_DIALOG(dialog);
 }
 
-GtkDialog *cong_dialog_information_alert_new(GtkWindow *parent, 
-					     const gchar *message)
+/**
+ * cong_dialog_information_alert_new:
+ * @parent:
+ * @message:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GtkDialog *
+cong_dialog_information_alert_new(GtkWindow *parent, 
+				  const gchar *message)
 {
 	GtkWidget *dialog, *content;
 

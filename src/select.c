@@ -29,6 +29,11 @@ static void
 update_ordered_selection (CongSelection *selection);
 
 /* Exported function definitions: */
+/**
+ * cong_selection_new:
+ *
+ * Returns: a new #CongSelection
+ */
 CongSelection*
 cong_selection_new (void)
 {
@@ -67,6 +72,12 @@ void gtk_selection_add_handler(GtkWidget            *widget,
 	return selection;
 }
 
+/**
+ * cong_selection_free:
+ * @selection:
+ *
+ * TODO: Write me
+ */
 void 
 cong_selection_free (CongSelection *selection)
 {	
@@ -80,6 +91,13 @@ cong_selection_free (CongSelection *selection)
 	}
 }
 
+/**
+ * cong_selection_start_from_curs:
+ * @selection:
+ * @curs:
+ *
+ * TODO: Write me
+ */
 void 
 cong_selection_start_from_curs (CongSelection *selection, 
 				CongCursor *curs)
@@ -93,7 +111,13 @@ cong_selection_start_from_curs (CongSelection *selection,
 	update_ordered_selection (selection);
 }
 
-
+/**
+ * cong_selection_end_from_curs:
+ * @selection:
+ * @curs:
+ *
+ * TODO: Write me
+ */
 void 
 cong_selection_end_from_curs (CongSelection *selection, 
 			      CongCursor *curs)
@@ -106,6 +130,13 @@ cong_selection_end_from_curs (CongSelection *selection,
 	update_ordered_selection (selection);
 }
 
+/**
+ * cong_selection_get_logical_range:
+ * @selection:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongRange*
 cong_selection_get_logical_range (CongSelection *selection)
 {
@@ -114,6 +145,13 @@ cong_selection_get_logical_range (CongSelection *selection)
 	return &selection->logical_range;
 }
 
+/**
+ * cong_selection_get_ordered_range:
+ * @selection:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongRange*
 cong_selection_get_ordered_range (CongSelection *selection)
 {
@@ -125,6 +163,13 @@ cong_selection_get_ordered_range (CongSelection *selection)
 	return &selection->ordered_range;
 }
 
+/**
+ * cong_selection_get_logical_start:
+ * @selection:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongLocation*
 cong_selection_get_logical_start (CongSelection *selection)
 {
@@ -133,6 +178,13 @@ cong_selection_get_logical_start (CongSelection *selection)
 	return &(selection->logical_range.loc0);
 }
 
+/**
+ * cong_selection_get_logical_end:
+ * @selection:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongLocation*
 cong_selection_get_logical_end (CongSelection *selection)
 {
@@ -141,6 +193,13 @@ cong_selection_get_logical_end (CongSelection *selection)
 	return &(selection->logical_range.loc1);
 }
 
+/**
+ * cong_selection_get_ordered_start:
+ * @selection:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongLocation*
 cong_selection_get_ordered_start (CongSelection *selection)
 {
@@ -152,6 +211,13 @@ cong_selection_get_ordered_start (CongSelection *selection)
 	return &(selection->ordered_range.loc0);
 }
 
+/**
+ * cong_selection_get_ordered_end:
+ * @selection:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongLocation*
 cong_selection_get_ordered_end (CongSelection *selection)
 {
@@ -163,6 +229,13 @@ cong_selection_get_ordered_end (CongSelection *selection)
 	return &(selection->ordered_range.loc1);
 }
 
+/**
+ * cong_selection_set_logical_start:
+ * @selection:
+ * @location:
+ *
+ * TODO: Write me
+ */
 void
 cong_selection_set_logical_start (CongSelection *selection,
 				  const CongLocation *location)
@@ -176,6 +249,13 @@ cong_selection_set_logical_start (CongSelection *selection,
 
 }
 
+/**
+ * cong_selection_set_logical_end:
+ * @selection:
+ * @location:
+ *
+ * TODO: Write me
+ */
 void
 cong_selection_set_logical_end (CongSelection *selection,
 				const CongLocation *location)
@@ -188,6 +268,14 @@ cong_selection_set_logical_end (CongSelection *selection,
 	update_ordered_selection (selection);
 }
 
+/**
+ * cong_selection_set_logical_range:
+ * @selection:
+ * @start_loc:
+ * @end_loc:
+ *
+ * TODO: Write me
+ */
 void
 cong_selection_set_logical_range (CongSelection *selection,
 				  const CongLocation *start_loc,
@@ -206,7 +294,15 @@ cong_selection_set_logical_range (CongSelection *selection,
 
 #if 1
 
-void cong_selection_import(CongSelection *selection, GtkWidget* widget)
+/**
+ * cong_selection_import:
+ * @selection:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+cong_selection_import(CongSelection *selection, GtkWidget* widget)
 {
 	gtk_selection_convert(widget, GDK_SELECTION_PRIMARY,
 			      gdk_atom_intern("STRING", FALSE), GDK_CURRENT_TIME);
@@ -217,8 +313,14 @@ void cong_selection_import(CongSelection *selection, GtkWidget* widget)
 	
 }
 
-
-void cong_selection_claim(CongSelection *selection)
+/**
+ * cong_selection_claim:
+ * @selection:
+ *
+ * TODO: Write me
+ */
+void 
+cong_selection_claim(CongSelection *selection)
 {
 
 #if 0	
@@ -233,6 +335,14 @@ void cong_selection_claim(CongSelection *selection)
 
 #endif
 
+/**
+ * cong_selection_is_node:
+ * @selection:
+ * @node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_selection_is_node (CongSelection *selection,
 			CongNodePtr node)
@@ -243,6 +353,12 @@ cong_selection_is_node (CongSelection *selection,
 				   node);
 }
 
+/**
+ * cong_selection_nullify:
+ * @selection:
+ *
+ * TODO: Write me
+ */
 void
 cong_selection_nullify (CongSelection *selection)
 {
@@ -252,6 +368,13 @@ cong_selection_nullify (CongSelection *selection)
 	cong_range_nullify (&selection->ordered_range);
 }
 
+/**
+ * cong_selection_is_valid:
+ * @selection:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_selection_is_valid (CongSelection *selection)
 {
@@ -266,12 +389,26 @@ cong_selection_is_valid (CongSelection *selection)
 	return FALSE;
 }
 
+/**
+ * cong_selection_legacy_get_gc_valid:
+ * @selection:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkGC*
 cong_selection_legacy_get_gc_valid (CongSelection *selection)
 {
 	return selection->gc_valid;
 }
 
+/**
+ * cong_selection_legacy_get_gc_invalid:
+ * @selection:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkGC*
 cong_selection_legacy_get_gc_invalid (CongSelection *selection)
 {
@@ -286,5 +423,41 @@ update_ordered_selection (CongSelection *selection)
 	cong_range_make_ordered (&selection->ordered_range);
 
 	/* probabky should have some caching of the result */
+}
+  
+/**
+ * cong_selection_get_selected_text:
+ * @doc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gchar* 
+cong_selection_get_selected_text (CongDocument *doc)
+{
+   CongSelection *selection;
+   CongCursor *curs;
+
+   g_return_val_if_fail(doc, NULL);
+ 
+   selection = cong_document_get_selection(doc);
+   curs = cong_document_get_cursor(doc);
+	
+   if (!cong_location_exists(&curs->location)) return NULL;
+	
+   if (!(cong_range_exists (cong_selection_get_logical_range (selection)) &&
+	      cong_range_is_valid (cong_selection_get_logical_range (selection)))) { 
+		return NULL;
+   }
+
+   if (cong_range_is_empty (cong_selection_get_logical_range (selection))) {
+      return NULL;
+   }
+
+   if (!cong_range_can_be_copied (cong_selection_get_ordered_range (selection))) {
+      return NULL;
+   }
+
+   return cong_range_generate_source (cong_selection_get_ordered_range (selection));
 }
 

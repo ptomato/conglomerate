@@ -27,9 +27,20 @@
 
 G_BEGIN_DECLS
 
+
+struct CongFindDialogData
+{
+   gchar *last_find;
+   gchar *last_replace;
+   
+   gboolean  is_wrap_around;
+   gboolean  is_entire_word;
+   gboolean  is_match_case;
+   gboolean  is_search_backwards;
+};
+
 /**
  * cong_document_find:
- *
  * @doc: the #CongDocument for which the find dialog is to be run
  *
  * Presents the Find dialog for this #CongDocument
@@ -40,7 +51,6 @@ cong_document_find (CongDocument *doc);
 
 /**
  * cong_document_find_next:
- *
  * @doc: the #CongDocument
  *
  * Perform an "Edit->Find Next" for this #CongDocument
@@ -51,7 +61,6 @@ cong_document_find_next (CongDocument *doc);
 
 /**
  * cong_document_find_prev:
- *
  * @doc: the #CongDocument
  *
  * Perform an "Edit->Find Next" for this #CongDocument
@@ -62,7 +71,6 @@ cong_document_find_prev (CongDocument *doc);
 
 /**
  * cong_document_replace:
- *
  * @doc: the #CongDocument for which the dialog is to be run
  *
  * Presents the Replace dialog for this #CongDocument

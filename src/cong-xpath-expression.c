@@ -90,6 +90,16 @@ cong_xpath_expression_instance_init (CongXPathExpression *node)
 	node->private = g_new0(CongXPathExpressionDetails,1);
 }
 
+/**
+ * cong_xpath_expression_construct:
+ * @xpath_expression:
+ * @doc:
+ * @context_node:
+ * @xpath_expression_string:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongXPathExpression*
 cong_xpath_expression_construct (CongXPathExpression *xpath_expression,
 				 CongDocument *doc,
@@ -106,6 +116,15 @@ cong_xpath_expression_construct (CongXPathExpression *xpath_expression,
 	return xpath_expression;
 }
 
+/**
+ * cong_xpath_expression_new:
+ * @doc:
+ * @context_node:
+ * @xpath_expression_string:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongXPathExpression*
 cong_xpath_expression_new (CongDocument *doc,
 			   CongNodePtr context_node,
@@ -122,6 +141,13 @@ cong_xpath_expression_new (CongDocument *doc,
 		 xpath_expression_string);
 }
 
+/**
+ * cong_xpath_expression_get_document:
+ * @xpath_expression:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDocument*
 cong_xpath_expression_get_document (CongXPathExpression *xpath_expression)
 {
@@ -130,6 +156,13 @@ cong_xpath_expression_get_document (CongXPathExpression *xpath_expression)
 	return PRIVATE(xpath_expression)->doc;
 }
 
+/**
+ * cong_xpath_expression_get_context_node:
+ * @xpath_expression:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongNodePtr
 cong_xpath_expression_get_context_node (CongXPathExpression *xpath_expression)
 {
@@ -138,6 +171,13 @@ cong_xpath_expression_get_context_node (CongXPathExpression *xpath_expression)
 	return PRIVATE(xpath_expression)->context_node;
 }
 
+/**
+ * cong_xpath_expression_get_string_result:
+ * @xpath_expression:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_xpath_expression_get_string_result (CongXPathExpression *xpath_expression)
 {

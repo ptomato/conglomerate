@@ -100,9 +100,19 @@ set_pixbuf (GtkTreeViewColumn *tree_column,
 	}
 }
 
-gboolean first_page_of_factory_back(GnomeDruidPage *druidpage,
-				    GtkWidget *widget,
-				    gpointer user_data)
+/**
+ * first_page_of_factory_back:
+ * @druidpage:
+ * @widget:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+first_page_of_factory_back(GnomeDruidPage *druidpage,
+			   GtkWidget *widget,
+			   gpointer user_data)
 {
 	CongNewFileAssistant *assistant = user_data;
 
@@ -111,9 +121,19 @@ gboolean first_page_of_factory_back(GnomeDruidPage *druidpage,
 	return TRUE;
 }
 
-gboolean last_page_of_factory_next(GnomeDruidPage *druidpage,
-				   GtkWidget *widget,
-				   gpointer user_data)
+/**
+ * last_page_of_factory_next:
+ * @druidpage:
+ * @widget:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+last_page_of_factory_next(GnomeDruidPage *druidpage,
+			  GtkWidget *widget,
+			  gpointer user_data)
 {
 	CongNewFileAssistant *assistant = user_data;
 
@@ -124,10 +144,21 @@ gboolean last_page_of_factory_next(GnomeDruidPage *druidpage,
 	return TRUE;
 }
 
-GnomeDruidPageStandard *cong_new_file_assistant_new_page(CongNewFileAssistant *assistant, 
-							 CongServiceDocumentFactory *document_factory, 
-							 gboolean is_first_of_factory,
-							 gboolean is_last_of_factory)
+/**
+ * cong_new_file_assistant_new_page:
+ * @assistant:
+ * @document_factory:
+ * @is_first_of_factory:
+ * @is_last_of_factory:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GnomeDruidPageStandard *
+cong_new_file_assistant_new_page(CongNewFileAssistant *assistant, 
+				 CongServiceDocumentFactory *document_factory, 
+				 gboolean is_first_of_factory,
+				 gboolean is_last_of_factory)
 {
 	GnomeDruidPageStandard *page;
 	gchar *title;
@@ -163,7 +194,15 @@ GnomeDruidPageStandard *cong_new_file_assistant_new_page(CongNewFileAssistant *a
 	return page;
 }
 
-void cong_new_file_assistant_set_page(CongNewFileAssistant *assistant, GnomeDruidPage *page)
+/**
+ * cong_new_file_assistant_set_page:
+ * @assistant:
+ * @page:
+ *
+ * TODO: Write me
+ */
+void 
+cong_new_file_assistant_set_page(CongNewFileAssistant *assistant, GnomeDruidPage *page)
 {
 	g_return_if_fail(assistant);
 	g_return_if_fail(page);
@@ -173,13 +212,30 @@ void cong_new_file_assistant_set_page(CongNewFileAssistant *assistant, GnomeDrui
 	
 }
 
-GtkWindow *cong_new_file_assistant_get_toplevel(CongNewFileAssistant *assistant)
+/**
+ * cong_new_file_assistant_get_toplevel:
+ * @assistant:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GtkWindow *
+cong_new_file_assistant_get_toplevel(CongNewFileAssistant *assistant)
 {
 	g_return_val_if_fail (assistant, NULL);
 
 	return GTK_WINDOW(assistant->window);
 }
 
+/**
+ * cong_new_file_assistant_set_data_for_factory:
+ * @assistant:
+ * @document_factory:
+ * @factory_data:
+ * @free_func:
+ *
+ * TODO: Write me
+ */
 void
 cong_new_file_assistant_set_data_for_factory (CongNewFileAssistant *assistant,
 					      CongServiceDocumentFactory *document_factory,
@@ -208,6 +264,14 @@ cong_new_file_assistant_set_data_for_factory (CongNewFileAssistant *assistant,
 	per_factory_data->free_func = free_func;
 }
 
+/**
+ * cong_new_file_assistant_get_data_for_factory:
+ * @assistant:
+ * @document_factory:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gpointer
 cong_new_file_assistant_get_data_for_factory (CongNewFileAssistant *assistant,
 					      CongServiceDocumentFactory *document_factory)
@@ -242,7 +306,15 @@ static void add_factory_callback(CongServiceDocumentFactory *factory, gpointer u
 
 }
 
-GtkWidget *make_type_selection_widget(CongNewFileAssistant *assistant)
+/**
+ * make_type_selection_widget:
+ * @assistant:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GtkWidget *
+make_type_selection_widget(CongNewFileAssistant *assistant)
 {
 	/* FIXME:  didn't work very well when I added a scrolled window */
 #if 0
@@ -307,9 +379,18 @@ GtkWidget *make_type_selection_widget(CongNewFileAssistant *assistant)
 #endif
 }
 
-void second_page_prepare(GnomeDruidPage *druidpage,
-			 GtkWidget *widget,
-			 gpointer user_data)
+/**
+ * second_page_prepare:
+ * @druidpage:
+ * @widget:
+ * @user_data:
+ *
+ * TODO: Write me
+ */
+void 
+second_page_prepare(GnomeDruidPage *druidpage,
+		    GtkWidget *widget,
+		    gpointer user_data)
 {
 	CongNewFileAssistant *assistant = user_data;
 
@@ -325,9 +406,19 @@ void second_page_prepare(GnomeDruidPage *druidpage,
 
 }
 
-gboolean second_page_next(GnomeDruidPage *druidpage,
-			  GtkWidget *widget,
-			  gpointer user_data)
+/**
+ * second_page_next:
+ * @druidpage:
+ * @widget:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+second_page_next(GnomeDruidPage *druidpage,
+		 GtkWidget *widget,
+		 gpointer user_data)
 {
 	CongNewFileAssistant *assistant = user_data;
 	GtkTreeSelection* tree_selection;
@@ -385,9 +476,19 @@ gboolean second_page_next(GnomeDruidPage *druidpage,
 
 }
 
-gboolean final_page_back(GnomeDruidPage *druidpage,
-			 GtkWidget *widget,
-			 gpointer user_data)
+/**
+ * final_page_back:
+ * @druidpage:
+ * @widget:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+final_page_back(GnomeDruidPage *druidpage,
+		GtkWidget *widget,
+		gpointer user_data)
 {
 	CongNewFileAssistant *assistant = user_data;
 
@@ -397,9 +498,19 @@ gboolean final_page_back(GnomeDruidPage *druidpage,
 	return TRUE;
 }
 
-gboolean final_page_finish(GnomeDruidPage *druidpage,
-			   GtkWidget *widget,
-			   gpointer user_data)
+/**
+ * final_page_finish:
+ * @druidpage:
+ * @widget:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+final_page_finish(GnomeDruidPage *druidpage,
+		  GtkWidget *widget,
+		  gpointer user_data)
 {
 	CongNewFileAssistant *assistant = user_data;
 	GtkTreeSelection* tree_selection;
@@ -436,7 +547,6 @@ gboolean final_page_finish(GnomeDruidPage *druidpage,
 		g_warning("No selected factory");
 	}
 
-
 	return TRUE;
 }
 
@@ -460,7 +570,14 @@ add_pages_for_factory_callback (CongServiceDocumentFactory *factory,
 	cong_document_factory_invoke_page_creation_callback(factory, assistant);
 }
 
-void new_document(GtkWindow *parent_window)
+/**
+ * new_document:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
+void 
+new_document(GtkWindow *parent_window)
 {
 	CongNewFileAssistant *assistant;
 
@@ -552,7 +669,17 @@ void new_document(GtkWindow *parent_window)
 
 	/* FIXME:  need to sort out memory leaks */
 }
-gint toolbar_callback_new(GtkWidget *widget, gpointer data)
+
+/**
+ * toolbar_callback_new:
+ * @w:
+ * @data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gint 
+toolbar_callback_new(GtkWidget *widget, gpointer data)
 {
 	CongPrimaryWindow *primary_window = data;
 

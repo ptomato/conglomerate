@@ -17,85 +17,132 @@
 
 /* the popup items have the data "popup_data_item" set on them: */
 
+/**
+ * cong_ui_hook_tree_new_sibling:
+ * @doc:
+ * @ds_element:
+ * @node:
+ *
+ * TODO: Write me
+ */
 void 
 cong_ui_hook_tree_new_sibling (CongDocument *doc,
-			       CongDispspecElement *ds_element,
+			       CongElementDescription *element_desc,
 			       CongNodePtr node)
 {
 	CongNodePtr new_node;
+	CongDispspec *ds;
+	gchar *username;
 
 	g_return_if_fail (IS_CONG_DOCUMENT (doc));
-	g_return_if_fail (ds_element);
+	g_return_if_fail (element_desc);
 	g_return_if_fail (node);
+
+	ds = cong_document_get_dispspec(doc);
+
+	username = cong_element_description_make_user_name (element_desc,
+							    ds);
 
 	/* GREP FOR MVC */
 	cong_document_begin_edit(doc);
 
 	{
-		gchar *desc = g_strdup_printf (_("Insert sibling: %s"), cong_dispspec_element_username (ds_element));
+		gchar *desc = g_strdup_printf (_("Insert sibling: %s"), username);
 		CongCommand *cmd = cong_document_begin_command (doc, desc, NULL);
 		g_free (desc);
 
 		/* New element */
-		new_node = cong_node_new_element_from_dispspec (ds_element, 
-								doc);
+		new_node = cong_element_description_make_node (element_desc, 
+							       doc,
+							       node->parent);
 		cong_command_add_node_add_after (cmd, 
 						 new_node, 
 						 node);
 
 		/*  add any necessary sub elements it needs */
-		cong_command_add_xml_add_required_children (cmd, 
-							    new_node);
+	        if (cong_command_add_required_sub_elements (cmd,new_node)) {
 		
-		cong_command_add_set_cursor_to_first_text_descendant (cmd, 
-								      new_node);
+			cong_command_add_set_cursor_to_first_text_descendant (cmd, 
+									      new_node);
 
-		cong_document_end_command (doc, cmd);		
+		        cong_document_end_command (doc, cmd);		
+		} else {
+
+			cong_document_abort_command (doc, cmd);
+
+		}
 	}
 
 	cong_document_end_edit(doc);
+
+	g_free (username);
 	
 }
 
+/**
+ * cong_ui_hook_tree_new_sub_element:
+ * @doc:
+ * @ds_element:
+ * @node:
+ *
+ * TODO: Write me
+ */
 void
 cong_ui_hook_tree_new_sub_element (CongDocument *doc,
-				   CongDispspecElement *ds_element,
+				   CongElementDescription *element_desc,
 				   CongNodePtr node)
 {
 	CongNodePtr new_node;
+	CongDispspec *ds;
+	gchar *username;
 
 	g_return_if_fail (IS_CONG_DOCUMENT (doc));
-	g_return_if_fail (ds_element);
+	g_return_if_fail (element_desc);
 	g_return_if_fail (node);
 
+	ds = cong_document_get_dispspec(doc);
+
+	username = cong_element_description_make_user_name (element_desc,
+							    ds);
 	/* GREP FOR MVC */
 	cong_document_begin_edit(doc);
 
 	{
-		gchar *desc = g_strdup_printf (_("Insert child: %s"), cong_dispspec_element_username (ds_element));
+		gchar *desc = g_strdup_printf (_("Insert child: %s"), username);
 		CongCommand *cmd = cong_document_begin_command (doc, desc, NULL);
 		g_free (desc);
 
 		/* New element */
-		new_node = cong_node_new_element_from_dispspec (ds_element, 
-								doc);
+		new_node = cong_element_description_make_node (element_desc, 
+							       doc,
+							       node);
 		cong_command_add_node_set_parent (cmd, 
 						  new_node, 
 						  node);
 
 		/*  add any necessary sub elements it needs */
-		cong_command_add_xml_add_required_children (cmd, 
-							    new_node);
+	        if (cong_command_add_required_sub_elements (cmd,new_node)) {
 		
-		cong_command_add_set_cursor_to_first_text_descendant (cmd, 
-								      new_node);
+			cong_command_add_set_cursor_to_first_text_descendant (cmd, 
+									      new_node);
+		        cong_document_end_command (doc, cmd);		
 
-		cong_document_end_command (doc, cmd);
+		} else {
+			cong_document_abort_command (doc, cmd);
+		}
 	}
 
 	cong_document_end_edit(doc);
 }
 
+/**
+ * cong_ui_hook_tree_properties:
+ * @doc:
+ * @node:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
 void
 cong_ui_hook_tree_properties (CongDocument *doc,
 			      CongNodePtr node,
@@ -138,6 +185,14 @@ tree_cut_update_location_callback (CongDocument *doc,
 	return FALSE;
 }
 
+/**
+ * cong_ui_hook_tree_cut:
+ * @doc:
+ * @node:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
 void 
 cong_ui_hook_tree_cut (CongDocument *doc,
 		       CongNodePtr node,
@@ -175,7 +230,14 @@ cong_ui_hook_tree_cut (CongDocument *doc,
 	cong_document_end_edit(doc);
 }
 
-
+/**
+ * cong_ui_hook_tree_copy:
+ * @doc:
+ * @node:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
 void 
 cong_ui_hook_tree_copy (CongDocument *doc,
 			CongNodePtr node,
@@ -196,6 +258,14 @@ cong_ui_hook_tree_copy (CongDocument *doc,
 	g_free(source);
 }
 
+/**
+ * cong_ui_hook_tree_paste_under:
+ * @doc:
+ * @node:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
 void 
 cong_ui_hook_tree_paste_under (CongDocument *doc,
 			       CongNodePtr node,
@@ -219,7 +289,14 @@ cong_ui_hook_tree_paste_under (CongDocument *doc,
 	}
 }
 
-
+/**
+ * cong_ui_hook_tree_paste_before:
+ * @doc:
+ * @node:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
 void
 cong_ui_hook_tree_paste_before (CongDocument *doc,
 				CongNodePtr node,
@@ -243,7 +320,14 @@ cong_ui_hook_tree_paste_before (CongDocument *doc,
 	}
 }
 
-
+/**
+ * cong_ui_hook_tree_paste_after:
+ * @doc:
+ * @node:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
 void
 cong_ui_hook_tree_paste_after (CongDocument *doc,
 			       CongNodePtr node,
@@ -265,4 +349,111 @@ cong_ui_hook_tree_paste_after (CongDocument *doc,
 						  node,
 						  clipboard_source);
 	}
+}
+
+void
+cong_ui_hook_tree_convert_to_comment (CongDocument *doc,
+				      CongNodePtr node,
+				      GtkWindow *parent_window)
+{
+	gchar *source;
+	CongNodePtr comment_node;
+
+	g_return_if_fail (IS_CONG_DOCUMENT (doc));
+	g_return_if_fail (node);
+
+	source = cong_node_generate_source(node);
+	g_message ("source");
+
+	cong_document_begin_edit(doc);
+
+	{
+		CongCommand *cmd = cong_document_begin_command (doc, _("Convert to comment"), NULL);
+
+		/* New element: */
+		comment_node = cong_node_new_comment (source,
+						      doc);
+
+
+		cong_command_add_node_add_after (cmd, 
+						 comment_node, 
+						 node);
+
+		/* Remove old node: */
+		cong_command_for_each_location (cmd, 
+						tree_cut_update_location_callback,
+						node);
+		cong_command_add_node_recursive_delete (cmd,
+							node);
+
+		cong_document_end_command (doc, cmd);		
+	}
+
+	cong_document_end_edit(doc);
+	
+	g_free(source);
+}
+
+void
+cong_ui_hook_tree_convert_from_comment (CongDocument *doc,
+					CongNodePtr comment_node,
+					GtkWindow *parent_window)
+{
+	CongNodePtr new_nodes; 
+	CongNodePtr iter, iter_next;
+
+	g_return_if_fail (IS_CONG_DOCUMENT (doc));
+	g_return_if_fail (comment_node);
+	g_return_if_fail (CONG_NODE_TYPE_COMMENT == cong_node_type (comment_node));
+	g_return_if_fail (comment_node->content);
+
+
+	new_nodes = cong_document_make_nodes_from_source_fragment (doc, 
+								   comment_node->content);
+	if (NULL==new_nodes) {
+		/* Couldn't parse the source */
+		return;
+	}
+
+	cong_document_begin_edit (doc);
+
+	{
+		CongCommand *cmd = cong_document_begin_command (doc, _("Uncomment"), NULL);
+		CongNodePtr relative_to_node = comment_node;
+
+
+		/* Add the new nodes: */
+		for (iter = new_nodes->children; iter; iter = iter_next) {
+			iter_next = iter->next;
+			
+			cong_command_add_node_add_after (cmd, 
+							 iter, 
+							 relative_to_node);
+			
+			relative_to_node = iter;
+		}
+		
+		/* Delete the placeholder parent: */
+		cong_command_add_node_recursive_delete (cmd, 
+							new_nodes);
+
+
+		/* Remove the original comment node: */
+		cong_command_for_each_location (cmd, 
+						tree_cut_update_location_callback,
+						comment_node);
+		cong_command_add_node_recursive_delete (cmd,
+							comment_node);
+		
+		/* Merge adjacent text nodes: */
+		cong_command_add_merge_adjacent_text_children_of_node (cmd, 
+								       relative_to_node->parent);
+
+		cong_document_end_command (doc,
+					   cmd);
+	}
+	
+	cong_document_end_edit (doc);
+
+
 }

@@ -24,6 +24,16 @@ struct LoadingDetails
 	GnomeVFSURI* path_uri;
 };
 
+/**
+ * visit_func:
+ * @rel_path:
+ * @info:
+ * @recursing_will_loop:
+ * @data:
+ * @recurse:
+ *
+ * TODO: Write me
+ */
 gboolean
 visit_func(const gchar *rel_path,
 	   GnomeVFSFileInfo *info,
@@ -68,8 +78,17 @@ visit_func(const gchar *rel_path,
 }
 
 /* Add all disspecs found in directory to an existing DispspecRegistry */
+/**
+ * cong_dispspec_registry_add_dir:
+ * @registry:
+ * @xds_directory:
+ * @toplevel_window:
+ * @raise_errs:
+ *
+ * TODO: Write me
+ */
 void
-cong_dispspec_registry_add_dir(CongDispspecRegistry *registry, const gchar *xds_directory, GtkWindow *toplevel_window, gboolean raise_errors)
+cong_dispspec_registry_add_dir(CongDispspecRegistry *registry, const gchar *xds_directory, GtkWindow *toplevel_window, gboolean raise_errs)
 {
 	GnomeVFSResult vfs_result;
 	struct LoadingDetails details;
@@ -84,7 +103,7 @@ cong_dispspec_registry_add_dir(CongDispspecRegistry *registry, const gchar *xds_
 					       visit_func,
 					       (gpointer)&details);
 
-	if (raise_errors && vfs_result!=GNOME_VFS_OK) {
+	if (raise_errs && vfs_result!=GNOME_VFS_OK) {
 		GtkDialog* dialog = cong_error_dialog_new_from_file_operation_failure(toplevel_window,
 										      _("Conglomerate could not read its registry of document types."),
 										      xds_directory,
@@ -101,6 +120,14 @@ cong_dispspec_registry_add_dir(CongDispspecRegistry *registry, const gchar *xds_
 
 /* Create a new DispspecRegistry.
    If a directory is specified, read disppsec files from it and insert them into registry.  If not, returned registry is empty. */
+/**
+ * cong_dispspec_registry_new:
+ * @xds_directory:
+ * @toplevel_window:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDispspecRegistry*
 cong_dispspec_registry_new(const gchar* xds_directory, GtkWindow *toplevel_window)
 {
@@ -115,12 +142,25 @@ cong_dispspec_registry_new(const gchar* xds_directory, GtkWindow *toplevel_windo
 	return registry;
 }
 
+/**
+ * cong_dispspec_registry_free:
+ * @registry:
+ *
+ * This function is currently just a false assertion
+ */
 void
 cong_dispspec_registry_free(CongDispspecRegistry* registry)
 {
 	g_assert(0); /* for now */
 }
 
+/**
+ * cong_dispspec_registry_get_num:
+ * @registry:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 unsigned int
 cong_dispspec_registry_get_num(CongDispspecRegistry* registry)
 {
@@ -129,6 +169,14 @@ cong_dispspec_registry_get_num(CongDispspecRegistry* registry)
 	return registry->num;
 }
 
+/**
+ * cong_dispspec_registry_get:
+ * @registry:
+ * @i:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDispspec*
 cong_dispspec_registry_get(CongDispspecRegistry* registry, unsigned int i)
 {
@@ -138,6 +186,13 @@ cong_dispspec_registry_get(CongDispspecRegistry* registry, unsigned int i)
 	return registry->array[i];
 }
 
+/**
+ * cong_dispspec_registry_add:
+ * @registry:
+ * @ds:
+ *
+ * TODO: Write me
+ */
 void
 cong_dispspec_registry_add(CongDispspecRegistry* registry, CongDispspec* ds)
 {
@@ -148,6 +203,12 @@ cong_dispspec_registry_add(CongDispspecRegistry* registry, CongDispspec* ds)
 	registry->array[registry->num-1]=ds;
 }
 
+/**
+ * cong_dispspec_registry_dump:
+ * @registry:
+ *
+ * TODO: Write me
+ */
 void
 cong_dispspec_registry_dump(CongDispspecRegistry* registry)
 {
@@ -185,18 +246,6 @@ get_toplevel_tag(xmlDocPtr doc, gchar** xmlns, gchar** tagname)
 }
 #endif
 
-GtkCellRenderer*
-cong_cell_renderer_simple_new (void)
-{
-	GtkCellRenderer* renderer = gtk_cell_renderer_text_new ();
-
-	g_object_set (G_OBJECT (renderer),
-		      "text",
-		      "fubar",
-		      NULL);
-
-	return renderer;
-}
 
 
 struct CongDispspecCoverage
@@ -305,7 +354,118 @@ run_coverage_selector_dialog (struct CongDispspecCoverage *coverage_array,
 
 
 /**
- * cong_dispspec_registry_get_appropriate_dispspec
+ * cong_cell_renderer_simple_new:
+ *
+ * TODO: Write me
+ */
+GtkCellRenderer*
+cong_cell_renderer_simple_new (void)
+{
+	GtkCellRenderer* renderer = gtk_cell_renderer_text_new ();
+
+	g_object_set (G_OBJECT (renderer),
+		      "text",
+		      "fubar",
+		      NULL);
+
+	return renderer;
+}
+
+
+#if 0
+static CongDispspec*
+run_coverage_selector_dialog (struct CongDispspecCoverage *coverage_array,
+			      guint count)
+{
+	GladeXML *xml;
+	GtkTreeView *tree_view;
+	GtkListStore *list_store;
+	int i;
+
+	g_assert (coverage_array);
+
+	xml = cong_util_load_glade_file ("conglomerate/glade/cong-dispspec-selector.glade",
+					 NULL,
+					 NULL,
+					 NULL);
+	tree_view = GTK_TREE_VIEW (glade_xml_get_widget(xml, "treeview1"));
+	list_store = gtk_list_store_new (COVERAGELISTSTORE_COVERAGE_NUM_FIELDS, G_TYPE_POINTER, G_TYPE_DOUBLE);
+
+	gtk_tree_view_set_model (tree_view,
+				 GTK_TREE_MODEL (list_store));
+	g_object_unref (G_OBJECT (list_store));
+
+	/* Populate the list store: */
+	{
+		GtkTreeIter iter;
+
+		for (i=0;i<count;i++) {
+			gtk_list_store_append (list_store, &iter);
+			
+			gtk_list_store_set (list_store, &iter,
+					    COVERAGELISTSTORE_DS_FIELD, coverage_array[i].ds,
+					    COVERAGELISTSTORE_COVERAGE_FIELD, coverage_array[i].coverage,
+					    -1);
+		}
+		
+		/* Add a new document type entry: */
+		gtk_list_store_append (list_store, &iter);
+		
+		gtk_list_store_set (list_store, &iter,
+				    COVERAGELISTSTORE_DS_FIELD, NULL,
+				    -1);
+	}
+
+	/* Create columns & renderers: */
+	{
+		GtkTreeViewColumn *column;
+		GtkCellRenderer *renderer;
+
+		/* File type column: */
+		{
+			column = gtk_tree_view_column_new();
+			gtk_tree_view_column_set_title(column, _("File Type"));
+
+			renderer = cong_cell_renderer_simple_new ();
+			gtk_tree_view_column_pack_start (column, renderer, FALSE);
+			
+			gtk_tree_view_append_column (tree_view, column);
+		}
+
+		/* Coverage column: */
+		{
+			column = gtk_tree_view_column_new();
+			gtk_tree_view_column_set_title(column, _("Coverage"));
+
+			renderer = cong_cell_renderer_simple_new ();
+			gtk_tree_view_column_pack_start (column, renderer, FALSE);
+			
+			gtk_tree_view_append_column (tree_view, column);
+		}
+		
+		/* Description column: */
+		{
+			column = gtk_tree_view_column_new();
+			gtk_tree_view_column_set_title(column, _("Description"));
+
+			renderer = cong_cell_renderer_simple_new ();
+			gtk_tree_view_column_pack_start (column, renderer, FALSE);
+			
+			gtk_tree_view_append_column (tree_view, column);
+		}
+	}
+
+	gtk_dialog_run (GTK_DIALOG (glade_xml_get_widget (xml, "coverage_dialog")));
+
+	g_object_unref (G_OBJECT (xml));
+
+	return NULL; 
+}
+#endif
+
+
+/**
+ * cong_dispspec_registry_get_appropriate_dispspec:
  * @registry:
  * @xml_doc:
  * @filename_extension:
@@ -315,7 +475,7 @@ run_coverage_selector_dialog (struct CongDispspecCoverage *coverage_array,
  * If this fails, it looks at the top-level tag and makes a guess, but asks the user for confirmation.
  * If this fails, it asks the user.
  * 
- * Returns:
+ * Returns: The appropriate dispspec for use with the file.
  */
 CongDispspec*
 cong_dispspec_registry_get_appropriate_dispspec (CongDispspecRegistry* registry, 

@@ -97,6 +97,15 @@ cong_editor_area_entity_ref_instance_init (CongEditorAreaEntityRef *area_entity_
 
 
 /* Exported function definitions: */
+/**
+ * cong_editor_area_entity_ref_construct:
+ * @area_entity_ref:
+ * @editor_widget:
+ * @text:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_entity_ref_construct (CongEditorAreaEntityRef *area_entity_ref,
 				       CongEditorWidget3 *editor_widget,
@@ -148,6 +157,14 @@ cong_editor_area_entity_ref_construct (CongEditorAreaEntityRef *area_entity_ref,
 	return CONG_EDITOR_AREA (area_entity_ref);
 }
 
+/**
+ * cong_editor_area_entity_ref_new:
+ * @editor_widget:
+ * @text:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_entity_ref_new (CongEditorWidget3 *editor_widget,
 				  const gchar *text)

@@ -51,7 +51,7 @@ struct CongSerialisationFormat
 
 struct CongExternalDocumentModel
 {
-	enum CongDocumentModelType model_type;
+	CongDocumentModelType model_type;
 	gchar *public_id;
 	gchar *system_id;
 };
@@ -65,9 +65,7 @@ struct CongDispspec
 	/* The CongDocumentModels: */
 	CongExternalDocumentModel *document_models[NUM_CONG_DOCUMENT_MODEL_TYPES];
 
-	/* Implementation is an "intrusive list" of CongDispspecElement structs */ 
-	CongDispspecElement* first;
-	CongDispspecElement* last;
+	GList *list_of_elements;
 
 	/* We have a search tree, indexed by SearchTreeKeys */
 	GTree *search_tree; 
@@ -179,7 +177,7 @@ cong_serialisation_format_new (const gchar *extension)
 }
 
 static CongExternalDocumentModel*
-cong_external_document_model_new (enum CongDocumentModelType model_type,
+cong_external_document_model_new (CongDocumentModelType model_type,
 				  const gchar *public_id,
 				  const gchar *system_id)
 {
@@ -209,7 +207,14 @@ make_model_from_dtd (xmlDtdPtr dtd)
 /* Exported functions: */
 
 /* Barebones constructor, used to implement other ones: */
-CongDispspec* cong_dispspec_new(void)
+/**
+ * cong_dispspec_new:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+CongDispspec* 
+cong_dispspec_new(void)
 {
 	CongDispspec *dispspec;
 	
@@ -223,7 +228,16 @@ CongDispspec* cong_dispspec_new(void)
 }
 
 /* Constructors that use the standard format: */
-GnomeVFSResult cong_dispspec_new_from_xds_file(GnomeVFSURI *uri, CongDispspec** ds)
+/**
+ * cong_dispspec_new_from_xds_file:
+ * @uri:
+ * @ds:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GnomeVFSResult 
+cong_dispspec_new_from_xds_file(GnomeVFSURI *uri, CongDispspec** ds)
 {
 	char* buffer;
 	GnomeVFSFileSize size;
@@ -245,7 +259,16 @@ GnomeVFSResult cong_dispspec_new_from_xds_file(GnomeVFSURI *uri, CongDispspec** 
 	return vfs_result;	
 }
 
-CongDispspec* cong_dispspec_new_from_xds_buffer(const char *buffer, size_t size)
+/**
+ * cong_dispspec_new_from_xds_buffer:
+ * @buffer:
+ * @size:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+CongDispspec* 
+cong_dispspec_new_from_xds_buffer(const char *buffer, size_t size)
 {
 	CongDispspec* ds;
 
@@ -265,9 +288,19 @@ CongDispspec* cong_dispspec_new_from_xds_buffer(const char *buffer, size_t size)
 
 
 /* Constructors that try to generate from another format: */
-CongDispspec* cong_dispspec_new_generate_from_dtd (xmlDtdPtr dtd, 
-						   const gchar *name, 
-						   const gchar *description)
+/**
+ * cong_dispspec_new_generate_from_dtd:
+ * @dtd:
+ * @name:
+ * @description:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+CongDispspec* 
+cong_dispspec_new_generate_from_dtd (xmlDtdPtr dtd, 
+				     const gchar *name, 
+				     const gchar *description)
 {
 	CongDispspec *ds;
 
@@ -291,6 +324,14 @@ CongDispspec* cong_dispspec_new_generate_from_dtd (xmlDtdPtr dtd,
 	return ds;
 }
 
+/**
+ * cong_dispspec_new_generate_from_xml_file:
+ * @doc:
+ * @extension:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDispspec *
 cong_dispspec_new_generate_from_xml_file (xmlDocPtr doc,
 					  const gchar *extension)
@@ -310,7 +351,14 @@ cong_dispspec_new_generate_from_xml_file (xmlDocPtr doc,
 	return dispspec;
 }
 
-void cong_dispspec_delete (CongDispspec *dispspec)
+/**
+ * cong_dispspec_delete:
+ * @dispspec:
+ *
+ * TODO: Write me
+ */
+void 
+cong_dispspec_delete (CongDispspec *dispspec)
 {
 	/* FIXME: is this causing heap corruption? */
 #if 0
@@ -341,7 +389,15 @@ void cong_dispspec_delete (CongDispspec *dispspec)
 #endif
 }
 
-xmlDocPtr cong_dispspec_make_xml(CongDispspec *dispspec)
+/**
+ * cong_dispspec_make_xml:
+ * @dispspec:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+xmlDocPtr 
+cong_dispspec_make_xml(CongDispspec *dispspec)
 {
 	xmlDocPtr xml_doc;
 	CongNodePtr root_node;
@@ -380,9 +436,10 @@ xmlDocPtr cong_dispspec_make_xml(CongDispspec *dispspec)
 
 		/* The elements: */
 		{
-			CongDispspecElement* element;
+			GList *iter;
+			for (iter = dispspec->list_of_elements; iter; iter=iter->next) {
+				CongDispspecElement *element = (CongDispspecElement *)iter->data;
 			
-			for (element = dispspec->first; element; element = cong_dispspec_element_next (element)) {
 				xmlNodePtr element_as_xml = cong_dispspec_element_to_xml (element,
 											  xml_doc);
 				g_assert (element_as_xml);
@@ -398,6 +455,13 @@ xmlDocPtr cong_dispspec_make_xml(CongDispspec *dispspec)
 }
 
 /* Data for the dispspec: */
+/**
+ * cong_dispspec_get_name:
+ * @ds:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_dispspec_get_name (const CongDispspec *ds)
 {
@@ -411,6 +475,13 @@ cong_dispspec_get_name (const CongDispspec *ds)
 
 }
 
+/**
+ * cong_dispspec_get_description:
+ * @ds:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_dispspec_get_description (const CongDispspec *ds)
 {
@@ -423,6 +494,13 @@ cong_dispspec_get_description (const CongDispspec *ds)
 	}
 }
 
+/**
+ * cong_dispspec_get_num_serialisation_formats:
+ * @ds:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 guint
 cong_dispspec_get_num_serialisation_formats (const CongDispspec *ds)
 {
@@ -431,6 +509,14 @@ cong_dispspec_get_num_serialisation_formats (const CongDispspec *ds)
 	return ds->num_serialisation_formats;
 }
 
+/**
+ * cong_dispspec_get_serialisation_format:
+ * @ds:
+ * @index:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const CongSerialisationFormat*
 cong_dispspec_get_serialisation_format (const CongDispspec *ds,
 					guint index)
@@ -443,6 +529,14 @@ cong_dispspec_get_serialisation_format (const CongDispspec *ds,
 }
 
 /* Returns NULL if it can't find a serialisation format with that extension */
+/**
+ * cong_dispspec_lookup_filename_extension:
+ * @ds:
+ * @extension:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const CongSerialisationFormat*
 cong_dispspec_lookup_filename_extension (const CongDispspec *ds,
 					 const gchar *extension)
@@ -463,6 +557,14 @@ cong_dispspec_lookup_filename_extension (const CongDispspec *ds,
 }
 
 /* Returns whether the dispspec uses that extension */
+/**
+ * cong_dispspec_matches_filename_extension:
+ * @ds:
+ * @extension:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_dispspec_matches_filename_extension (const CongDispspec *ds,
 					  const gchar *extension)
@@ -473,9 +575,17 @@ cong_dispspec_matches_filename_extension (const CongDispspec *ds,
 							       extension));
 }
 
+/**
+ * cong_dispspec_get_external_document_model:
+ * @ds:
+ * @model_type:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const CongExternalDocumentModel*
 cong_dispspec_get_external_document_model (const CongDispspec *ds,
-					   enum CongDocumentModelType model_type)
+					   CongDocumentModelType model_type)
 {
 	g_return_val_if_fail(ds, NULL);
 	g_return_val_if_fail(model_type<NUM_CONG_DOCUMENT_MODEL_TYPES, NULL);
@@ -483,6 +593,13 @@ cong_dispspec_get_external_document_model (const CongDispspec *ds,
 	return ds->document_models[model_type];
 }
 
+/**
+ * cong_dispspec_get_icon:
+ * @ds:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkPixbuf*
 cong_dispspec_get_icon(const CongDispspec *ds)
 {
@@ -495,6 +612,15 @@ cong_dispspec_get_icon(const CongDispspec *ds)
 }
 
 /* Getting at elements within a dispspec */
+/**
+ * cong_dispspec_lookup_element:
+ * @ds:
+ * @ns_uri:
+ * @local_name:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDispspecElement*
 cong_dispspec_lookup_element (const CongDispspec *ds, 
 			      const gchar* ns_uri, 
@@ -517,6 +643,14 @@ cong_dispspec_lookup_element (const CongDispspec *ds,
 	return element;
 }
 
+/**
+ * cong_dispspec_lookup_node:
+ * @ds:
+ * @node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDispspecElement*
 cong_dispspec_lookup_node(const CongDispspec *ds, CongNodePtr node)
 {
@@ -528,7 +662,15 @@ cong_dispspec_lookup_node(const CongDispspec *ds, CongNodePtr node)
 					     cong_node_get_local_name(node));
 }
 
-enum CongElementType
+/**
+ * cong_dispspec_type:
+ * @ds:
+ * @ns_uri:
+ * @local_name:
+ *
+ * TODO: Write me
+ */
+CongElementType
 cong_dispspec_type (CongDispspec *ds, 
 		    const gchar* ns_uri, 
 		    const gchar* local_name)
@@ -544,76 +686,132 @@ cong_dispspec_type (CongDispspec *ds,
 	return cong_dispspec_element_type(element);
 }
 
+/**
+ * cong_dispspec_get_first_element:
+ * @ds:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDispspecElement*
 cong_dispspec_get_first_element(CongDispspec *ds)
 {
 	g_return_val_if_fail(ds, NULL);
 
-	return ds->first;
+	if (ds->list_of_elements) {
+		return (CongDispspecElement*)(ds->list_of_elements->data);
+	} else {
+		return NULL;
+	}
 }
 
+/**
+ * cong_dispspec_for_each_element:
+ * @ds:
+ * @callback:
+ * @user_data:
+ *
+ * TODO: Write me
+ */
+void
+cong_dispspec_for_each_element (CongDispspec *ds, 
+				void
+				(*callback) (CongDispspec *ds,
+					     CongDispspecElement *ds_element,
+					     gpointer user_data),
+				gpointer user_data)
+{
+	GList *iter;
+	
+	g_return_if_fail (ds);
+	g_return_if_fail (callback);
+
+	for (iter=ds->list_of_elements; iter; iter=iter->next) {
+		(*callback) (ds,
+			     (CongDispspecElement*)iter->data,
+			     user_data);
+	}
+}
+
+
 /* Manipulating a dispspec: */
-void cong_dispspec_add_element (CongDispspec* ds, 
-				CongDispspecElement* element)
+/**
+ * cong_dispspec_add_element:
+ * @ds:
+ * @element:
+ *
+ * TODO: Write me
+ */
+void 
+cong_dispspec_add_element (CongDispspec* ds, 
+			   CongDispspecElement* element)
 {
 	struct SearchTreeKey *key;
 
 	g_return_if_fail(ds);
 	g_return_if_fail(element);
 
-	g_assert(element->next==NULL);
-	g_assert(element->local_name);
-
-	if (ds->first) {
-		g_assert(ds->last);
-		ds->last->next = element;
-	} else {
-		ds->first = element;
-	}
-
-	ds->last = element;
+	ds->list_of_elements = g_list_append (ds->list_of_elements,
+					      element);
 
 	key = g_new0(struct SearchTreeKey, 1);
-	if (element->ns_uri) {
-		key->ns_uri = g_strdup (element->ns_uri);
+	if (cong_dispspec_element_get_ns_uri (element)) {
+		key->ns_uri = g_strdup (cong_dispspec_element_get_ns_uri (element));
 	}
-	key->local_name = element->local_name;
+	g_assert (cong_dispspec_element_get_local_name (element));
+	key->local_name = g_strdup (cong_dispspec_element_get_local_name (element));
+	/* FIXME: does this leak? */
 
 	g_tree_insert(ds->search_tree, key, element);
 }
 
+/**
+ * cong_dispspec_get_num_elements:
+ * @ds:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 guint
 cong_dispspec_get_num_elements (CongDispspec *ds)
 {
 	guint count;
-	CongDispspecElement *ds_iter;
+	GList *iter;
 
 	g_return_val_if_fail (ds, 0);
 
 	/* o(n): */
 
 	count = 0;
-	for (ds_iter = ds->first; ds_iter; ds_iter=ds_iter->next) {
+	for (iter = ds->list_of_elements; iter; iter=iter->next) {
 		count++;
 	}
 	return count;	
 }
 
+/**
+ * cong_dispspec_get_element:
+ * @ds:
+ * @index:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDispspecElement*
 cong_dispspec_get_element (CongDispspec *ds,
 			   guint index)
 {
 	guint count;
-	CongDispspecElement *ds_iter;
+	GList *iter;
 
 	g_return_val_if_fail (ds, NULL);
 
 	/* o(n): */
 
 	count = 0;
-	for (ds_iter = ds->first; ds_iter; ds_iter=ds_iter->next) {
+	for (iter = ds->list_of_elements; iter; iter=iter->next) {
 		if (count==index) {
-			return ds_iter;
+			return (CongDispspecElement*)iter->data;
 		}
 
 		count++;
@@ -624,7 +822,7 @@ cong_dispspec_get_element (CongDispspec *ds,
 /* Various functions that may get deprecated at some point: */
 #if NEW_LOOK
 #if 0
-GdkGC *cong_dispspec_gc_get(CongDispspec *ds, CongNodePtr x, enum CongDispspecGCUsage usage)
+GdkGC *cong_dispspec_gc_get(CongDispspec *ds, CongNodePtr x, CongDispspecGCUsage usage)
 {
 	CongDispspecElement* element = cong_dispspec_lookup_element(ds, );
 
@@ -636,7 +834,17 @@ GdkGC *cong_dispspec_gc_get(CongDispspec *ds, CongNodePtr x, enum CongDispspecGC
 }
 #endif
 #else
-GdkGC *cong_dispspec_name_gc_get(CongDispspec *ds, CongNodePtr t, int tog)
+/**
+ * cong_dispspec_name_gc_get:
+ * @ds:
+ * @t:
+ * @tog:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GdkGC *
+cong_dispspec_name_gc_get(CongDispspec *ds, CongNodePtr t, int tog)
 {
 	CongDispspecElement* element = cong_dispspec_lookup_element(ds, cong_node_name(t));
 
@@ -647,8 +855,8 @@ GdkGC *cong_dispspec_name_gc_get(CongDispspec *ds, CongNodePtr t, int tog)
 	}
 }
 
-
-GdkGC *cong_dispspec_gc_get(CongDispspec *ds, CongNodePtr x, int tog)
+GdkGC *
+cong_dispspec_gc_get(CongDispspec *ds, CongNodePtr x, int tog)
 {
 	CongDispspecElement* element = cong_dispspec_lookup_element(ds, xml_frag_name_nice(x));
 
@@ -660,6 +868,14 @@ GdkGC *cong_dispspec_gc_get(CongDispspec *ds, CongNodePtr x, int tog)
 }
 #endif
 
+/**
+ * cong_dispspec_name_get:
+ * @ds:
+ * @node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_dispspec_name_get (CongDispspec *ds, 
 			CongNodePtr node)
@@ -691,12 +907,21 @@ char *cong_dispspec_name_name_get(CongDispspec *ds, TTREE *t)
 #endif
 
 #if 1
+/**
+ * cong_dispspec_element_structural:
+ * @ds:
+ * @ns_uri:
+ * @local_name:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean 
 cong_dispspec_element_structural (CongDispspec *ds, 
 				  const gchar *ns_uri, 
-				  const char *name)
+				  const char *local_name)
 {
-	CongDispspecElement* element = cong_dispspec_lookup_element (ds, ns_uri, name);
+	CongDispspecElement* element = cong_dispspec_lookup_element (ds, ns_uri, local_name);
 
 	if (NULL==element) {
 		return FALSE;
@@ -705,13 +930,21 @@ cong_dispspec_element_structural (CongDispspec *ds,
 	return (CONG_ELEMENT_TYPE_STRUCTURAL == cong_dispspec_element_type(element));
 }
 
-
+/**
+ * cong_dispspec_element_collapse:
+ * @ds:
+ * @ns_uri:
+ * @local_name:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean 
 cong_dispspec_element_collapse (CongDispspec *ds, 
 				const gchar *ns_uri, 
-				const char *name)
+				const char *local_name)
 {
-	CongDispspecElement* element = cong_dispspec_lookup_element (ds, ns_uri, name);
+	CongDispspecElement* element = cong_dispspec_lookup_element (ds, ns_uri, local_name);
 
 	if (NULL==element) {
 		return FALSE;
@@ -720,13 +953,21 @@ cong_dispspec_element_collapse (CongDispspec *ds,
 	return cong_dispspec_element_collapseto(element);
 }
 
-
+/**
+ * cong_dispspec_element_span:
+ * @ds:
+ * @ns_uri:
+ * @local_name:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_dispspec_element_span (CongDispspec *ds, 
 			    const gchar *ns_uri, 
-			    const char *name)
+			    const char *local_name)
 {
-	CongDispspecElement* element = cong_dispspec_lookup_element (ds, ns_uri, name);
+	CongDispspecElement* element = cong_dispspec_lookup_element (ds, ns_uri, local_name);
 
 	if (NULL==element) {
 		return FALSE;
@@ -735,13 +976,21 @@ cong_dispspec_element_span (CongDispspec *ds,
 	return (CONG_ELEMENT_TYPE_SPAN == cong_dispspec_element_type(element));
 }
 
-
+/**
+ * cong_dispspec_element_insert:
+ * @ds:
+ * @ns_uri:
+ * @local_name:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean 
 cong_dispspec_element_insert (CongDispspec *ds, 
 			      const gchar *ns_uri, 
-			      const char *name)
+			      const char *local_name)
 {
-	CongDispspecElement* element = cong_dispspec_lookup_element(ds, ns_uri, name);
+	CongDispspecElement* element = cong_dispspec_lookup_element(ds, ns_uri, local_name);
 
 	if (NULL==element) {
 		return FALSE;
@@ -967,7 +1216,7 @@ parse_external_document_model (CongDispspec *ds,
 	type = cong_node_get_attribute (node, NULL, "type");
 
 	if (type) {
-		enum CongDocumentModelType model_type = cong_enum_mapping_lookup (document_model_enum_mapping,
+		CongDocumentModelType model_type = cong_enum_mapping_lookup (document_model_enum_mapping,
 										  sizeof(document_model_enum_mapping)/sizeof(CongEnumMapping),
 										  "type",
 										  CONG_DOCUMENT_MODE_TYPE_DTD);
@@ -1001,13 +1250,28 @@ parse_template(CongDispspec *ds, xmlNodePtr node)
 	}
 }
 	
-void col_to_gcol(GdkColor *gcol, unsigned int col)
+/**
+ * col_to_gcol:
+ * @gcol:
+ * @col:
+ *
+ * TODO: Write me
+ */
+void 
+col_to_gcol(GdkColor *gcol, unsigned int col)
 {
   gcol->blue = (col << 8) & 0xff00;
   gcol->green = (col & 0xff00);
   gcol->red = (col >> 8) & 0xff00;
 }
 
+/**
+ * cong_external_document_model_get_public_id:
+ * @model:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_external_document_model_get_public_id (const CongExternalDocumentModel* model)
 {
@@ -1016,6 +1280,13 @@ cong_external_document_model_get_public_id (const CongExternalDocumentModel* mod
 	return model->public_id;
 }
 
+/**
+ * cong_external_document_model_get_system_id:
+ * @model:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_external_document_model_get_system_id (const CongExternalDocumentModel* model)
 {
@@ -1101,7 +1372,7 @@ add_xml_for_document_models (xmlDocPtr xml_doc,
 		     node_document_models);
 	
 	for (i=0; i<NUM_CONG_DOCUMENT_MODEL_TYPES; i++) {
-		enum CongDocumentModelType model_type = (enum CongDocumentModelType)i;
+		CongDocumentModelType model_type = (CongDocumentModelType)i;
 
 		const CongExternalDocumentModel* model = cong_dispspec_get_external_document_model (dispspec,
 												    model_type);
@@ -1348,7 +1619,13 @@ load_dtd (xmlDocPtr doc)
 	return NULL;
 }
 
-
+/**
+ * cong_dispspec_get_template:
+ * @ds:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 xmlNodePtr
 cong_dispspec_get_template(const CongDispspec *ds)
 {
@@ -1386,6 +1663,14 @@ calc_coverage_recursive (const CongDispspec *ds,
 	}
 }
 
+/**
+ * cong_dispspec_calculate_coverage:
+ * @ds:
+ * @xml_doc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gdouble
 cong_dispspec_calculate_coverage (const CongDispspec *ds,
 				  xmlDocPtr xml_doc)

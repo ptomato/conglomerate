@@ -32,7 +32,7 @@
 
 struct CongEditorAreaUnderlineDetails
 {
-	enum CongEditorAreaUnderlineStyle style;
+	CongEditorAreaUnderlineStyle style;
 	
 	GdkGC *gc;
 };
@@ -69,10 +69,19 @@ cong_editor_area_underline_instance_init (CongEditorAreaUnderline *area_underlin
 }
 
 /* Exported function definitions: */
+/**
+ * cong_editor_area_underline_construct:
+ * @area_underline:
+ * @editor_widget:
+ * @style:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_underline_construct (CongEditorAreaUnderline *area_underline,
 				      CongEditorWidget3 *editor_widget,
-				      enum CongEditorAreaUnderlineStyle style)
+				      CongEditorAreaUnderlineStyle style)
 {
 	g_return_val_if_fail (area_underline, NULL);
 
@@ -85,9 +94,17 @@ cong_editor_area_underline_construct (CongEditorAreaUnderline *area_underline,
 	return CONG_EDITOR_AREA (area_underline);
 }
 
+/**
+ * cong_editor_area_underline_new:
+ * @editor_widget:
+ * @style:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_underline_new (CongEditorWidget3 *editor_widget,
-				enum CongEditorAreaUnderlineStyle style)
+				CongEditorAreaUnderlineStyle style)
 {
 	return cong_editor_area_underline_construct
 		(g_object_new (CONG_EDITOR_AREA_UNDERLINE_TYPE, NULL),

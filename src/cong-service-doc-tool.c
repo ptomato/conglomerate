@@ -33,6 +33,22 @@ struct CongServiceDocToolPrivate
 
 CONG_DEFINE_CLASS (CongServiceDocTool, cong_service_doc_tool, CONG_SERVICE_DOC_TOOL, CongServiceTool, CONG_SERVICE_TOOL_TYPE)
 
+/**
+ * cong_service_doc_tool_construct:
+ * @tool:
+ * @name:
+ * @description:
+ * @service_id:
+ * @menu_text:
+ * @tooltip_text:
+ * @tooltip_further_text:
+ * @doc_filter:
+ * @action_callback:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongServiceDocTool*
 cong_service_doc_tool_construct (CongServiceDocTool *tool,
 				 const gchar *name, 
@@ -65,6 +81,14 @@ cong_service_doc_tool_construct (CongServiceDocTool *tool,
 
 }
 
+/**
+ * cong_doc_tool_supports_document:
+ * @doc_tool:
+ * @doc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean 
 cong_doc_tool_supports_document (CongServiceDocTool *tool, 
 				 CongDocument *doc)
@@ -79,6 +103,13 @@ cong_doc_tool_supports_document (CongServiceDocTool *tool,
 					   cong_service_tool_get_user_data (CONG_SERVICE_TOOL (tool)));
 }
 
+/**
+ * cong_doc_tool_invoke:
+ * @doc_tool:
+ * @primary_window:
+ *
+ * TODO: Write me
+ */
 void 
 cong_doc_tool_invoke (CongServiceDocTool *tool, 
 		      CongPrimaryWindow *primary_window)

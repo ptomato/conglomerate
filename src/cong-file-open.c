@@ -23,7 +23,14 @@ struct force_dialog
 	const gchar *filename_extension;
 };
 
-void force_load(gpointer data)
+/**
+ * force_load:
+ * @data:
+ *
+ * TODO: Write me
+ */
+void 
+force_load(gpointer data)
 {
 	struct force_dialog *the_dlg = (struct force_dialog*)data;
 
@@ -37,6 +44,16 @@ void force_load(gpointer data)
 	g_assert(the_dlg->ds);
 }
 
+/**
+ * query_for_forced_dispspec:
+ * @what_failed:
+ * @doc:
+ * @parent_window:
+ * @filename_extension:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDispspec* 
 query_for_forced_dispspec (gchar *what_failed, 
 			   xmlDocPtr doc, 
@@ -55,6 +72,8 @@ query_for_forced_dispspec (gchar *what_failed,
 							_("The internal structure of the document does not match any of the types known to Conglomerate."), 
 							_("You can force Conglomerate to load the document by clicking on the \"Force\" button below, but results may not be ideal."),
 							_("Force"),
+							GTK_STOCK_CANCEL,
+							TRUE,
 							force_load,
 							&the_dlg);
 	
@@ -70,6 +89,13 @@ query_for_forced_dispspec (gchar *what_failed,
 	}
 }
 
+/**
+ * get_filename_extension:
+ * @uri:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gchar*
 get_filename_extension (const GnomeVFSURI *uri)
 {
@@ -92,6 +118,13 @@ get_filename_extension (const GnomeVFSURI *uri)
 	return result;
 }
 
+/**
+ * open_document_do:
+ * @doc_name:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
 void 
 open_document_do (const gchar* doc_name, 
 		  GtkWindow *parent_window)
@@ -116,6 +149,9 @@ open_document_do (const gchar* doc_name,
 		ds = cong_dispspec_registry_get_appropriate_dispspec (cong_app_get_dispspec_registry (cong_app_singleton()), 
 								      doc,
 								      filename_extension);
+
+		/* Disable this for now: we'll make it valid to have a NULL dispspec in this case for now: */
+		#if 0
 		if (ds==NULL) {
 			gchar *what_failed;
 
@@ -138,6 +174,7 @@ open_document_do (const gchar* doc_name,
 				return;
 			}
 		}
+		#endif
 
 		gnome_vfs_uri_unref(file_uri);
 
@@ -146,7 +183,6 @@ open_document_do (const gchar* doc_name,
 		}		
 	}
 
-	g_assert(ds);
 	cong_doc = cong_document_new_from_xmldoc(doc, ds, doc_name); /* takes ownership of doc */
 
 	cong_node_self_test_recursive(cong_document_get_root(cong_doc));
@@ -158,9 +194,14 @@ open_document_do (const gchar* doc_name,
 
 }
 
-
-
-void open_document(GtkWindow *parent_window)
+/**
+ * open_document:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
+void 
+open_document(GtkWindow *parent_window)
 {
 	char *doc_name;
 
@@ -169,8 +210,8 @@ void open_document(GtkWindow *parent_window)
 	doc_name = cong_get_file_name(_("Select an XML document"),
 				      NULL,
 				      parent_window,
-				      CONG_FILE_CHOOSER_ACTION_OPEN);
-
+				      CONG_FILE_CHOOSER_ACTION_OPEN,
+				      cong_file_selection_make_xml_filter_list());
 	if (!doc_name) {
 		return;
 	}
@@ -180,7 +221,16 @@ void open_document(GtkWindow *parent_window)
 	g_free(doc_name);
 }
 
-gint toolbar_callback_open(GtkWidget *widget, gpointer data)
+/**
+ * toolbar_callback_open:
+ * @widget:
+ * @data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gint 
+toolbar_callback_open(GtkWidget *widget, gpointer data)
 {
 	CongPrimaryWindow *primary_window = data;
 

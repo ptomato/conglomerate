@@ -33,8 +33,8 @@
 #include "cong-document.h"
 #include "cong-dispspec.h"
 #include "cong-command.h"
-#include "cong-error-dialog.h"
 #include "cong-util.h"
+#include "cong-glade.h"
 
 typedef struct CongFilePropertiesDialogDetails CongFilePropertiesDialogDetails;
 
@@ -143,6 +143,8 @@ refresh_dtd_stuff (CongFilePropertiesDialogDetails *dialog_details,
 	GtkButton *button_dtd;
 	GtkLabel *label_dtd_notes;
 
+	gchar * text;
+
 	g_assert (dialog_details);
 	g_assert (dialog_details->xml);
 	g_assert (IS_CONG_DOCUMENT (doc));
@@ -170,10 +172,12 @@ refresh_dtd_stuff (CongFilePropertiesDialogDetails *dialog_details,
 				     "");
 	
 	} else {
-		const CongExternalDocumentModel* model_dtd;
-		
-		model_dtd = cong_dispspec_get_external_document_model (ds,
-								       CONG_DOCUMENT_MODE_TYPE_DTD);
+		const CongExternalDocumentModel* model_dtd = NULL;
+
+		if (ds) {		
+			model_dtd = cong_dispspec_get_external_document_model (ds,
+									       CONG_DOCUMENT_MODE_TYPE_DTD);
+		}
 		
 		if (model_dtd) {
 			gtk_button_set_label (button_dtd,
@@ -182,10 +186,11 @@ refresh_dtd_stuff (CongFilePropertiesDialogDetails *dialog_details,
 				      cong_external_document_model_get_public_id (model_dtd),
 				      cong_external_document_model_get_system_id (model_dtd));
 
-			gtk_label_set_markup ( label_dtd_notes,
-					       _("<small>The document does not specify an external DTD, but Conglomerate believes the above information is appropriate.  Click on \"Associate this DTD\" to specify this information explicitly in the document.</small>"));
-			
-			
+			text = g_strdup_printf("<small>%s</small>",
+					       _("The document does not specify an external DTD, but Conglomerate believes the above information is appropriate.  Click on \"Associate this DTD\" to specify this information explicitly in the document."));
+					       
+			gtk_label_set_markup ( label_dtd_notes, text );
+			g_free(text);
 		} else {
 			set_dtd_info (dialog_details->xml,
 				      "",
@@ -198,6 +203,14 @@ refresh_dtd_stuff (CongFilePropertiesDialogDetails *dialog_details,
 	}	
 }
 
+/**
+ * cong_file_properties_dialog_new:
+ * @doc:
+ * @parent_window:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GtkWidget*
 cong_file_properties_dialog_new (CongDocument *doc, 
 				 GtkWindow *parent_window)
@@ -230,7 +243,7 @@ cong_file_properties_dialog_new (CongDocument *doc,
 	dialog_details->doc = doc; 
 	g_object_ref (G_OBJECT (doc));
 
-	dialog_details->xml = cong_util_load_glade_file ("glade/cong-file-properties.glade",
+	dialog_details->xml = cong_util_load_glade_file ("conglomerate/glade/cong-file-properties.glade",
 							 NULL,
 							 doc,
 							 NULL);		
@@ -257,9 +270,9 @@ cong_file_properties_dialog_new (CongDocument *doc,
 	/* Fields from dispspec: */
 	{
 		gtk_label_set_text ( GTK_LABEL (glade_xml_get_widget (dialog_details->xml,"label_typename")),
-				     cong_dispspec_get_name (ds));
+				     ds ? cong_dispspec_get_name (ds) : _("Unknown"));
 		gtk_label_set_text ( GTK_LABEL (glade_xml_get_widget (dialog_details->xml,"label_typedesc")),
-				     cong_dispspec_get_description (ds));
+				     ds ? cong_dispspec_get_description (ds) : _("Unknown"));
 	}
 	
 	/* XML Header: */
@@ -373,7 +386,8 @@ on_dtd_button_clicked (GtkButton *button,
 			
 		} else {
 			/* Then button is "Add a DTD": */
-			CONG_DO_UNIMPLEMENTED_DIALOG (NULL, "Adding a DTD");
+			cong_util_run_add_dtd_dialog (doc,
+						      GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET(button))));
 		}
 	}
 }

@@ -75,6 +75,16 @@ cong_node_modification_add_before_instance_init (CongNodeModificationAddBefore *
 	node->private = g_new0(CongNodeModificationAddBeforeDetails,1);
 }
 
+/**
+ * cong_node_modification_add_before_construct:
+ * @node_modification_add_before:
+ * @doc:
+ * @node:
+ * @younger_sibling:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongNodeModificationAddBefore*
 cong_node_modification_add_before_construct (CongNodeModificationAddBefore *node_modification_add_before,
 					     CongDocument *doc,
@@ -105,6 +115,15 @@ cong_node_modification_add_before_construct (CongNodeModificationAddBefore *node
 	return node_modification_add_before;
 }
 
+/**
+ * cong_node_modification_add_before_new:
+ * @doc:
+ * @node:
+ * @younger_sibling:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongModification*
 cong_node_modification_add_before_new (CongDocument *doc,
 				      CongNodePtr node,
@@ -191,7 +210,8 @@ undo (CongModification *modification)
 		} else {
 			cong_document_private_node_set_parent (doc, 
 							       node, 
-							       PRIVATE(node_modification_add_before)->former_parent);
+							       PRIVATE(node_modification_add_before)->former_parent,
+							       TRUE);
 		}
 	} else {
 		cong_document_private_node_make_orphan (doc, 
@@ -223,7 +243,8 @@ redo (CongModification *modification)
 	} else {
 		cong_document_private_node_set_parent (doc, 
 						       node, 
-						       PRIVATE(node_modification_add_before)->new_parent);
+						       PRIVATE(node_modification_add_before)->new_parent,
+						       TRUE);
 	}
 
 	cong_document_end_edit (doc);

@@ -44,13 +44,21 @@ static gchar*
 clean_text(const gchar* txt);
 
 const gchar*
-cong_ui_get_colour_string(enum CongNodeType type);
+cong_ui_get_colour_string(CongNodeType type);
 
 static gchar*
 get_text_for_node(CongNodePtr node);
 
 /* Exported function implementations: */
-GtkWidget *cong_dom_view_new (CongDocument *doc)
+/**
+ * cong_dom_view_new:
+ * @doc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GtkWidget *
+cong_dom_view_new (CongDocument *doc)
 {
 	CongTreeView *cong_tree_view;
 	GtkScrolledWindow *scrolled_window;
@@ -135,8 +143,15 @@ clean_text(const gchar* txt)
 	return result;
 }
 
+/**
+ * cong_ui_get_colour_string:
+ * @type:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
-cong_ui_get_colour_string(enum CongNodeType type)
+cong_ui_get_colour_string(CongNodeType type)
 {
 	/* FIXME: this should be linked to the theme and/or the GtkSourceView settings */
 
@@ -190,7 +205,7 @@ cong_ui_get_colour_string(enum CongNodeType type)
 static gchar*
 get_text_for_node(CongNodePtr node)
 {
-	enum CongNodeType node_type;
+	CongNodeType node_type;
 	const gchar *colour_string;
 	const gchar *string_colour_string;
 	gchar *text = NULL;
@@ -231,7 +246,8 @@ get_text_for_node(CongNodePtr node)
 		break;		
 	case CONG_NODE_TYPE_TEXT:
 		cleaned_text = clean_text(node->content);
-		text = g_strdup_printf(_("Text: \"<span foreground=\"%s\">%s</span>\""), colour_string, cleaned_text);
+		text = g_strdup_printf("%s \"<span foreground=\"%s\">%s</span>\"", 
+				       _("Text:"), colour_string, cleaned_text);
 		g_free(cleaned_text);
 		break;
 	case CONG_NODE_TYPE_CDATA_SECTION:
@@ -248,7 +264,7 @@ get_text_for_node(CongNodePtr node)
 		break;
 	case CONG_NODE_TYPE_COMMENT:
 		cleaned_text = clean_text(node->content);
-		text = g_strdup_printf(_("<span foreground=\"%s\">&lt;!-- %s --&gt;</span>"), colour_string, cleaned_text);
+		text = g_strdup_printf("<span foreground=\"%s\">&lt;!-- %s --&gt;</span>", colour_string, cleaned_text);
 		g_free(cleaned_text);
 		break;
 	case CONG_NODE_TYPE_DOCUMENT:
@@ -315,4 +331,3 @@ get_text_for_node(CongNodePtr node)
 	return (text);
 	
 }
-

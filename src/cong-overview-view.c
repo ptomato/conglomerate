@@ -65,6 +65,13 @@ struct CongOverviewDetails
 };
 
 /* Exported function implementations: */
+/**
+ * cong_overview_view_new:
+ * @doc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongTreeView*
 cong_overview_view_new (CongDocument *doc)
 {
@@ -100,7 +107,7 @@ node_filter (CongTreeView *cong_tree_view,
 	     CongNodePtr node,
 	     gpointer user_data)
 {
-	enum CongNodeType node_type;
+	CongNodeType node_type;
 
 	g_return_val_if_fail(cong_tree_view, FALSE);
 	g_return_val_if_fail(node, FALSE);
@@ -174,7 +181,7 @@ node_creation_callback (CongTreeView *cong_tree_view,
 			gpointer user_data)
 {
 	GtkTreeStore *gtk_tree_store;
-	enum CongNodeType node_type;
+	CongNodeType node_type;
 	CongDocument *doc;
 	CongDispspec *ds;
 
@@ -271,11 +278,20 @@ node_creation_callback (CongTreeView *cong_tree_view,
 	}
 }
 
+/**
+ * pixbuf_callback:
+ * @cong_tree_view:
+ * @node:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkPixbuf* pixbuf_callback (CongTreeView *cong_tree_view,
 			    CongNodePtr node,
 			    gpointer user_data)
 {
-	enum CongNodeType node_type;
+	CongNodeType node_type;
 
 	g_return_val_if_fail (cong_tree_view, NULL);
 	g_return_val_if_fail (node, NULL);

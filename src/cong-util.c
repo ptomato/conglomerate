@@ -28,6 +28,18 @@
 #include "cong-app.h"
 #include "cong-document.h"
 #include "cong-text-cache.h"
+#include "cong-glade.h"
+
+#include "cong-dispspec.h"
+#include "cong-dispspec-element.h"
+
+#include "cong-error-dialog.h"
+
+#include "cong-ui-hooks.h"
+
+#include "cong-file-selection.h"
+
+#include "cong-command.h"
 
 #include "cong-dispspec.h"
 #include "cong-dispspec-element.h"
@@ -46,43 +58,13 @@
 #endif
 #endif
 
-#include "cong-attribute-editor.h"
-
-GladeXML*
-cong_util_load_glade_file (const gchar *filename,
-			   const gchar *root,
-			   CongDocument *doc,
-			   CongNodePtr node)
-{
-	gchar* glade_filename;
-	GladeXML *xml;
-		
-	g_return_val_if_fail (filename, NULL);
-	if (doc || node) {
-		g_return_val_if_fail (IS_CONG_DOCUMENT (doc), NULL);
-	}
-
-	glade_filename = gnome_program_locate_file (cong_app_get_gnome_program (cong_app_singleton()),
-						    GNOME_FILE_DOMAIN_APP_DATADIR,
-						    filename,
-						    FALSE,
-						    NULL);
-	global_glade_doc_ptr = doc;
-	global_glade_node_ptr = node;
-	
-	xml = glade_xml_new (glade_filename, 
-			     root, 
-			     NULL);
-	glade_xml_signal_autoconnect(xml);
-	
-	global_glade_doc_ptr = NULL;
-	global_glade_node_ptr = NULL;
-	
-	g_free(glade_filename);
-
-	return xml;
-}
-
+/**
+ * cong_util_is_docbook:
+ * @doc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean 
 cong_util_is_docbook (CongDocument *doc) 
 {
@@ -110,6 +92,13 @@ cong_util_is_docbook (CongDocument *doc)
 	return FALSE;
 }
 
+/**
+ * cong_util_is_pure_whitespace:
+ * @utf8_text:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean 
 cong_util_is_pure_whitespace (const gchar *utf8_text)
 {
@@ -128,6 +117,14 @@ cong_util_is_pure_whitespace (const gchar *utf8_text)
 	return TRUE;
 }
 
+/**
+ * cong_util_cleanup_text:
+ * @text:  input UTF8 text
+ *
+ * Handy function for taking UTF8 text and turning it into something you can see in a log: tabs and carriage returns etc are turned into visible characters.
+ *
+ * Returns: a freshly-allocated string, with all tabs and carriage returns turned into their printf equivalents
+ */
 gchar* 
 cong_util_cleanup_text (const xmlChar *src_text) 
 {
@@ -172,6 +169,16 @@ cong_util_cleanup_text (const xmlChar *src_text)
 #endif
 }
 
+/**
+ * cong_util_text_header
+ * @text:  input UTF8 text
+ * @truncation_length:
+ *
+ * Handy function for taking UTF8 text and turning it into something you can use in short user-visible message: tabs and carriage returns etc are turned into spaces,
+ * and it is truncated with an ellipsis if above a certain length.
+ *
+ * Returns: a freshly-allocated string, cleaned up as described above
+ */
 gchar* 
 cong_util_text_header (const xmlChar *text,
 		       guint truncation_length)
@@ -201,7 +208,13 @@ cong_util_text_header (const xmlChar *text,
 	return result;
 }
 
-
+/**
+ * cong_utils_get_norman_walsh_stylesheet_path:
+ *
+ *  Try to locate Norman Walsh's stylesheets for DocBook using the local catalog to find them.
+ *
+ * Returns:  a string containing the path (which the caller must delete), or NULL
+ */
 gchar*
 cong_utils_get_norman_walsh_stylesheet_path(void)
 {
@@ -215,6 +228,13 @@ cong_utils_get_norman_walsh_stylesheet_path(void)
        return resolved_path;
 }
 
+/**
+ * cong_utils_get_norman_walsh_stylesheet:
+ * @stylesheet_relative_path:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gchar*
 cong_utils_get_norman_walsh_stylesheet(const gchar *stylesheet_relative_path)
 {
@@ -232,6 +252,13 @@ cong_utils_get_norman_walsh_stylesheet(const gchar *stylesheet_relative_path)
 	return result;
 }
 
+/**
+ * cong_util_load_icon:
+ * @icon_basename:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkPixbuf*
 cong_util_load_icon (const gchar *icon_basename)
 {
@@ -241,7 +268,7 @@ cong_util_load_icon (const gchar *icon_basename)
 
 	g_return_val_if_fail(icon_basename, NULL);
 
-	filename = g_strdup_printf("%s-16.png", icon_basename);
+	filename = g_strdup_printf("conglomerate/%s-16.png", icon_basename);
 	full_path = gnome_program_locate_file (cong_app_get_gnome_program (cong_app_singleton()),
 					       GNOME_FILE_DOMAIN_APP_PIXMAP,
 					       filename,
@@ -255,6 +282,13 @@ cong_util_load_icon (const gchar *icon_basename)
 	return pixbuf;
 }
 
+/**
+ * cong_util_append:
+ * @string:
+ * @to_add:
+ *
+ * TODO: Write me
+ */
 void 
 cong_util_append (gchar **string, 
 		  const gchar *to_add)
@@ -271,6 +305,13 @@ cong_util_append (gchar **string,
 	*string = new_string;
 }
 
+/**
+ * cong_util_prepend:
+ * @string:
+ * @to_add:
+ *
+ * TODO: Write me
+ */
 void 
 cong_util_prepend (gchar **string, 
 		  const gchar *to_add)
@@ -288,6 +329,14 @@ cong_util_prepend (gchar **string,
 }
 
 #if (ENABLE_PRINTING && ENABLED_LIBFO)
+/**
+ * cong_util_print_xslfo:
+ * @toplevel_window:
+ * @gpc:
+ * @xml_doc:
+ *
+ * TODO: Write me
+ */
 void 
 cong_util_print_xslfo (GtkWindow *toplevel_window, 
 		       GnomePrintContext *gpc,
@@ -379,8 +428,16 @@ cong_util_print_xslfo (GtkWindow *toplevel_window,
 #endif
 
 /**
-   Make DTD declaration, and assigns it to the given document.  Doesn't add it to doc tree.
- */
+ * cong_util_make_dtd:
+ * @xml_doc:
+ * @root_element:
+ * @ExternalID:
+ * @SystemID:
+ *
+ * Make DTD declaration, and assigns it to the given document.  Doesn't add it to doc tree
+ *
+ * Returns: the #xmlDtdPtr that was assigned
+ */ 
 xmlDtdPtr
 cong_util_make_dtd (xmlDocPtr xml_doc,
 		    const xmlChar *root_element,
@@ -432,6 +489,18 @@ cong_util_make_dtd (xmlDocPtr xml_doc,
 /**
    Make DTD declaration, assigns it to the given document, and add it to the tree.
 */
+/**
+ * cong_util_add_external_dtd:
+ * @xml_doc:
+ * @root_element:
+ * @ExternalID:
+ * @SystemID:
+ *
+ * Make DTD declaration, assigns it to the given document, and add it to the tree.
+ * Call cong_document_set_external_dtd() instead if you want notifications to work.
+ *
+ * Returns: the #xmlDtdPtr that was assigned
+ */
 xmlDtdPtr 
 cong_util_add_external_dtd (xmlDocPtr xml_doc, 
 			    const xmlChar *root_element,
@@ -478,6 +547,16 @@ static void blend_col(GdkColor *dst, const GdkColor *src0, const GdkColor *src1,
 static GdkColor white = {0, 0xffff, 0xffff, 0xffff};
 
 /* Dodgy hack to do lines that blend to white: */
+/**
+ * cong_util_draw_blended_line:
+ * @w:
+ * @col:
+ * @x0:
+ * @y0:
+ * @x1:
+ *
+ * TODO: Write me
+ */
 void 
 cong_util_draw_blended_line (GtkWidget *w,
 			     const GdkColor *col,
@@ -508,6 +587,17 @@ cong_util_draw_blended_line (GtkWidget *w,
 	gdk_gc_unref(gc);
 }
 
+/**
+ * cong_util_get_int_from_rgb_hex:
+ * @string:
+ * 
+ * Parse a string containing an HTML-style hexadecimal representation of an RGB triplet
+ * into a 32 bit RGB triplet.
+ *
+ * FIXME: it's fundamentally broken to be using ints for this; should use a struct
+ *
+ * Returns: RGB triplet packed into a 32-bit value
+ */
 unsigned int
 cong_util_get_int_from_rgb_hex (const gchar *string)
 {
@@ -529,7 +619,16 @@ cong_util_get_int_from_rgb_hex (const gchar *string)
 	return(col);
 }
 
-
+/**
+ * cong_util_ns_equality
+ * @xml_ns1: A namespace. Can be NULL.
+ * @xml_ns2: Another namespace. Can be NULL.
+ *
+ * Compares the namespace URIs of both namespaces. 
+ * The prefixes are not checked. If both are NULL
+ * they are also equal.
+ * Returns:
+ */
 gboolean
 cong_util_ns_equality (const xmlNs *xml_ns1,
 		       const xmlNs *xml_ns2)
@@ -544,6 +643,19 @@ cong_util_ns_equality (const xmlNs *xml_ns1,
 					  xml_ns2->href);
 }
 
+/**
+ * cong_util_ns_uri_equality:
+ * @uri0:
+ * @uri1:
+ * 
+ * Compare two namespace URIs, either or both of which can be NULL.
+ *
+ * Currently the comparison is an exact string comparison, which might be too strict,
+ * see p118 of "Effective XML" for a discussion of ambiguities in the spec.
+ *
+ * Returns: TRUE if they are the same URI (or both NULL), FALSE otherwise
+ *
+ */
 gboolean
 cong_util_ns_uri_equality (const gchar* uri0, 
 			   const gchar* uri1)
@@ -553,6 +665,19 @@ cong_util_ns_uri_equality (const gchar* uri0,
 
 }
 
+/**
+ * cong_util_ns_uri_sort_order:
+ * @uri0:
+ * @uri1:
+ * 
+ * Compare two namespace URIs, either or both of which can be NULL.
+ *
+ * Currently the comparison is an exact string comparison, which might be too strict,
+ * see p118 of "Effective XML" for a discussion of ambiguities in the spec.
+ *
+ * Returns: 0 if they are the same URI (or both NULL), otherwise positive or negative to give an ordering
+ *
+ */
 gint
 cong_util_ns_uri_sort_order (const gchar* uri0, 
 			     const gchar* uri1)
@@ -577,6 +702,15 @@ cong_util_ns_uri_sort_order (const gchar* uri0,
 
 }
 
+/**
+ * cong_util_attribute_value_equality:
+ * @value0:
+ * @value1:
+ *
+ * Compare two attribute value strings for equality; either or both might be NULL
+ *
+ * Returns: TRUE if they are equal (i.e. the same string, or both are NULL)
+ */
 gboolean
 cong_util_attribute_value_equality (const gchar *value0,
 				    const gchar *value1)
@@ -596,7 +730,14 @@ cong_util_attribute_value_equality (const gchar *value0,
 	}
 }
 
-
+/**
+ * cong_element_description_new:
+ * @ns_uri:
+ * @local_name:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongElementDescription*
 cong_element_description_new (const gchar *ns_uri,
 			      const gchar *local_name)
@@ -615,6 +756,35 @@ cong_element_description_new (const gchar *ns_uri,
 	return element_desc;
 }
 
+/**
+ * cong_element_description_new_from_node:
+ * @node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+CongElementDescription*
+cong_element_description_new_from_node (CongNodePtr node)
+{
+	g_return_val_if_fail (node, NULL);
+	g_return_val_if_fail (node->type == XML_ELEMENT_NODE, NULL);
+
+	if (node->ns) {
+		return cong_element_description_new (node->ns->href,
+						     node->name);
+	} else {
+		return cong_element_description_new (NULL,
+						     node->name);
+	}
+}
+				
+/**
+ * cong_element_description_clone:
+ * @element_desc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongElementDescription*
 cong_element_description_clone (const CongElementDescription *element_desc)
 {
@@ -632,6 +802,12 @@ cong_element_description_clone (const CongElementDescription *element_desc)
 	return new_element_desc;
 }
 
+/**
+ * cong_element_description_free:
+ * @element_desc:
+ *
+ * TODO: Write me
+ */
 void
 cong_element_description_free (CongElementDescription *element_desc)
 {
@@ -643,6 +819,15 @@ cong_element_description_free (CongElementDescription *element_desc)
 	g_free (element_desc->local_name);
 }
 
+/**
+ * cong_element_description_make_node:
+ * @element_desc:
+ * @doc:
+ * @ns_search_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongNodePtr
 cong_element_description_make_node (const CongElementDescription *element_desc,
 				    CongDocument *doc,
@@ -664,6 +849,46 @@ cong_element_description_make_node (const CongElementDescription *element_desc,
 	return new_node;	
 }
 
+/**
+ * cong_element_description_matches_node:
+ * @element_desc:
+ * @node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean
+cong_element_description_matches_node (const CongElementDescription *element_desc,
+				       CongNodePtr node)
+{
+	g_return_val_if_fail (element_desc, FALSE);
+	g_return_val_if_fail (node, FALSE);
+
+	
+	if (node->type!=XML_ELEMENT_NODE) {
+		return FALSE;
+	}
+
+	if (0!=strcmp(node->name, element_desc->local_name)) {
+		return FALSE;
+	}
+
+	if (node->ns) {
+		return 0==strcmp(node->ns->href, element_desc->ns_uri);
+	} else {
+		return (NULL == element_desc->ns_uri);
+	}
+}
+
+
+/**
+ * cong_element_description_get_dispspec_element_for_doc:
+ * @element_desc:
+ * @doc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDispspecElement*
 cong_element_description_get_dispspec_element_for_doc (const CongElementDescription *element_desc,
 						       CongDocument *doc)
@@ -674,12 +899,22 @@ cong_element_description_get_dispspec_element_for_doc (const CongElementDescript
 	g_return_val_if_fail (IS_CONG_DOCUMENT (doc), NULL);
 	
 	ds = cong_document_get_dispspec (doc);
-	g_assert (ds);
-
-	return cong_element_description_get_dispspec_element_for_dispspec (element_desc,
-									   ds);
+	if (ds) {
+		return cong_element_description_get_dispspec_element_for_dispspec (element_desc,
+										   ds);
+	} else {
+		return NULL;
+	}
 }
 
+/**
+ * cong_element_description_get_dispspec_element_for_dispspec:
+ * @element_desc:
+ * @ds:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDispspecElement*
 cong_element_description_get_dispspec_element_for_dispspec (const CongElementDescription *element_desc,
 							    CongDispspec *ds)
@@ -702,7 +937,106 @@ cong_element_description_get_qualified_name (const CongElementDescription *eleme
 }
 #endif
 
+gchar*
+cong_element_description_make_user_name (const CongElementDescription *element_desc,
+					 CongDispspec *ds)
+{
+	g_return_val_if_fail (element_desc, NULL);
+	
+	if (ds) {
+		CongDispspecElement* ds_element = cong_element_description_get_dispspec_element_for_dispspec (element_desc,
+													      ds);
 
+		if (ds_element) {
+			return g_strdup (cong_dispspec_element_username (ds_element));
+		}
+	}
+	
+	if (element_desc->ns_uri) {
+		return g_strdup_printf("<%s xmls=\"%s\"/>", element_desc->local_name, element_desc->ns_uri);
+	} else {
+		return g_strdup_printf("<%s />", element_desc->local_name);
+	}
+}
+
+const gchar*
+cong_element_description_get_sort_string (const CongElementDescription *element_desc,
+					  CongDispspec *ds)
+{
+	g_return_val_if_fail (element_desc, NULL);
+	
+	if (ds) {
+		CongDispspecElement* ds_element = cong_element_description_get_dispspec_element_for_dispspec (element_desc,
+													      ds);
+
+		if (ds_element) {
+			if (cong_dispspec_element_username (ds_element)) {
+				return cong_dispspec_element_username (ds_element);
+			} else {
+				return cong_dispspec_element_get_local_name (ds_element);
+			}
+		}
+	}
+	
+	return element_desc->local_name;
+}
+
+static gint 
+element_desc_compare_func (gconstpointer a, 
+			   gconstpointer b,
+			   gpointer user_data)
+{
+	CongDispspec *ds = (CongDispspec *)user_data;
+	const CongElementDescription *element_desc_a;
+	const CongElementDescription *element_desc_b;
+	const gchar *sort_a;
+	const gchar *sort_b;
+	gchar *folded_a;
+	gchar *folded_b;
+	gint result;
+
+	element_desc_a = (const CongElementDescription *)a;
+	element_desc_b = (const CongElementDescription *)b;
+
+	sort_a = cong_element_description_get_sort_string (element_desc_a,
+							   ds);
+	sort_b = cong_element_description_get_sort_string (element_desc_b,
+							   ds);
+
+	g_assert(sort_a);
+	g_assert(sort_b);
+
+	/* g_message("comparing \"%s\" and \"%s\"", sort_a, sort_b); */
+
+	folded_a = g_utf8_casefold(sort_a,-1);
+	folded_b = g_utf8_casefold(sort_b,-1);
+	result = g_utf8_collate(folded_a, folded_b);
+
+	g_free(folded_a);
+	g_free(folded_b);
+
+	return result;
+}
+
+
+GList*
+cong_element_description_list_sort (GList *list_of_element_desc,
+				    CongDispspec *dispspec)
+{
+	/* Sort the list into alphabetical order of user-visible names: */
+	return g_list_sort_with_data (list_of_element_desc, 
+				      element_desc_compare_func,
+				      dispspec);
+}
+
+
+
+/**
+ * cong_element_description_list_free:
+ * @list_of_element_desc:
+ *
+ * TODO: Write me
+ */
 void
 cong_element_description_list_free (GList *list_of_element_desc)
 {
@@ -723,6 +1057,16 @@ enum {
 	NUM_FIELDS
 };
 
+/**
+ * sort_func_ds_user_visible_name:
+ * @model:
+ * @a:
+ * @b:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gint
 sort_func_ds_user_visible_name (GtkTreeModel *model,
 				GtkTreeIter *a,
@@ -764,6 +1108,16 @@ sort_func_ds_user_visible_name (GtkTreeModel *model,
 	return result;
 }
 
+/**
+ * sort_func_element_local_name:
+ * @model:
+ * @a:
+ * @b:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gint
 sort_func_element_local_name (GtkTreeModel *model,
 			      GtkTreeIter *a,
@@ -802,7 +1156,17 @@ selection_changed_cb (GtkTreeSelection *selection,
 				  gtk_tree_selection_get_selected (selection, NULL, NULL));
 }
 
-
+/**
+ * cong_util_modal_element_selection_dialog:
+ * @title: Title for the dialog
+ * @description: Descriptive text for the dialog
+ * @doc: The document, so that dispspecs can be searched for descriptions
+ * @elements: A GList of #CongElementDescription
+ *
+ * Runs a modal element selection dialog.
+ *
+ * Returns: the selected element (which the caller must free), or NULL if the dialog was cancelled
+ */
 CongElementDescription*
 cong_util_modal_element_selection_dialog (const gchar *title, 
 					  const gchar *description,
@@ -820,7 +1184,7 @@ cong_util_modal_element_selection_dialog (const gchar *title,
 	g_return_val_if_fail (IS_CONG_DOCUMENT (doc), NULL);
 	g_return_val_if_fail (elements, NULL);
 
-	xml = cong_util_load_glade_file ("glade/string_selection_dialog.glade",
+	xml = cong_util_load_glade_file ("conglomerate/glade/string_selection_dialog.glade",
 					 NULL,
 					 doc,
 					 NULL);
@@ -830,6 +1194,7 @@ cong_util_modal_element_selection_dialog (const gchar *title,
 	
         gtk_window_set_title (GTK_WINDOW (dialog), 
 			      title);
+	gtk_dialog_set_default_response (GTK_DIALOG(dialog), GTK_RESPONSE_OK);
 	gtk_label_set_text (GTK_LABEL (label), 
 			    description);
 
@@ -951,10 +1316,11 @@ cong_util_modal_element_selection_dialog (const gchar *title,
 		g_object_unref (G_OBJECT (list_store));
 	}
 
-	gtk_dialog_run (GTK_DIALOG (dialog));
-
-	/* Get selection: */
+	result = NULL;
+	
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK)
 	{
+		/* Get selection: */
 		CongElementDescription *element_desc;
 		GtkTreeIter iter;
 
@@ -967,10 +1333,7 @@ cong_util_modal_element_selection_dialog (const gchar *title,
 					    -1);
 
 			/* need to clone: */
-			result = cong_element_description_clone (element_desc);;
-
-		} else {
-			result = NULL;
+			result = cong_element_description_clone (element_desc);
 		}
 	}
 				
@@ -980,7 +1343,62 @@ cong_util_modal_element_selection_dialog (const gchar *title,
 	return result;
 }
 
+static gboolean 
+make_element_description_list_callback (CongDocument *doc, CongNodePtr node, gpointer user_data, guint recursion_level)
+{
+	GList **list = (GList**)user_data;
 
+	if (node->type == XML_ELEMENT_NODE) {
+		/* Check it's not already present: */
+		GList *iter = *list;
+
+		while (iter) {
+			if (cong_element_description_matches_node ((const CongElementDescription*)iter->data,
+								   node)) {
+				/* Got a match; bail out: */
+				return FALSE;
+			}
+		}
+
+		/* Nothing matched: add to the list: */
+		*list = g_list_prepend (*list,
+					cong_element_description_new_from_node (node));
+	}
+
+	return FALSE;
+}
+
+/**
+ * cong_util_make_element_description_list:
+ * @doc:
+ *
+ * Make a list of all CongElementDescription already in the document
+ * Returns: a list of CongElementDescription
+ */
+GList*
+cong_util_make_element_description_list (CongDocument *doc)
+{
+	/* FIXME: this will be slow (bugzilla 145026)*/
+	GList *list = NULL;
+
+	g_return_val_if_fail (IS_CONG_DOCUMENT (doc), NULL);
+
+	cong_document_for_each_node (doc, 
+				     make_element_description_list_callback,
+				     &list);
+
+	return list;	
+}
+
+/**
+ * cong_util_make_menu_item:
+ * @label:
+ * @tip:
+ * @pixbuf:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GtkMenuItem* 
 cong_util_make_menu_item (const gchar *label,
 			  const gchar *tip,
@@ -1008,6 +1426,13 @@ cong_util_make_menu_item (const gchar *label,
 	return GTK_MENU_ITEM(item);
 }
 
+/**
+ * cong_util_make_stock_menu_item:
+ * @stock_id:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GtkMenuItem* 
 cong_util_make_stock_menu_item (const gchar *stock_id)
 {
@@ -1017,6 +1442,13 @@ cong_util_make_stock_menu_item (const gchar *stock_id)
 								 NULL));
 }
 
+/**
+ * cong_util_make_menu_item_for_dispspec_element:
+ * @element:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GtkMenuItem* 
 cong_util_make_menu_item_for_dispspec_element (CongDispspecElement *element)
 {
@@ -1043,6 +1475,14 @@ cong_util_make_menu_item_for_dispspec_element (CongDispspecElement *element)
 	return item;
 }
 
+/**
+ * cong_util_make_menu_item_for_element_desc:
+ * @element_desc:
+ * @doc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GtkMenuItem* 
 cong_util_make_menu_item_for_element_desc (const CongElementDescription *element_desc,
 					   CongDocument *doc)
@@ -1057,12 +1497,26 @@ cong_util_make_menu_item_for_element_desc (const CongElementDescription *element
 	if (ds_element) {
 		return cong_util_make_menu_item_for_dispspec_element (ds_element);
 	} else {
-		return cong_util_make_menu_item (element_desc->local_name,
-						 NULL,
-						 NULL);
+
+		gchar *username = cong_element_description_make_user_name (element_desc,
+									   NULL);
+
+		GtkMenuItem *item = cong_util_make_menu_item (username,
+							      NULL,
+							      NULL);
+		g_free (username);
+
+		return item;
 	}
 }
 
+/**
+ * cong_util_add_menu_separator:
+ * @menu:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GtkWidget*
 cong_util_add_menu_separator (GtkMenu *menu)
 {
@@ -1080,6 +1534,13 @@ cong_util_add_menu_separator (GtkMenu *menu)
 	return item;
 }
 
+/**
+ * cong_util_get_qualified_attribute_name:
+ * @namespace: Namespace of attribute (can be NULL).
+ * @local_attribute_name: Local name of attribute.
+ *
+ * Returns: 
+ */
 char *
 cong_util_get_qualified_attribute_name(const xmlNs *namespace,
 				       const xmlChar *local_attribute_name)
@@ -1095,3 +1556,105 @@ cong_util_get_qualified_attribute_name(const xmlNs *namespace,
 			       namespace->prefix,
 			       local_attribute_name);
 }
+
+
+extern char *ilogo_xpm[];
+
+/**
+ * cong_util_show_in_window:
+ * @content:
+ * @title:
+ * 
+ * Embed the chosen GtkWidget in an appropriate frame, with the application icon etc.
+ * Anything using this probably needs some HIG love.
+ *
+ */
+void
+cong_util_show_in_window (GtkWidget *content,
+			  const gchar *title)
+{
+	GtkWidget *window;
+
+	g_return_if_fail (content);
+	g_return_if_fail (title);
+
+	window = gnome_app_new (PACKAGE_NAME,
+				title);
+	gnome_app_set_contents (GNOME_APP(window), 
+				content);
+
+	/* Set up the window nicely: */
+	{	
+		GdkPixbuf *icon_pixbuf = gdk_pixbuf_new_from_xpm_data((const char**)ilogo_xpm);
+		
+		gtk_window_set_icon(GTK_WINDOW(window),
+				    icon_pixbuf);
+
+		gdk_pixbuf_unref(icon_pixbuf);
+
+	}
+
+	gtk_window_set_default_size(GTK_WINDOW(window),
+				    500,
+				    400);
+
+	gtk_widget_show(GTK_WIDGET(window));
+}
+
+GtkFileFilter*
+cong_util_make_file_filter (const gchar *name,
+			    const gchar* mime_type)
+{
+	GtkFileFilter *filter;
+
+	g_return_val_if_fail (name, NULL);
+	g_return_val_if_fail (mime_type, NULL);
+
+	filter = gtk_file_filter_new ();
+	gtk_file_filter_set_name (filter, name);
+	gtk_file_filter_add_mime_type (filter, mime_type);
+
+	return filter;
+}
+
+/**
+ * cong_util_run_add_dtd_dialog:
+ * @doc:
+ * @parent_window:
+ *
+ * Open a dialog for choosing a DTD to associate with the document
+ * 
+ */
+void
+cong_util_run_add_dtd_dialog (CongDocument *doc,
+			      GtkWindow *parent_window)
+{
+	gchar* dtd_filename;
+	GList *list_of_filters;
+
+	g_return_if_fail (doc);
+
+	list_of_filters = g_list_append (NULL, cong_util_make_file_filter (_("DTD files"), 
+									   "text/x-dtd"));
+	
+	dtd_filename = cong_get_file_name (_("Select a DTD"), 
+					   NULL,
+					   parent_window,
+					   CONG_FILE_CHOOSER_ACTION_OPEN,
+					   list_of_filters);
+
+	if (dtd_filename) {
+		CongCommand *cmd = cong_document_begin_command (doc,
+								_("Associate with DTD"),
+								NULL);
+		cong_command_add_set_external_dtd (cmd,
+						   cong_document_get_root(doc)->name,
+						   NULL,
+						   dtd_filename);
+		cong_document_end_command (doc,
+					   cmd);
+		
+		g_free (dtd_filename);
+	}
+}
+

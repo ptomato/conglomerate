@@ -65,6 +65,13 @@ cong_modification_construct (CongModification *modification,
 	return modification;
 }
 
+/**
+ * cong_modification_get_document:
+ * @modification:
+ * 
+ * TODO: Write me
+ * Returns:
+ */
 CongDocument*
 cong_modification_get_document (CongModification *modification)
 {
@@ -73,6 +80,12 @@ cong_modification_get_document (CongModification *modification)
 	return PRIVATE(modification)->doc;
 }
 
+/**
+ * cong_modification_undo:
+ * @modification:
+ * 
+ * TODO: Write me
+ */
 void
 cong_modification_undo (CongModification *modification)
 {
@@ -81,6 +94,12 @@ cong_modification_undo (CongModification *modification)
 	g_message ("cong_modification_undo()");
 }
 
+/**
+ * cong_modification_redo:
+ * @modification:
+ * 
+ * TODO: Write me
+ */
 void
 cong_modification_redo (CongModification *modification)
 {

@@ -90,9 +90,18 @@ cong_editor_area_unknown_tag_instance_init (CongEditorAreaUnknownTag *area_unkno
 }
 
 const gchar*
-cong_ui_get_colour_string(enum CongNodeType type);
+cong_ui_get_colour_string(CongNodeType type);
 
 /* Exported function definitions: */
+/**
+ * cong_editor_area_unknown_tag_construct:
+ * @area_unknown_tag:
+ * @editor_widget:
+ * @tagname:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_unknown_tag_construct (CongEditorAreaUnknownTag *area_unknown_tag,
 					CongEditorWidget3 *editor_widget,
@@ -165,6 +174,14 @@ cong_editor_area_unknown_tag_construct (CongEditorAreaUnknownTag *area_unknown_t
 	return CONG_EDITOR_AREA (area_unknown_tag);
 }
 
+/**
+ * cong_editor_area_unknown_tag_new:
+ * @editor_widget:
+ * @tagname:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_unknown_tag_new (CongEditorWidget3 *editor_widget,
 				  const gchar *tagname)

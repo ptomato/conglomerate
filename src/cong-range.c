@@ -26,6 +26,12 @@
 #include "cong-range.h"
 #include "cong-eel.h"
 
+/**
+ * cong_range_init:
+ * @range:
+ *
+ * TODO: Write me
+ */
 void
 cong_range_init (CongRange *range)
 {
@@ -35,6 +41,12 @@ cong_range_init (CongRange *range)
 	cong_location_nullify(&range->loc1);
 }
 
+/**
+ * cong_range_nullify:
+ * @range:
+ *
+ * TODO: Write me
+ */
 void
 cong_range_nullify (CongRange *range)
 {
@@ -44,6 +56,13 @@ cong_range_nullify (CongRange *range)
 	cong_location_nullify(&range->loc1);
 }
 
+/**
+ * cong_range_is_valid:
+ * @range:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_range_is_valid (CongRange *range)
 {
@@ -68,6 +87,13 @@ cong_range_is_valid (CongRange *range)
 	return (range->loc0.node->parent == range->loc1.node->parent);
 }
 
+/**
+ * cong_range_generate_source:
+ * @range:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gchar*
 cong_range_generate_source (CongRange *range)
 {
@@ -122,6 +148,13 @@ cong_range_generate_source (CongRange *range)
 	return result;
 }
 
+/**
+ * cong_range_exists:
+ * @range:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_range_exists (CongRange *range)
 {
@@ -134,6 +167,13 @@ cong_range_exists (CongRange *range)
 	}	
 }
 
+/**
+ * cong_range_is_empty:
+ * @range:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_range_is_empty (CongRange *range)
 {
@@ -150,6 +190,13 @@ cong_range_is_empty (CongRange *range)
 
 }
 
+/**
+ * cong_range_is_ordered:
+ * @range:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_range_is_ordered (CongRange *range)
 {
@@ -174,6 +221,13 @@ cong_range_is_ordered (CongRange *range)
 
 }
 
+/**
+ * cong_range_can_be_cut:
+ * @range:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_range_can_be_cut (CongRange *range)
 {
@@ -202,6 +256,13 @@ cong_range_can_be_cut (CongRange *range)
 	}
 }
 
+/**
+ * cong_range_can_be_copied:
+ * @range:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_range_can_be_copied (CongRange *range)
 {
@@ -210,6 +271,12 @@ cong_range_can_be_copied (CongRange *range)
 	return cong_range_can_be_cut(range);
 }
 
+/**
+ * cong_range_make_ordered:
+ * @range:
+ *
+ * TODO: Write me
+ */
 void
 cong_range_make_ordered (CongRange *range)
 {
@@ -251,6 +318,14 @@ cong_range_make_ordered (CongRange *range)
 	
 }
 
+/**
+ * cong_range_is_node:
+ * @range:
+ * @node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_range_is_node (CongRange *range,
 		    CongNodePtr node)
@@ -266,6 +341,13 @@ cong_range_is_node (CongRange *range,
 	return FALSE;
 }
 
+/**
+ * cong_range_copy:
+ * @dst:
+ * @src:
+ *
+ * TODO: Write me
+ */
 void
 cong_range_copy(CongRange *dst, const CongRange *src)
 {

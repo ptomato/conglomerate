@@ -73,7 +73,16 @@ static void remove_template_def(xmlDocPtr template)
 	xmlXPathFreeContext(xpathCtx); 
 }
 
-void factory_action_callback_templates(CongServiceDocumentFactory *factory,
+/**
+ * factory_action_callback_templates:
+ * @factory:
+ * @assistant:
+ * @user_data:
+ *
+ * TODO: Write me
+ */
+void 
+factory_action_callback_templates(CongServiceDocumentFactory *factory,
 	CongNewFileAssistant *assistant, gpointer user_data)
 {
 	xmlDocPtr template;
@@ -89,7 +98,16 @@ void factory_action_callback_templates(CongServiceDocumentFactory *factory,
 		cong_new_file_assistant_get_toplevel(assistant));
 }
 
-void factory_page_creation_callback_templates(CongServiceDocumentFactory *factory, CongNewFileAssistant *assistant, gpointer user_data)
+/**
+ * factory_page_creation_callback_templates:
+ * @factory:
+ * @assistant:
+ * @user_data:
+ *
+ * This function is not currently implemented
+ */
+void 
+factory_page_creation_callback_templates(CongServiceDocumentFactory *factory, CongNewFileAssistant *assistant, gpointer user_data)
 {
 }
 
@@ -223,7 +241,15 @@ static void visit_paths(GSList* paths, GnomeVFSDirectoryVisitFunc visit_path,
 }
 
 /* would be exposed as "plugin_register"? */
-gboolean plugin_templates_plugin_register(CongPlugin *plugin)
+/**
+ * plugin_templates_plugin_register:
+ * @plugin:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+plugin_templates_plugin_register(CongPlugin *plugin)
 {
 	GSList* template_paths;
 	CongTemplate* template;
@@ -243,7 +269,15 @@ gboolean plugin_templates_plugin_register(CongPlugin *plugin)
 }
 
 /* exposed as "plugin_configure"? legitimate for it not to be present */
-gboolean plugin_templates_plugin_configure(CongPlugin *plugin)
+/**
+ * plugin_templates_plugin_configure:
+ * @plugin:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean
+plugin_templates_plugin_configure(CongPlugin *plugin)
 {
 	g_return_val_if_fail(plugin, FALSE);
 

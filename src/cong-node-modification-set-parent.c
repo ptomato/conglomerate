@@ -74,6 +74,16 @@ cong_node_modification_set_parent_instance_init (CongNodeModificationSetParent *
 	node->private = g_new0(CongNodeModificationSetParentDetails,1);
 }
 
+/**
+ * cong_node_modification_set_parent_construct:
+ * @node_modification_set_parent:
+ * @doc:
+ * @node:
+ * @adoptive_parent:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongNodeModificationSetParent*
 cong_node_modification_set_parent_construct (CongNodeModificationSetParent *node_modification_set_parent,
 					     CongDocument *doc,
@@ -99,6 +109,15 @@ cong_node_modification_set_parent_construct (CongNodeModificationSetParent *node
 	return node_modification_set_parent;
 }
 
+/**
+ * cong_node_modification_set_parent_new:
+ * @doc:
+ * @node:
+ * @adoptive_parent:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongModification*
 cong_node_modification_set_parent_new (CongDocument *doc,
 				       CongNodePtr node,
@@ -168,7 +187,8 @@ undo (CongModification *modification)
 		} else {
 			cong_document_private_node_set_parent (doc, 
 							       node, 
-							       PRIVATE(node_modification_set_parent)->former_parent);
+							       PRIVATE(node_modification_set_parent)->former_parent,
+							       TRUE); /* add to end */
 		}
 	} else {
 		cong_document_private_node_make_orphan (doc, 
@@ -195,11 +215,11 @@ redo (CongModification *modification)
 
 	cong_document_private_node_set_parent (doc, 
 					       node,
-					       PRIVATE(node_modification_set_parent)->new_parent);
+					       PRIVATE(node_modification_set_parent)->new_parent,
+					       TRUE); /* add to end */
 
 	cong_document_end_edit (doc);
 
 	g_assert (node->next == NULL);
 	g_assert (node->parent == PRIVATE(node_modification_set_parent)->new_parent);
 }
-

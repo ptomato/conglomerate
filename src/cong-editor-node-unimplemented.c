@@ -58,6 +58,16 @@ cong_editor_node_unimplemented_instance_init (CongEditorNodeUnimplemented *node_
 	node_unimplemented->private = g_new0(CongEditorNodeUnimplementedDetails,1);
 }
 
+/**
+ * cong_editor_node_unimplemented_construct:
+ * @editor_node_unimplemented:
+ * @widget:
+ * @traversal_node:
+ * @description:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNodeUnimplemented*
 cong_editor_node_unimplemented_construct (CongEditorNodeUnimplemented *editor_node_unimplemented,
 					  CongEditorWidget3* editor_widget,
@@ -73,6 +83,15 @@ cong_editor_node_unimplemented_construct (CongEditorNodeUnimplemented *editor_no
 	return editor_node_unimplemented;
 }
 
+/**
+ * cong_editor_node_unimplemented_new:
+ * @widget:
+ * @traversal_node:
+ * @description:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNode*
 cong_editor_node_unimplemented_new (CongEditorWidget3 *widget,
 				    CongTraversalNode *traversal_node,

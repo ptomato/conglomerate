@@ -67,6 +67,15 @@ cong_editor_child_policy_flow_holder_instance_init (CongEditorChildPolicyFlowHol
 	child_policy_flow_holder->private = g_new0(CongEditorChildPolicyFlowHolderDetails,1);
 }
 
+/**
+ * cong_editor_child_policy_flow_holder_construct:
+ * @child_policy_flow_holder:
+ * @editor_node:
+ * @flow_holder:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorChildPolicy*
 cong_editor_child_policy_flow_holder_construct (CongEditorChildPolicyFlowHolder *child_policy_flow_holder,
 						CongEditorNode *editor_node,
@@ -80,6 +89,14 @@ cong_editor_child_policy_flow_holder_construct (CongEditorChildPolicyFlowHolder 
 	return CONG_EDITOR_CHILD_POLICY(child_policy_flow_holder);
 }
 
+/**
+ * cong_editor_child_policy_flow_holder_new:
+ * @editor_node:
+ * @flow_holder:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorChildPolicy*
 cong_editor_child_policy_flow_holder_new (CongEditorNode *editor_node,
 					  CongEditorAreaFlowHolder *flow_holder)

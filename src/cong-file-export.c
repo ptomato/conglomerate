@@ -146,20 +146,17 @@ static void setup_description(CongExportDialogDetails *dialog_details)
 {
 	CongServiceExporter* exporter = get_selected_exporter(dialog_details);
 	const gchar *desc;
+	gchar * text;
 
 	g_assert(dialog_details);
 	g_assert(exporter);
 
 	desc = cong_service_get_description(CONG_SERVICE(exporter));
 
-	if (desc) {
-		gchar * text = g_strdup_printf("<small>%s</small>", desc);
-		gtk_label_set_markup(dialog_details->description, text);
-		g_free(text);
-
-	} else {
-		gtk_label_set_markup(dialog_details->description, _("<small>(No description available)</small>"));
-	}
+	text = g_strdup_printf("<small>%s</small>", 
+                                       (desc ? desc : _("(No description available)")));
+	gtk_label_set_markup(dialog_details->description, text);
+	g_free(text);
 }
 
 static void on_exporter_selection_changed(GtkOptionMenu *optionmenu,
@@ -197,7 +194,8 @@ static void on_select_filename_button_clicked(GtkButton *button,
 	new_uri = cong_get_file_name(_("Select file to export to"),
 				     export_uri,
 				     GTK_WINDOW(details->dialog),
-				     CONG_FILE_CHOOSER_ACTION_SAVE);
+				     CONG_FILE_CHOOSER_ACTION_SAVE,
+				     NULL /* For now */);
 
 	if (new_uri) {
 		cong_exporter_set_preferred_uri(exporter, new_uri);
@@ -318,7 +316,13 @@ static GtkWidget *cong_document_export_dialog_new(CongDocument *doc,
 	return dialog;
 }
 
-
+/**
+ * cong_ui_hook_file_export:
+ * @doc:
+ * @toplevel_window:
+ *
+ * TODO: Write me
+ */
 void
 cong_ui_hook_file_export (CongDocument *doc,
 			  GtkWindow *toplevel_window)

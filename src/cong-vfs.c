@@ -32,6 +32,15 @@
 /*
   A routine that tries to load all the bytes requested from the handle into the buffer and bails out on any failure
  */
+/**
+ * cong_vfs_read_bytes:
+ * @vfs_handle:
+ * @buffer:
+ * @bytes:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GnomeVFSResult
 cong_vfs_read_bytes (GnomeVFSHandle* vfs_handle, 
 		     char* buffer, 
@@ -48,6 +57,15 @@ cong_vfs_read_bytes (GnomeVFSHandle* vfs_handle,
 /* 
    A routine that tries to syncronously load a file into a buffer in memory (surely this exists already somewhere?)
 */
+/**
+ * cong_vfs_new_buffer_from_file:
+ * @filename:
+ * @buffer:
+ * @size:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GnomeVFSResult
 cong_vfs_new_buffer_from_file (const char* filename, 
 			       char** buffer, 
@@ -82,6 +100,16 @@ cong_vfs_new_buffer_from_file (const char* filename,
 	return vfs_result;
 }
 
+/**
+ * cong_vfs_new_buffer_from_uri:
+ * @vfs_uri:
+ * @buffer:
+ * @size:
+ *
+ * A routine that tries to syncronously load a file into a buffer in memory (surely this exists already somewhere?)
+ *
+ * Returns:
+ */
 GnomeVFSResult
 cong_vfs_new_buffer_from_uri (GnomeVFSURI* uri, 
 			      char** buffer, 
@@ -152,6 +180,14 @@ cong_vfs_new_buffer_from_uri (GnomeVFSURI* uri,
 	}
 }
 
+/**
+ * cong_vfs_load_xml_from_uri:
+ * @string_uri:
+ * @parent_window:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 xmlDocPtr
 cong_vfs_load_xml_from_uri (const gchar *string_uri,
 			    GtkWindow *parent_window)
@@ -251,6 +287,15 @@ cong_vfs_load_xml_from_uri (const gchar *string_uri,
 #endif
 }
 
+/**
+ * cong_vfs_save_xml_to_uri:
+ * @doc_ptr:
+ * @vfs_uri:
+ * @output_file_size:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GnomeVFSResult
 cong_vfs_save_xml_to_uri (xmlDocPtr doc_ptr, 
 			  GnomeVFSURI *file_uri,	
@@ -303,8 +348,13 @@ cong_vfs_save_xml_to_uri (xmlDocPtr doc_ptr,
 	return vfs_result;
 }
 
-
-/* Convert a URI into a POSIX, path, assuming that this is valid: */
+/**
+ * cong_vfs_get_local_path_from_uri:
+ * @vfs_uri: a #GnomeVFSURI
+ *
+ * Returns: a #gchar containing @uri as a POSIX path, assuming it is
+ * valid
+ */
 gchar*
 cong_vfs_get_local_path_from_uri (GnomeVFSURI *uri)
 {
@@ -325,6 +375,14 @@ cong_vfs_get_local_path_from_uri (GnomeVFSURI *uri)
 	return uri_string;
 }
 
+/**
+ * cong_vfs_split_vfs_uri:
+ * @vfs_uri:
+ * @filename_alone:
+ * @path:
+ *
+ * TODO: Write me
+ */
 void
 cong_vfs_split_vfs_uri (const GnomeVFSURI* vfs_uri, 
 			gchar** filename_alone, 
@@ -359,6 +417,14 @@ cong_vfs_split_vfs_uri (const GnomeVFSURI* vfs_uri,
 #endif
 }
 
+/**
+ * cong_vfs_split_string_uri:
+ * @string_uri:
+ * @filename_alone:
+ * @path:
+ *
+ * TODO: Write me
+ */
 void
 cong_vfs_split_string_uri (const gchar* string_uri,
 			   gchar** filename_alone, 
@@ -377,6 +443,13 @@ cong_vfs_split_string_uri (const gchar* string_uri,
 	gnome_vfs_uri_unref (vfs_uri);
 }
 
+/**
+ * cong_vfs_extract_short_name:
+ * @string_uri:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gchar*
 cong_vfs_extract_short_name (const gchar *string_uri)
 {

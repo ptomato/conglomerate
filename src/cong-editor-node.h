@@ -81,7 +81,7 @@ CONG_DECLARE_CLASS_BEGIN(CongEditorNode, cong_editor_node, GObject)
 
 	void (*line_regeneration_required) (CongEditorNode *editor_node);
 	
-	enum CongFlowType (*get_flow_type) (CongEditorNode *editor_node);
+	CongFlowType (*get_flow_type) (CongEditorNode *editor_node);
 CONG_DECLARE_CLASS_END()
 
 struct CongAreaCreationInfo

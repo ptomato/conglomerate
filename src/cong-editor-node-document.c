@@ -36,6 +36,15 @@ CONG_EDITOR_NODE_DEFINE_SUBCLASS(Document,
 				 int dummy;
 				 )
 
+/**
+ * cong_editor_node_document_construct:
+ * @editor_node_document:
+ * @widget:
+ * @traversal_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNodeDocument*
 cong_editor_node_document_construct (CongEditorNodeDocument *editor_node_document,
 				     CongEditorWidget3* editor_widget,

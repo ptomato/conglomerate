@@ -71,6 +71,15 @@ cong_node_modification_make_orphan_instance_init (CongNodeModificationMakeOrphan
 	node->private = g_new0(CongNodeModificationMakeOrphanDetails,1);
 }
 
+/**
+ * cong_node_modification_make_orphan_construct:
+ * @node_modification_make_orphan:
+ * @doc:
+ * @node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongNodeModificationMakeOrphan*
 cong_node_modification_make_orphan_construct (CongNodeModificationMakeOrphan *node_modification_make_orphan,
 					      CongDocument *doc,
@@ -97,6 +106,14 @@ cong_node_modification_make_orphan_construct (CongNodeModificationMakeOrphan *no
 	return node_modification_make_orphan;
 }
 
+/**
+ * cong_node_modification_make_orphan_new:
+ * @doc:
+ * @node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongModification*
 cong_node_modification_make_orphan_new (CongDocument *doc,
 					CongNodePtr node)
@@ -171,7 +188,8 @@ undo (CongModification *modification)
 			/* This will add it as the youngest child; hence we had to store the former younger sibling rather than the former older one: */
 			cong_document_private_node_set_parent (doc, 
 							       node, 
-							       PRIVATE(node_modification_make_orphan)->former_parent);
+							       PRIVATE(node_modification_make_orphan)->former_parent,
+							       TRUE);
 		}
 	} else {
 		cong_document_private_node_make_orphan (doc, 
@@ -204,4 +222,3 @@ redo (CongModification *modification)
 	g_assert (node->next == NULL);
 	g_assert (node->parent == NULL);
 }
-

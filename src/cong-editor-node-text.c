@@ -154,6 +154,15 @@ CONG_EDITOR_NODE_DEFINE_SUBCLASS(Text,
 				 GList *list_of_text_fragments;				 
 				 );
 
+/**
+ * cong_editor_node_text_construct:
+ * @editor_node_text:
+ * @widget:
+ * @traversal_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNodeText*
 cong_editor_node_text_construct (CongEditorNodeText *editor_node_text,
 				 CongEditorWidget3* editor_widget,
@@ -162,7 +171,7 @@ cong_editor_node_text_construct (CongEditorNodeText *editor_node_text,
 #if 0
 	gchar *markup;	
 #endif
-	enum CongWhitespaceHandling whitespace = cong_node_get_whitespace_handling (cong_editor_widget3_get_document (editor_widget),
+	CongWhitespaceHandling whitespace = cong_node_get_whitespace_handling (cong_editor_widget3_get_document (editor_widget),
 										    cong_traversal_node_get_node (traversal_node));
 
 	cong_editor_node_construct (CONG_EDITOR_NODE (editor_node_text),
@@ -216,6 +225,15 @@ CONG_EDITOR_NODE_IMPLEMENT_DISPOSE_BEGIN(Text, text, CONG_EDITOR_NODE_TEXT) \
 				     PRIVATE(editor_node_text)->handler_id_selection_change);	
 CONG_EDITOR_NODE_IMPLEMENT_DISPOSE_END()
 
+/**
+ * cong_editor_node_text_convert_original_byte_offset_to_stripped:
+ * @editor_node_text:
+ * @original_byte_offset:
+ * @stripped_byte_offset:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_editor_node_text_convert_original_byte_offset_to_stripped (CongEditorNodeText *editor_node_text,
 								int original_byte_offset,
@@ -226,6 +244,15 @@ cong_editor_node_text_convert_original_byte_offset_to_stripped (CongEditorNodeTe
 									 stripped_byte_offset);
 }
 
+/**
+ * cong_eel_pango_layout_calc_up:
+ * @layout:
+ * @input_index:
+ * @output_index:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_eel_pango_layout_calc_up (PangoLayout *layout,
 			       int input_index,
@@ -267,6 +294,15 @@ cong_eel_pango_layout_calc_up (PangoLayout *layout,
 	return FALSE;
 }
 
+/**
+ * cong_eel_pango_layout_calc_down:
+ * @layout:
+ * @input_index:
+ * @output_index:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_eel_pango_layout_calc_down (PangoLayout *layout,
 				 int input_index,
@@ -305,6 +341,15 @@ cong_eel_pango_layout_calc_down (PangoLayout *layout,
 	return FALSE;
 }
 
+/**
+ * cong_editor_node_text_calc_up:
+ * @editor_node_text:
+ * @input_byte_offset:
+ * @output_byte_offset:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_editor_node_text_calc_up (CongEditorNodeText *editor_node_text,
 			       int input_byte_offset,
@@ -335,6 +380,15 @@ cong_editor_node_text_calc_up (CongEditorNodeText *editor_node_text,
 
 }
 
+/**
+ * cong_editor_node_text_calc_down:
+ * @editor_node_text:
+ * @input_byte_offset:
+ * @output_byte_offset:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_editor_node_text_calc_down (CongEditorNodeText *editor_node_text,
 				 int input_byte_offset,
@@ -518,6 +572,15 @@ gboolean
 cong_selection_get_end_byte_offset (CongSelection *selection, 
 				    CongNodePtr node,
 				    gint *output);
+/**
+ * cong_selection_get_start_byte_offset:
+ * @selection:
+ * @node:
+ * @output:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_selection_get_start_byte_offset (CongSelection *selection, 
 				      CongNodePtr node,
@@ -569,6 +632,15 @@ cong_selection_get_start_byte_offset (CongSelection *selection,
 	return FALSE;
 }
 
+/**
+ * cong_selection_get_end_byte_offset:
+ * @selection:
+ * @node:
+ * @output:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_selection_get_end_byte_offset (CongSelection *selection, 
 				    CongNodePtr node,
@@ -1592,4 +1664,3 @@ refresh_pango_layout (CongEditorNodeText *editor_node_text)
 	pango_attr_list_unref (attr_list);
 #endif
 }
-

@@ -57,7 +57,7 @@ generate_line_areas_recursive (CongEditorNode *editor_node,
 			       gint initial_indent);
 #endif
 
-static enum CongFlowType
+static CongFlowType
 get_flow_type(CongEditorNode *editor_node);
 
 /* Extra stuff: */
@@ -94,6 +94,15 @@ cong_editor_node_element_span_instance_init (CongEditorNodeElementSpan *node_ele
 	node_element_span->private = g_new0(CongEditorNodeElementSpanDetails,1);
 }
 
+/**
+ * cong_editor_node_element_span_construct:
+ * @editor_node_element_span:
+ * @widget:
+ * @traversal_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNodeElementSpan*
 cong_editor_node_element_span_construct (CongEditorNodeElementSpan *editor_node_element_span,
 					 CongEditorWidget3* editor_widget,
@@ -106,6 +115,14 @@ cong_editor_node_element_span_construct (CongEditorNodeElementSpan *editor_node_
 	return editor_node_element_span;
 }
 
+/**
+ * cong_editor_node_element_span_new:
+ * @widget:
+ * @traversal_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNode*
 cong_editor_node_element_span_new (CongEditorWidget3* widget,
 				   CongTraversalNode *traversal_node)
@@ -300,7 +317,7 @@ generate_line_areas_recursive (CongEditorNode *editor_node,
 }
 #endif
 
-static enum CongFlowType
+static CongFlowType
 get_flow_type(CongEditorNode *editor_node)
 {
 	return CONG_FLOW_TYPE_INLINE;

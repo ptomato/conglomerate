@@ -78,6 +78,13 @@ lighten_component (guchar cur_value)
 	return (guchar) new_value;
 }
 
+/**
+ * eel_create_spotlight_pixbuf:
+ * @source_pixbuf:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkPixbuf *
 eel_create_spotlight_pixbuf (GdkPixbuf* src)
 {
@@ -124,6 +131,15 @@ eel_create_spotlight_pixbuf (GdkPixbuf* src)
 
 /* saturation is 0-255, darken is 0-255 */
 
+/**
+ * eel_create_darkened_pixbuf:
+ * @source_pixbuf:
+ * @saturation:
+ * @darken:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkPixbuf *
 eel_create_darkened_pixbuf (GdkPixbuf *src, int saturation, int darken)
 {
@@ -177,7 +193,16 @@ eel_create_darkened_pixbuf (GdkPixbuf *src, int saturation, int darken)
 }
 
 /* this routine colorizes the passed-in pixbuf by multiplying each pixel with the passed in color */
-
+/**
+ * eel_create_colorized_pixbuf:
+ * @source_pixbuf:
+ * @red_value:
+ * @green_value:
+ * @blue_value:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkPixbuf *
 eel_create_colorized_pixbuf (GdkPixbuf *src,
 				  int red_value,
@@ -257,6 +282,20 @@ draw_frame_column (GdkPixbuf *frame_image, int target_height, int source_height,
 	}
 }
 
+/**
+ * eel_stretch_frame_image:
+ * @frame_image:
+ * @left_offset:
+ * @top_offset:
+ * @right_offset:
+ * @bottom_offset:
+ * @dest_width:
+ * @dest_height:
+ * @fill_flag:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkPixbuf *
 eel_stretch_frame_image (GdkPixbuf *frame_image, int left_offset, int top_offset, int right_offset, int bottom_offset,
 				int dest_width, int dest_height, gboolean fill_flag)
@@ -312,8 +351,19 @@ eel_stretch_frame_image (GdkPixbuf *frame_image, int left_offset, int top_offset
 	return result_pixbuf;
 }
 
-
 /* draw an arbitrary frame around an image, with the result passed back in a newly allocated pixbuf */
+/**
+ * eel_embed_image_in_frame:
+ * @source_image:
+ * @frame_image:
+ * @left_offset:
+ * @top_offset:
+ * @right_offset:
+ * @bottom_offset:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkPixbuf *
 eel_embed_image_in_frame (GdkPixbuf *source_image, GdkPixbuf *frame_image, int left_offset, int top_offset, int right_offset, int bottom_offset)
 {
@@ -341,7 +391,13 @@ eel_embed_image_in_frame (GdkPixbuf *source_image, GdkPixbuf *frame_image, int l
    clearing every other pixel's alpha value in a checkerboard grip.  We have to do the
    checkerboard instead of reducing the alpha since it will be turned into an alpha-less
    gdkpixmap and mask for the actual dragging */
-
+/**
+ * eel_make_semi_transparent:
+ * @source_pixbuf:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkPixbuf *
 eel_make_semi_transparent (GdkPixbuf *src)
 {
@@ -398,4 +454,3 @@ eel_make_semi_transparent (GdkPixbuf *src)
 	
 	return dest_pixbuf;
 }
-

@@ -32,23 +32,32 @@
 #include "cong-fake-plugin-hooks.h"
 #include "cong-service-importer.h"
 
-gchar *cong_ui_make_what_failed_string_for_import(const gchar *uri_string)
+/**
+ * cong_ui_make_what_failed_string_for_import:
+ * @uri_string:
+ *
+ * TODO: Write me
+ */
+gchar *
+cong_ui_make_what_failed_string_for_import(const gchar *uri_string)
 {
 	gchar *return_val = g_strdup_printf(_("Conglomerate could not import the file \"%s\""), uri_string);
 
 	return return_val;
 }
 
-gboolean sgml_importer_mime_filter(CongServiceImporter *importer, const gchar *mime_type, gpointer user_data)
+GtkFileFilter*
+sgml_importer_filter_factory_callback (CongServiceImporter *importer)
 {
-	g_return_val_if_fail(importer, FALSE);
-	g_return_val_if_fail(mime_type, FALSE);
+	GtkFileFilter *filter;
 
-	if (0==strcmp(mime_type,"text/sgml")) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+	g_return_val_if_fail (importer, NULL);
+
+	filter = cong_service_importer_make_basic_filter (importer);
+
+	gtk_file_filter_add_mime_type (filter, "text/sgml");
+
+	return filter;
 }
 
 #if 0
@@ -71,7 +80,18 @@ static gboolean on_stderr(GIOChannel *source,
 }
 #endif
 
-void sgml_importer_action_callback(CongServiceImporter *importer, const gchar *uri, const gchar *mime_type, gpointer user_data, GtkWindow *toplevel_window)
+/**
+ * sgml_importer_action_callback:
+ * @importer:
+ * @uri:
+ * @mime_type:
+ * @user_data:
+ * @toplevel_window:
+ *
+ * TODO: Write me
+ */
+void 
+sgml_importer_action_callback(CongServiceImporter *importer, const gchar *uri, const gchar *mime_type, gpointer user_data, GtkWindow *toplevel_window)
 {
 #if 0
 	char* buffer;
@@ -173,8 +193,16 @@ void sgml_importer_action_callback(CongServiceImporter *importer, const gchar *u
 }
 
 
- /* would be exposed as "plugin_register"? */
-gboolean plugin_sgml_plugin_register(CongPlugin *plugin)
+/* would be exposed as "plugin_register"? */
+/**
+ * plugin_sgml_plugin_register:
+ * @plugin:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+plugin_sgml_plugin_register(CongPlugin *plugin)
 {
 	g_return_val_if_fail(plugin, FALSE);
 	
@@ -182,14 +210,22 @@ gboolean plugin_sgml_plugin_register(CongPlugin *plugin)
 				      _("Import SGML"), 
 				      _("Import an SGML file, converting to XML."),
 				      "sgml-import",
-				      sgml_importer_mime_filter,
+				      sgml_importer_filter_factory_callback,
 				      sgml_importer_action_callback,
 				      NULL);
 	return TRUE;
 }
 
 /* exposed as "plugin_configure"? legitimate for it not to be present */
-gboolean plugin_sgml_plugin_configure(CongPlugin *plugin)
+/**
+ * plugin_sgml_plugin_configure:
+ * @plugin:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+plugin_sgml_plugin_configure(CongPlugin *plugin)
 {
 	g_return_val_if_fail(plugin, FALSE);
 

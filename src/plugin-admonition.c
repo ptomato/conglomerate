@@ -37,6 +37,15 @@
 
 #include "plugin-admonition-node-element.h"
 
+/**
+ * manufacture_editor_node_admonition:
+ * @plugin_editor_node_factory:
+ * @editor_widget:
+ * @traversal_node:
+ * @user_data:
+ *
+ * TODO: Write me
+ */
 static CongEditorNodeElement*  
 manufacture_editor_node_admonition (CongServiceEditorNodeFactory *plugin_editor_node_factory, 
 				    CongEditorWidget3 *editor_widget, 
@@ -52,7 +61,15 @@ manufacture_editor_node_admonition (CongServiceEditorNodeFactory *plugin_editor_
 }
 
  /* would be exposed as "plugin_register"? */
-gboolean plugin_admonition_plugin_register(CongPlugin *plugin)
+/**
+ * plugin_admonition_plugin_register:
+ * @plugin:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+plugin_admonition_plugin_register(CongPlugin *plugin)
 {
 	g_return_val_if_fail(plugin, FALSE);
 	
@@ -66,7 +83,15 @@ gboolean plugin_admonition_plugin_register(CongPlugin *plugin)
 }
 
 /* exposed as "plugin_configure"? legitimate for it not to be present */
-gboolean plugin_admonition_plugin_configure(CongPlugin *plugin)
+/**
+ * plugin_admonition_plugin_configure:
+ * @plugin:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+plugin_admonition_plugin_configure(CongPlugin *plugin)
 {
 	g_return_val_if_fail(plugin, FALSE);
 

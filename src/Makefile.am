@@ -22,11 +22,25 @@ else
 printing_sources = 
 endif
 
+## http://bugzilla.gnome.org/show_bug.cgi?id=137248
+## integrate marshal.make into this Makefile.am
+##
+# this code is also in marshal.make
+cong-marshal.h: cong.marshal
+	glib-genmarshal $< --header --prefix=cong_cclosure_marshal > $@
+
+cong-marshal.c: cong.marshal
+	glib-genmarshal $< --body --prefix=cong_cclosure_marshal > $@
+
+## http://bugzilla.gnome.org/show_bug.cgi?id=137248
+
 conglomerate_SOURCES =      \
   global.h                  \
   cong-app.h                \
   cong-attribute-editor.h   \
   cong-attribute-editor-cdata.h \
+  cong-attribute-editor-lang.c	\
+  cong-attribute-editor-lang.h	\
   cong-attribute-editor-enumeration.h \
   cong-attribute-wrapper.h   \
   cong-attribute-wrapper-check-button.h \
@@ -92,6 +106,8 @@ conglomerate_SOURCES =      \
   cong-fake-plugin-hooks.h  \
   cong-file-selection.h     \
   cong-font.h               \
+  cong-glade.c		    \
+  cong-glade.h		    \
   cong-graph.h              \
   cong-location.h           \
   cong-marshal.h            \
@@ -286,8 +302,10 @@ conglomerate_SOURCES =      \
   plugin-admonition.c       \
   plugin-admonition-node-element.h \
   plugin-admonition-node-element.c \
+  plugin-arbitrary.c        \
   plugin-cleanup-source.c   \
   plugin-convert-case.c     \
+  plugin-css.c              \
   plugin-docbook.c          \
   plugin-templates.c        \
   plugin-dtd.c              \
@@ -317,20 +335,26 @@ conglomerate_SOURCES =      \
   main.c		    \
   $(printing_sources)
 
-INCLUDES = $(CONGLOMERATE_CFLAGS) \
+INCLUDES = $(BASE_CFLAGS) \
+	$(CONGLOMERATE_CFLAGS) \
 	$(PRINTING_CFLAGS) \
 	$(LIBFO_CFLAGS) \
+	$(SEWFOX_CFLAGS) \
 	$(GTKSOURCEVIEW_CFLAGS) \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \
-	-DPKGDATADIR=\""$(pkgdatadir)"\" \
+	-DPREFIX=\""$(prefix)"\" \
+	-DSYSCONFDIR=\""$(sysconfdir)/conglomerate"\" \
+	-DDATADIR=\""$(datadir)"\" \
+	-DLIBDIR=\""$(libdir)/conglomerate"\" \
 	$(NULL)
 
 conglomerate_LDADD  = $(CONGLOMERATE_LIBS) \
 	$(PRINTING_LIBS) \
 	$(LIBFO_LIBS) \
+	$(SEWFOX_LIBS) \
 	$(GTKSOURCEVIEW_LIBS) \
 	$(NULL)
 
-EXTRA_DIST = Makefile.win
+EXTRA_DIST = Makefile.win cong.marshal marshal.make
 
 ## Last Line

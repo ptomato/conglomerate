@@ -62,50 +62,6 @@ create_block_area (CongEditorNodeElementAdmonition *editor_node_element_admoniti
 					      area_label);
 }
 
-#if 0
-static CongEditorArea*
-create_block_area (CongEditorNodeElementAdmonition *editor_node_element_admonition);
-		   
-
-#if 1
-static void 
-create_areas (CongEditorNode *editor_node,
-	      const CongAreaCreationInfo *creation_info)
-{
-	CongEditorNodeElementAdmonition *editor_node_element_admonition = CONG_EDITOR_NODE_ELEMENT_ADMONITION (editor_node);
-	CongEditorArea *block_area;
-
-	g_return_if_fail (editor_node);
-
-	block_area = create_block_area (editor_node_element_admonition);
-
-	cong_editor_node_create_block_area (editor_node,
-					    creation_info,
-					    block_area,
-					    TRUE);
-	/* FIXME: should we attach signals, or store the area anywhere? */
-}
-#else
-static CongEditorArea*
-generate_block_area (CongEditorNode *editor_node)
-{
-	CongEditorArea *new_area;
-	CongEditorNodeElementAdmonition *editor_node_element_admonition = CONG_EDITOR_NODE_ELEMENT_ADMONITION (editor_node);
-	CongEditorArea *area_label;
-	GdkPixbuf* pixbuf;
-
-	g_return_val_if_fail (editor_node, NULL);
-
-	block_area = create_block_area (editor_node_element_admonition);
-
-	cong_editor_area_connect_node_signals (new_area,
-					       editor_node);
-
-	return new_area;
-}
-#endif
-#endif
-
 static const gchar*
 get_icon_filename (CongEditorNodeElementAdmonition *editor_node_element_admonition)
 {
@@ -120,13 +76,15 @@ static GdkPixbuf*
 load_icon (const gchar *icon_filename)
 {
 	gchar *full_path;
+	gchar *modified_icon_filename; /* FIXME bugzilla 136287 */
 	GdkPixbuf *pixbuf;
 
 	g_return_val_if_fail(icon_filename, NULL);
 
+	modified_icon_filename = g_strconcat(PACKAGE_NAME,"/",icon_filename, NULL);
 	full_path = gnome_program_locate_file (cong_app_get_gnome_program (cong_app_singleton()),
 					       GNOME_FILE_DOMAIN_APP_PIXMAP,
-					       icon_filename,
+					       modified_icon_filename,
 					       FALSE,
 					       NULL);
 
@@ -135,6 +93,7 @@ load_icon (const gchar *icon_filename)
 	pixbuf = gdk_pixbuf_new_from_file(full_path, NULL);
 	
 	g_free(full_path);
+	g_free(modified_icon_filename);
 
 	return pixbuf;
 }

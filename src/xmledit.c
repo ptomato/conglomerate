@@ -13,9 +13,17 @@
 #include "cong-range.h"
 #include "cong-error-dialog.h"
 #include "cong-command.h"
+#include "cong-util.h"
 
 /* --- Cut/copy/paste --- */
-void cong_document_cut_selection(CongDocument *doc)
+/**
+ * cong_document_cut_selection:
+ * @doc:
+ *
+ * TODO: Write me
+ */
+void 
+cong_document_cut_selection(CongDocument *doc)
 {
 	CongSelection *selection;
 	CongCursor *curs;
@@ -58,51 +66,45 @@ void cong_document_cut_selection(CongDocument *doc)
 	cong_document_end_edit (doc);
 }
 
-void cong_document_copy_selection(CongDocument *doc)
+/**
+ * cong_document_copy_selection:
+ * @doc:
+ *
+ * TODO: Write me
+ */
+void 
+cong_document_copy_selection(CongDocument *doc)
 {
-	CongSelection *selection;
-	CongCursor *curs;
 
-	g_return_if_fail(doc);
+	gchar *source;
 
-	selection = cong_document_get_selection(doc);
-	curs = cong_document_get_cursor(doc);
-	
-	if (!cong_location_exists(&curs->location)) return;
-	
-	if (!(cong_range_exists (cong_selection_get_logical_range (selection)) &&
-	      cong_range_is_valid (cong_selection_get_logical_range (selection)))) { 
-		return;
-	}
-
-	if (cong_range_is_empty (cong_selection_get_logical_range (selection))) {
-		return;
-	}
-
-	if (!cong_range_can_be_copied (cong_selection_get_ordered_range (selection))) {
-		g_warning ("Selection cannot be copied - UI should be insensitive");
-		return;
-	}
-
-	/* GREP FOR MVC */
-	cong_document_begin_edit (doc);
-
-	{
-		gchar *source = cong_range_generate_source (cong_selection_get_ordered_range (selection));
+	source = cong_selection_get_selected_text (doc);
 		
+	if (source)
+	{
+		/* GREP FOR MVC */
+		cong_document_begin_edit (doc);
+    
 		cong_app_set_clipboard_from_xml_fragment (cong_app_singleton(),
 							  GDK_SELECTION_CLIPBOARD,
 							  source,
 							  doc);
-
+		cong_document_end_edit (doc);
+	
 		g_free (source);
 	}
 
-	cong_document_end_edit (doc);
 }
 
-
-void cong_document_paste_clipboard_or_selection(CongDocument *doc, GtkWidget *widget)
+/**
+ * cong_document_paste_clipboard_or_selection:
+ * @doc:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+cong_document_paste_clipboard_or_selection(CongDocument *doc, GtkWidget *widget)
 {
 	CongSelection *selection;
 	CongCursor *curs;
@@ -127,6 +129,14 @@ void cong_document_paste_clipboard_or_selection(CongDocument *doc, GtkWidget *wi
 	}
 }
 
+/**
+ * cong_document_paste_source_at:
+ * @doc:
+ * @insert_loc:
+ * @source_fragment:
+ *
+ * TODO: Write me
+ */
 void 
 cong_document_paste_source_at (CongDocument *doc, 
 			       CongLocation *insert_loc, 
@@ -215,6 +225,14 @@ cong_document_paste_source_at (CongDocument *doc,
 
 }
 
+/**
+ * cong_document_paste_source_under:
+ * @doc:
+ * @relative_to_node:
+ * @source_fragment:
+ *
+ * TODO: Write me
+ */
 void
 cong_document_paste_source_under (CongDocument *doc, 
 				  CongNodePtr relative_to_node,
@@ -258,6 +276,14 @@ cong_document_paste_source_under (CongDocument *doc,
 	cong_document_end_edit (doc);
 }
 
+/**
+ * cong_document_paste_source_before:
+ * @doc:
+ * @relative_to_node:
+ * @source_fragment:
+ *
+ * TODO: Write me
+ */
 void
 cong_document_paste_source_before (CongDocument *doc, 
 				   CongNodePtr relative_to_node,
@@ -300,6 +326,14 @@ cong_document_paste_source_before (CongDocument *doc,
 	cong_document_end_edit (doc);
 }
 
+/**
+ * cong_document_paste_source_after:
+ * @doc:
+ * @relative_to_node:
+ * @source_fragment:
+ *
+ * TODO: Write me
+ */
 void
 cong_document_paste_source_after (CongDocument *doc, 
 				  CongNodePtr relative_to_node,
@@ -346,46 +380,17 @@ cong_document_paste_source_after (CongDocument *doc,
 	cong_document_end_edit (doc);
 }
 
-extern char *ilogo_xpm[];
-
-void cong_document_view_source(CongDocument *doc)
+/**
+ * cong_document_view_source:
+ * @doc:
+ *
+ * TODO: Write me
+ */
+void 
+cong_document_view_source(CongDocument *doc)
 {
-	GtkWidget *window;
-	GtkWidget *source_view;
-
 	g_return_if_fail(doc);
 
-	window = gnome_app_new(PACKAGE_NAME,
-			       _("Source View - Conglomerate"));
-	source_view = cong_source_view_new(doc);
-
-	gnome_app_set_contents(GNOME_APP(window), source_view);
-
-	/* Set up the window nicely: */
-	{	
-		GdkPixbuf *icon_pixbuf = gdk_pixbuf_new_from_xpm_data((const char**)ilogo_xpm);
-		
-		gtk_window_set_icon(GTK_WINDOW(window),
-				    icon_pixbuf);
-
-		gdk_pixbuf_unref(icon_pixbuf);
-
-	}
-
-	gtk_window_set_default_size(GTK_WINDOW(window),
-				    500,
-				    400);
-
-	gtk_widget_show(GTK_WIDGET(window));
-
+	cong_util_show_in_window (cong_source_view_new(doc),
+				  _("Source View - Conglomerate"));
 }
-
-
-
-
-
-
-
-
-
-

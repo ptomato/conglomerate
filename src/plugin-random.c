@@ -34,6 +34,7 @@
 #include "cong-dispspec-registry.h"
 #include "cong-dtd.h"
 #include "cong-eel.h"
+#include "cong-glade.h"
 
 #include "cong-fake-plugin-hooks.h"
 #include "cong-service-document-factory.h"
@@ -120,7 +121,16 @@ free_gui (gpointer factory_data)
 	g_free (random_gui);	
 }
 
-void factory_page_creation_callback_random(CongServiceDocumentFactory *factory, CongNewFileAssistant *assistant, gpointer user_data)
+/**
+ * factory_page_creation_callback_random:
+ * @factory:
+ * @assistant:
+ * @user_data:
+ *
+ * TODO: Write me
+ */
+void 
+factory_page_creation_callback_random(CongServiceDocumentFactory *factory, CongNewFileAssistant *assistant, gpointer user_data)
 {
 	RandomGUI *random_gui;
 #if 0
@@ -129,7 +139,7 @@ void factory_page_creation_callback_random(CongServiceDocumentFactory *factory, 
 
 	random_gui = g_new0 (RandomGUI, 1);
 	
-	random_gui->xml = cong_util_load_glade_file ("glade/plugin-random.glade",
+	random_gui->xml = cong_util_load_glade_file ("conglomerate/glade/plugin-random.glade",
 						     "middle_page",
 						     NULL,
 						     NULL);
@@ -181,6 +191,12 @@ populate_element (RandomCreationInfo *rci,
 		  xmlNodePtr xml_node,
 		  int depth);
 
+/**
+ * generate_bool_for_opt:
+ * @rci:
+ *
+ * TODO: Write me
+ */
 gboolean
 generate_bool_for_opt (RandomCreationInfo *rci)
 {
@@ -189,6 +205,12 @@ generate_bool_for_opt (RandomCreationInfo *rci)
 	return g_rand_boolean (rci->random);
 }
 
+/**
+ * generate_count_for_mult:
+ * @rci:
+ *
+ * TODO: Write me
+ */
 gint
 generate_count_for_mult (RandomCreationInfo *rci)
 {
@@ -199,6 +221,12 @@ generate_count_for_mult (RandomCreationInfo *rci)
 				 6);
 }
 
+/**
+ * generate_count_for_plus:
+ * @rci:
+ *
+ * TODO: Write me
+ */
 gint
 generate_count_for_plus (RandomCreationInfo *rci)
 {
@@ -209,6 +237,13 @@ generate_count_for_plus (RandomCreationInfo *rci)
 				 7);
 }
 
+/**
+ * generate_count_for_ocur:
+ * @rci:
+ * @ocur:
+ *
+ * TODO: Write me
+ */
 gint
 generate_count_for_ocur (RandomCreationInfo *rci,
 			 xmlElementContentOccur ocur)
@@ -256,6 +291,12 @@ cong_dtd_generate_source_for_content (xmlElementContentPtr content)
 }
 #endif
 
+/**
+ * random_unichar:
+ * @rci:
+ *
+ * TODO: Write me
+ */
 gunichar
 random_unichar (RandomCreationInfo *rci)
 {
@@ -287,6 +328,12 @@ random_unichar (RandomCreationInfo *rci)
 	}
 }
 
+/**
+ * random_text:
+ * @rci:
+ *
+ * TODO: Write me
+ */
 gchar*
 random_text (RandomCreationInfo *rci)
 {
@@ -512,9 +559,17 @@ populate_element (RandomCreationInfo *rci,
 
 			g_assert (NULL==cong_dispspec_element_get_ns_uri (ds_element));
 			child_node = xmlNewDocNode (xml_doc,
-						    NULL, /* fixme: namespaces! */
+						    NULL,
 						    cong_dispspec_element_get_local_name (ds_element),
 						    "");
+			if (cong_dispspec_element_get_ns_uri (ds_element)) {
+				xmlNsPtr xml_ns = xmlNewNs (child_node, 
+							    cong_dispspec_element_get_ns_uri (ds_element),
+							    NULL);
+				xmlSetNs (child_node, 
+					  xml_ns);	
+			}
+
 			xmlAddChild (xml_node,
 				     child_node);
 			
@@ -549,12 +604,17 @@ make_random_doc (RandomCreationInfo *rci)
 
 	xml_doc = xmlNewDoc ("1.0");
 
-	/* FIXME: support namespaces! */
-	g_assert (NULL==cong_dispspec_element_get_ns_uri (ds_element_root));
 	root_node = xmlNewDocNode (xml_doc,
 				   NULL, /* xmlNsPtr ns, */
 				   root_element,
 				   NULL);
+	if (cong_dispspec_element_get_ns_uri (ds_element_root)) {
+		xmlNsPtr xml_ns = xmlNewNs (root_node, 
+					    cong_dispspec_element_get_ns_uri (ds_element_root),
+					    NULL);
+		xmlSetNs (root_node, 
+			  xml_ns);	
+	}
 	xmlDocSetRootElement (xml_doc,
 			      root_node);
 
@@ -572,8 +632,16 @@ make_random_doc (RandomCreationInfo *rci)
 	return xml_doc;
 }
 
-
-void factory_action_callback_random(CongServiceDocumentFactory *factory, CongNewFileAssistant *assistant, gpointer user_data)
+/**
+ * factory_action_callback_random:
+ * @factory:
+ * @assistant:
+ * @user_data:
+ *
+ * TODO: Write me
+ */
+void 
+factory_action_callback_random(CongServiceDocumentFactory *factory, CongNewFileAssistant *assistant, gpointer user_data)
 {
 	RandomCreationInfo rci;
 	xmlDocPtr xml_doc;
@@ -599,8 +667,16 @@ void factory_action_callback_random(CongServiceDocumentFactory *factory, CongNew
 						    cong_new_file_assistant_get_toplevel (assistant));
 }
 
- /* would be exposed as "plugin_register"? */
-gboolean plugin_random_plugin_register(CongPlugin *plugin)
+/* would be exposed as "plugin_register"? */
+/**
+ * plugin_random_plugin_register:
+ * @plugin:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+plugin_random_plugin_register(CongPlugin *plugin)
 {
 	g_return_val_if_fail(plugin, FALSE);
 	
@@ -616,7 +692,15 @@ gboolean plugin_random_plugin_register(CongPlugin *plugin)
 }
 
 /* exposed as "plugin_configure"? legitimate for it not to be present */
-gboolean plugin_random_plugin_configure(CongPlugin *plugin)
+/**
+ * plugin_random_plugin_configure:
+ * @plugin:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+plugin_random_plugin_configure(CongPlugin *plugin)
 {
 	g_return_val_if_fail(plugin, FALSE);
 

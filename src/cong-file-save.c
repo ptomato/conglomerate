@@ -32,7 +32,16 @@
 #include "cong-file-selection.h"
 #include "cong-ui-hooks.h"
 
-gint toolbar_callback_save(GtkWidget *w, gpointer data)
+/**
+ * toolbar_callback_save:
+ * @w:
+ * @data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gint 
+toolbar_callback_save(GtkWidget *w, gpointer data)
 {
 	CongPrimaryWindow *primary_window = data;
 	CongDocument *doc = cong_primary_window_get_document(primary_window);
@@ -40,7 +49,16 @@ gint toolbar_callback_save(GtkWidget *w, gpointer data)
 	return save_document(doc, cong_primary_window_get_toplevel(primary_window));
 }
 
-gint save_document_as(CongDocument *doc, GtkWindow *parent_window)
+/**
+ * save_document_as:
+ * @doc:
+ * @parent_window:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gint 
+save_document_as(CongDocument *doc, GtkWindow *parent_window)
 {
 	char *current_doc_name;
 	char *new_doc_name;
@@ -53,8 +71,8 @@ gint save_document_as(CongDocument *doc, GtkWindow *parent_window)
 	new_doc_name = cong_get_file_name(_("Save XML as..."), 
 					  current_doc_name,
 					  parent_window,
-					  CONG_FILE_CHOOSER_ACTION_SAVE);
-
+					  CONG_FILE_CHOOSER_ACTION_SAVE,
+					  cong_file_selection_make_xml_filter_list ());
 	if (current_doc_name) {
 		g_free(current_doc_name);
 	}
@@ -70,7 +88,16 @@ gint save_document_as(CongDocument *doc, GtkWindow *parent_window)
 	return TRUE;
 }
 
-gint save_document(CongDocument *doc, GtkWindow *parent_window) 
+/**
+ * save_document:
+ * @doc:
+ * @parent_window:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gint 
+save_document(CongDocument *doc, GtkWindow *parent_window) 
 {
 	gchar *doc_name;
 

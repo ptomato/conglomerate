@@ -35,6 +35,20 @@ struct CongServiceToolPrivate
 
 CONG_DEFINE_CLASS (CongServiceTool, cong_service_tool, CONG_SERVICE_TOOL, CongService, CONG_SERVICE_TYPE)
 
+/**
+ * cong_service_tool_construct:
+ * @tool:
+ * @name:
+ * @description:
+ * @service_id:
+ * @menu_text:
+ * @tooltip_text:
+ * @tooltip_further_text:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongServiceTool*
 cong_service_tool_construct (CongServiceTool *tool,
 			     const gchar *name, 
@@ -64,6 +78,13 @@ cong_service_tool_construct (CongServiceTool *tool,
 
 }
 
+/**
+ * cong_service_tool_get_menu_text:
+ * @tool:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_service_tool_get_menu_text (CongServiceTool *tool)
 {
@@ -72,6 +93,13 @@ cong_service_tool_get_menu_text (CongServiceTool *tool)
 	return PRIVATE (tool)->menu_text;
 }
 
+/**
+ * cong_service_tool_get_tip_text:
+ * @tool:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_service_tool_get_tip_text (CongServiceTool *tool)
 {
@@ -80,6 +108,13 @@ cong_service_tool_get_tip_text (CongServiceTool *tool)
 	return PRIVATE (tool)->tooltip_text;
 }
 
+/**
+ * cong_service_tool_get_tip_further_text:
+ * @tool:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_service_tool_get_tip_further_text (CongServiceTool *tool)
 {
@@ -88,6 +123,13 @@ cong_service_tool_get_tip_further_text (CongServiceTool *tool)
 	return PRIVATE (tool)->tooltip_further_text;
 }
 
+/**
+ * cong_service_tool_get_user_data:
+ * @tool:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gpointer
 cong_service_tool_get_user_data (CongServiceTool *tool)
 {

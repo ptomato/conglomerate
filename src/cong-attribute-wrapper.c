@@ -93,6 +93,18 @@ cong_attribute_wrapper_instance_init (CongAttributeWrapper *attribute_wrapper)
 	attribute_wrapper->private = g_new0(CongAttributeWrapperDetails,1);
 }
 
+/**
+ * cong_attribute_wrapper_construct:
+ * @attribute_wrapper:
+ * @doc:
+ * @node:
+ * @ns_ptr:
+ * @attribute_name:
+ * @attr:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongAttributeWrapper*
 cong_attribute_wrapper_construct (CongAttributeWrapper *attribute_wrapper,
 				  CongDocument *doc,
@@ -125,6 +137,13 @@ cong_attribute_wrapper_construct (CongAttributeWrapper *attribute_wrapper,
 	return CONG_ATTRIBUTE_WRAPPER (attribute_wrapper);
 }
 
+/**
+ * cong_attribute_wrapper_get_document:
+ * @attribute_wrapper:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDocument*
 cong_attribute_wrapper_get_document (CongAttributeWrapper *attribute_wrapper)
 {
@@ -133,6 +152,13 @@ cong_attribute_wrapper_get_document (CongAttributeWrapper *attribute_wrapper)
 	return PRIVATE(attribute_wrapper)->doc; 
 }
 
+/**
+ * cong_attribute_wrapper_get_node:
+ * @attribute_wrapper:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongNodePtr
 cong_attribute_wrapper_get_node (CongAttributeWrapper *attribute_wrapper)
 {
@@ -141,6 +167,13 @@ cong_attribute_wrapper_get_node (CongAttributeWrapper *attribute_wrapper)
 	return PRIVATE(attribute_wrapper)->node;
 }
 
+/**
+ * cong_attribute_wrapper_get_attribute:
+ * @attribute_wrapper:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 xmlAttributePtr
 cong_attribute_wrapper_get_attribute (CongAttributeWrapper *attribute_wrapper)
 {
@@ -149,6 +182,13 @@ cong_attribute_wrapper_get_attribute (CongAttributeWrapper *attribute_wrapper)
 	return PRIVATE(attribute_wrapper)->attr;
 }
 
+/**
+ * cong_attribute_wrapper_get_ns:
+ * @attribute_wrapper:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 xmlNs *
 cong_attribute_wrapper_get_ns (CongAttributeWrapper *attribute_wrapper)
 {
@@ -157,6 +197,13 @@ cong_attribute_wrapper_get_ns (CongAttributeWrapper *attribute_wrapper)
 	return PRIVATE(attribute_wrapper)->ns_ptr;	
 }
 
+/**
+ * cong_attribute_wrapper_get_attribute_name:
+ * @attribute_wrapper:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const gchar*
 cong_attribute_wrapper_get_attribute_name (CongAttributeWrapper *attribute_wrapper)
 {
@@ -165,6 +212,13 @@ cong_attribute_wrapper_get_attribute_name (CongAttributeWrapper *attribute_wrapp
 	return PRIVATE(attribute_wrapper)->attribute_name;
 }
 
+/**
+ * cong_attribute_wrapper_get_attribute_value:
+ * @attribute_wrapper:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gchar*
 cong_attribute_wrapper_get_attribute_value (CongAttributeWrapper *attribute_wrapper)
 {
@@ -175,6 +229,13 @@ cong_attribute_wrapper_get_attribute_value (CongAttributeWrapper *attribute_wrap
 					PRIVATE(attribute_wrapper)->attribute_name);
 }
 
+/**
+ * cong_attribute_wrapper_set_value:
+ * @attribute_wrapper:
+ * @new_value:
+ *
+ * TODO: Write me
+ */
 void
 cong_attribute_wrapper_set_value (CongAttributeWrapper *attribute_wrapper,
 				  const gchar *new_value)
@@ -201,6 +262,12 @@ cong_attribute_wrapper_set_value (CongAttributeWrapper *attribute_wrapper,
 				   cmd);
 }
 
+/**
+ * cong_attribute_wrapper_remove_value:
+ * @attribute_wrapper:
+ *
+ * TODO: Write me
+ */
 void
 cong_attribute_wrapper_remove_value (CongAttributeWrapper *attribute_wrapper)
 {
@@ -297,4 +364,21 @@ on_remove_attribute (CongDocument *doc,
 					      (attribute_wrapper));
 		}
 	}
+}
+
+/**
+ * cong_attribute_wrapper_bind_to_widget:
+ * @wrapper:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+
+void
+cong_attribute_wrapper_bind_to_widget (CongAttributeWrapper* wrapper,
+			GtkWidget *widget)
+{
+     g_return_if_fail (IS_CONG_ATTRIBUTE_WRAPPER (wrapper));
+
+     /* Leak it for now? Or attach as generic data and attach a signal handler to the widget's destroy signal? */
 }

@@ -53,6 +53,13 @@ not_eel_gdk_rgb_to_color_spec (const guint32 color)
 }
 #endif
 
+/**
+ * get_col_string:
+ * @col:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gchar*
 get_col_string(const GdkColor* col)
 {
@@ -832,7 +839,7 @@ CongNodePtr xv_editor_elements_skip(CongNodePtr x, CongDispspec *ds)
 {
 	for ( ; x; x = cong_node_next(x))
 	{
-		enum CongNodeType node_type = cong_node_type(x);
+		CongNodeType node_type = cong_node_type(x);
 		const char *name = xml_frag_name_nice(x);
 
 #error
@@ -1050,7 +1057,7 @@ void cong_editor_recursively_populate_ui(CongEditorView *editor_view,
 
 	for ( ; x; )
 	{
-		enum CongNodeType node_type = cong_node_type(x);
+		CongNodeType node_type = cong_node_type(x);
 		const char *name = xml_frag_name_nice(x);
 
 		/* g_message("Examining frag %s\n",name); */
@@ -1181,7 +1188,7 @@ void cong_editor_populate_ui(CongEditorView *editor_view)
 
 	for ( ; x; x = cong_node_next(x))
 	{
-		enum CongNodeType type = cong_node_type(x);
+		CongNodeType type = cong_node_type(x);
 
 		const char *name = xml_frag_name_nice(x);
 

@@ -99,6 +99,15 @@ cong_editor_area_line_instance_init (CongEditorAreaLine *line)
 }
 
 /* Exported function definitions: */
+/**
+ * cong_editor_area_line_construct:
+ * @area_line:
+ * @editor_widget:
+ * @width_limit:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_line_construct (CongEditorAreaLine *line,
 				 CongEditorWidget3 *editor_widget,
@@ -120,7 +129,14 @@ cong_editor_area_line_construct (CongEditorAreaLine *line,
 
 	return CONG_EDITOR_AREA (line);
 }
-
+/**
+ * cong_editor_area_line_new:
+ * @editor_widget:
+ * @width_limit:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_line_new (CongEditorWidget3 *editor_widget,
 			   gint width_limit)
@@ -136,6 +152,13 @@ cong_editor_area_line_new (CongEditorWidget3 *editor_widget,
 		 width_limit);
 }
 
+/**
+ * cong_editor_area_line_get_width_limit:
+ * @area_line:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gint
 cong_editor_area_line_get_width_limit (CongEditorAreaLine *area_line)
 {
@@ -144,6 +167,13 @@ cong_editor_area_line_get_width_limit (CongEditorAreaLine *area_line)
 	return PRIVATE(area_line)->width_limit;
 }
 
+/**
+ * cong_editor_area_line_get_width_used:
+ * @area_line:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gint
 cong_editor_area_line_get_width_used_up_to (CongEditorAreaLine *area_line,
 					    CongEditorArea *child_area)
@@ -190,6 +220,13 @@ cong_editor_area_line_get_width_used (CongEditorAreaLine *area_line)
 							PRIVATE(area_line)->width_limit);
 }
 
+/**
+ * cong_editor_area_line_get_width_free:
+ * @area_line:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gint
 cong_editor_area_line_get_width_free (CongEditorAreaLine *area_line)
 {

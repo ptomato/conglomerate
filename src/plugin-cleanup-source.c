@@ -82,6 +82,13 @@ generate_indentation(const CongSourceCleanupOptions *options, guint indent_level
 
 }
 
+/**
+ * cong_util_is_recursively_inline:
+ * @doc:
+ * @node:
+ *
+ * TODO: Write me
+ */
 gboolean 
 cong_util_is_recursively_inline (CongDocument *doc,
 				 CongNodePtr node)
@@ -155,8 +162,16 @@ cong_util_is_recursively_inline (CongDocument *doc,
 	return TRUE;
 }
 
-gchar* cong_util_strip_whitespace_from_string (const gchar* input_string, 
-					       gboolean strip_all_initial_whitespace)
+/**
+ * cong_util_strip_whitespace_from_string:
+ * @input_string:
+ * @strip_all_initial_whitespace:
+ *
+ * TODO: Write me
+ */
+gchar* 
+cong_util_strip_whitespace_from_string (const gchar* input_string, 
+					gboolean strip_all_initial_whitespace)
 {
 	gunichar *unichar_string;
 	glong num_chars;
@@ -296,7 +311,7 @@ static gboolean add_indentation_callback(CongDocument *doc, CongNodePtr node, gp
 			g_assert(node->parent);
 			
 			{
-				enum CongNodeType parent_type = cong_node_type (node->parent);
+				CongNodeType parent_type = cong_node_type (node->parent);
 				if (parent_type!=CONG_NODE_TYPE_DOCUMENT) {
 					add_indentation_and_cr_nodes (doc, 
 								      node,
@@ -422,8 +437,16 @@ static void action_callback(CongServiceDocTool *tool, CongPrimaryWindow *primary
 	cong_util_cleanup_source(cong_primary_window_get_document(primary_window), &options);
 }
 
- /* would be exposed as "plugin_register"? */
-gboolean plugin_cleanup_source_plugin_register(CongPlugin *plugin)
+/* would be exposed as "plugin_register"? */
+/**
+ * plugin_cleanup_source_plugin_register:
+ * @plugin:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+plugin_cleanup_source_plugin_register(CongPlugin *plugin)
 {
 	g_return_val_if_fail(plugin, FALSE);
 
@@ -442,7 +465,15 @@ gboolean plugin_cleanup_source_plugin_register(CongPlugin *plugin)
 }
 
 /* exposed as "plugin_configure"? legitimate for it not to be present */
-gboolean plugin_cleanup_source_plugin_configure(CongPlugin *plugin)
+/**
+ * plugin_cleanup_source_plugin_configure:
+ * @plugin:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+gboolean 
+plugin_cleanup_source_plugin_configure(CongPlugin *plugin)
 {
 	g_return_val_if_fail(plugin, FALSE);
 

@@ -7,20 +7,45 @@
 #include "global.h"
 #include "cong-file-selection.h"
 
-/*
-  This file isolates the API change-over between gtk_file_selection and gtk_file_chooser.
+/**
+ * cong_get_file_name:
+ * @title:
+ * @filename:
+ * @parent_window:
+ * @action:
+ * @list_of_filters:
+ * 
+ * TODO: Write me
+ * Returns:
  */
-#if 0
-/* Implementation in terms of gtk_file_chooser: */
+
 gchar*
 cong_get_file_name (const gchar *title, 
 		    const gchar *filename,
 		    GtkWindow *parent_window,
-		    CongFileChooserAction cong_action)
+		    CongFileChooserAction cong_action,
+		    GList *list_of_filters)
+{
+	return cong_get_file_name_with_filter (title, 
+					       filename,
+					       parent_window,
+					       cong_action,
+					       list_of_filters,
+					       NULL);
+}
+
+gchar*
+cong_get_file_name_with_filter (const gchar *title, 
+				const gchar *filename,
+				GtkWindow *parent_window,
+				CongFileChooserAction cong_action,
+				GList *list_of_filters,
+				GtkFileFilter **output_filter)
 {
 	gchar *result = NULL;
 	GtkWidget *dialog;
 	GtkFileChooserAction gtk_action;
+	GList *iter;
 
 	g_return_val_if_fail (title, NULL);
 	g_return_val_if_fail (parent_window, NULL);
@@ -40,78 +65,48 @@ cong_get_file_name (const gchar *title,
 					      parent_window,
 					      gtk_action,
 					      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-					      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+					      (gtk_action==GTK_FILE_CHOOSER_ACTION_SAVE)?GTK_STOCK_SAVE:GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 					      NULL);
 
 	if (filename) {
 		gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (dialog), filename);
 	}
-#if 0
-	GtkFileFilter *filter = gtk_file_filter_new ();
-	gtk_file_filter_set_name (filter, "All Files");
-	gtk_file_filter_add_pattern (filter, "*");
-	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
 
-	GtkFileFilter *test_filter = gtk_file_filter_new ();
-	gtk_file_filter_set_name (test_filter, "My Test Filter");
-	gtk_file_filter_add_mime_type (test_filter, "text/xml");
-	gtk_file_filter_add_mime_type (test_filter, "x-directory/normal");
-	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), 
-				     test_filter);
-	gtk_file_chooser_set_filter (GTK_FILE_CHOOSER (dialog), 
-				     test_filter);
-#endif
+	for (iter = list_of_filters; iter; iter=iter->next) {
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog),
+					     GTK_FILE_FILTER (iter->data));
+	}
+
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		result = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-	}
-	
+
+		if (output_filter) {
+			GtkFileFilter *filter = gtk_file_chooser_get_filter (GTK_FILE_CHOOSER (dialog));
+			g_assert (GTK_IS_FILE_FILTER (filter));
+			*output_filter = filter;
+		}
+	}	
+
 	gtk_widget_destroy (dialog);
 	
 	return result;
 }
-#else
-/* Implementation in terms of gtk_file_selection: */
-gchar*
-cong_get_file_name (const gchar *title, 
-		    const gchar *filename,
-		    GtkWindow *parent_window,
-		    CongFileChooserAction cong_action)
+
+GList*
+cong_file_selection_make_xml_filter_list (void)
 {
-	GtkFileSelection *file_selection;
-	gint result_int;
-	gchar *result_filename;
+	GList *list = NULL;
+	GtkFileFilter *test_filter = gtk_file_filter_new ();
+	gtk_file_filter_set_name (test_filter, _("XML Files"));
+	gtk_file_filter_add_mime_type (test_filter, "text/xml");
+	gtk_file_filter_add_mime_type (test_filter, "x-directory/normal");
 
-	g_return_val_if_fail (title, NULL);
-	g_return_val_if_fail (parent_window, NULL);
+	/* Workarounds for various files that don't appear for me: */
+	gtk_file_filter_add_pattern (test_filter, "*.glade");
+	gtk_file_filter_add_pattern (test_filter, "*.xsl");
 
-	/* Create a new file selection widget */
-	file_selection = GTK_FILE_SELECTION(gtk_file_selection_new (title));
+	list = g_list_append(list, test_filter);
 
-	if (filename) {
-		gtk_file_selection_set_filename(file_selection, 
-						filename);
-	}
-
-	gtk_window_set_transient_for(GTK_WINDOW(file_selection), 
-				     parent_window);
-
-	result_int = gtk_dialog_run(GTK_DIALOG(file_selection));
-
-	switch (result_int) {
-	default: g_assert(0);
-	case GTK_RESPONSE_DELETE_EVENT:
-	case GTK_RESPONSE_NONE:
-	case GTK_RESPONSE_CANCEL:
-		result_filename = NULL;
-		break;
-
-	case GTK_RESPONSE_OK:
-		result_filename = g_strdup(gtk_file_selection_get_filename(file_selection));
-		break;
-	}
-
-	gtk_widget_destroy(GTK_WIDGET(file_selection));
-
-	return result_filename;
+ 	return list;	
 }
-#endif
+

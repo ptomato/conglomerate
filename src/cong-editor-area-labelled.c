@@ -92,6 +92,15 @@ cong_editor_area_labelled_instance_init (CongEditorAreaLabelled *area_labelled)
 
 
 /* Exported function definitions: */
+/**
+ * cong_editor_area_labelled_construct:
+ * @area_labelled:
+ * @editor_widget:
+ * @label:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_labelled_construct (CongEditorAreaLabelled *area_labelled,
 				     CongEditorWidget3 *editor_widget,
@@ -130,6 +139,14 @@ cong_editor_area_labelled_construct (CongEditorAreaLabelled *area_labelled,
 	return CONG_EDITOR_AREA (area_labelled);
 }
 
+/**
+ * cong_editor_area_labelled_new:
+ * @editor_widget:
+ * @label:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_labelled_new (CongEditorWidget3 *editor_widget,
 			       CongEditorArea *label)
@@ -145,6 +162,13 @@ cong_editor_area_labelled_new (CongEditorWidget3 *editor_widget,
 		 label);
 }
 
+/**
+ * cong_editor_area_labelled_set_label:
+ * @area_labelled:
+ * @label:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_labelled_set_label (CongEditorAreaLabelled *area_labelled,
 				     CongEditorArea *label)

@@ -3,7 +3,7 @@
 /*
  * cong-fake-plugin-hooks.h
  *
- * Copyright (C) 2003 David Malcolm
+ * Copyright (C) 2004 David Malcolm
  *
  * Conglomerate is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -37,6 +37,10 @@ gboolean plugin_abiword_plugin_configure(CongPlugin *plugin);
 gboolean plugin_admonition_plugin_register(CongPlugin *plugin);
 gboolean plugin_admonition_plugin_configure(CongPlugin *plugin);
 
+/* plugin-arbitrary.c: */
+gboolean plugin_arbitrary_plugin_register(CongPlugin *plugin);
+gboolean plugin_arbitrary_plugin_configure(CongPlugin *plugin);
+
 /* plugin-cleanup-source.c: */
 gboolean plugin_cleanup_source_plugin_register(CongPlugin *plugin);
 gboolean plugin_cleanup_source_plugin_configure(CongPlugin *plugin);
@@ -44,6 +48,10 @@ gboolean plugin_cleanup_source_plugin_configure(CongPlugin *plugin);
 /* plugin-convert-case.c: */
 gboolean plugin_convert_case_plugin_register(CongPlugin *plugin);
 gboolean plugin_convert_case_plugin_configure(CongPlugin *plugin);
+
+/* plugin-css.c: */
+gboolean plugin_css_plugin_register(CongPlugin *plugin);
+gboolean plugin_css_plugin_configure(CongPlugin *plugin);
 
 /* plugin-docbook.c: */
 gboolean plugin_docbook_plugin_register(CongPlugin *plugin);

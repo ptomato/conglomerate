@@ -71,6 +71,17 @@ cong_node_modification_remove_attribute_instance_init (CongNodeModificationRemov
 	node->private = g_new0(CongNodeModificationRemoveAttributeDetails,1);
 }
 
+/**
+ * cong_node_modification_remove_attribute_construct:
+ * @node_modification_remove_attribute:
+ * @doc:
+ * @node:
+ * @ns_ptr:
+ * @name:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongNodeModificationRemoveAttribute*
 cong_node_modification_remove_attribute_construct (CongNodeModificationRemoveAttribute *node_modification_remove_attribute,
 						   CongDocument *doc,
@@ -96,6 +107,16 @@ cong_node_modification_remove_attribute_construct (CongNodeModificationRemoveAtt
 	return node_modification_remove_attribute;
 }
 
+/**
+ * cong_node_modification_remove_attribute_new:
+ * @doc:
+ * @node:
+ * @ns_ptr:
+ * @name:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongModification*
 cong_node_modification_remove_attribute_new (CongDocument *doc,
 					     CongNodePtr node,
@@ -209,4 +230,3 @@ redo (CongModification *modification)
 	
 	cong_document_end_edit (doc);
 }
-

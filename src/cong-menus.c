@@ -71,7 +71,15 @@ extern char *ilogo_xpm[];
 #define ENABLE_DEBUG_MENU 1
 #define ENABLE_UNIMPLEMENTED_MENUS 1
 
-GtkWidget* make_uneditable_text(const gchar* text)
+/**
+ * make_uneditable_text:
+ * @text:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+GtkWidget* 
+make_uneditable_text(const gchar* text)
 {
 #if 1
 	GtkWidget *widget = gtk_label_new(text);
@@ -91,9 +99,18 @@ GtkWidget* make_uneditable_text(const gchar* text)
 
 
 /* Handy routines for implementing menu callbacks: */
-void unimplemented_menu_item(gpointer callback_data,
-			     guint callback_action,
-			     GtkWidget *widget)
+/**
+ * unimplemented_menu_item:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+unimplemented_menu_item(gpointer callback_data,
+			guint callback_action,
+			GtkWidget *widget)
 {
 	CongPrimaryWindow *primary_window = callback_data;
 	CONG_DO_UNIMPLEMENTED_DIALOG(cong_primary_window_get_toplevel(primary_window), 
@@ -172,6 +189,7 @@ static void menu_callback_file_save_copy(gpointer callback_data,
 				     _("The selected menu item has not yet been implemented."));
 }
 
+#if ENABLE_UNIMPLEMENTED_MENUS
 static void menu_callback_file_revert(gpointer callback_data,
 				      guint callback_action,
 				      GtkWidget *widget)
@@ -207,6 +225,7 @@ static void menu_callback_file_revert(gpointer callback_data,
 							      118770);
 	} 
 }
+#endif /* ENABLE_UNIMPLEMENTED_MENUS */
 
 static void menu_callback_file_import(gpointer callback_data,
 				      guint callback_action,
@@ -402,21 +421,44 @@ menu_callback_preferences (gpointer callback_data,
 
 /* Callbacks for "Debug" menu: */
 #if ENABLE_DEBUG_MENU
-void debug_error(CongPrimaryWindow *primary_window)
+/**
+ * debug_error:
+ * @primary_window:
+ *
+ * TODO: Write me
+ */
+void 
+debug_error(CongPrimaryWindow *primary_window)
 {
 	cong_error_tests(cong_primary_window_get_toplevel(primary_window));
 }
 
-void menu_callback_debug_error(gpointer callback_data,
-			       guint callback_action,
-			       GtkWidget *widget)
+/**
+ * menu_callback_debug_error:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_error(gpointer callback_data,
+			  guint callback_action,
+			  GtkWidget *widget)
 {
 	CongPrimaryWindow *primary_window = callback_data;
 
 	debug_error(primary_window); 
 }
 
-void open_preview_window_for_doc(xmlDocPtr doc)
+/**
+ * open_preview_window_for_doc:
+ * @doc:
+ *
+ * TODO: Write me
+ */
+void 
+open_preview_window_for_doc(xmlDocPtr doc)
 {
 #if 1
 	/* Save it to a temp file and invoke user's favourite browser: */
@@ -435,8 +477,16 @@ void open_preview_window_for_doc(xmlDocPtr doc)
 #endif
 }
 
-void open_transformed_window_for_doc(xmlDocPtr doc, 
-				     GtkWindow *parent_window)
+/**
+ * open_transformed_window_for_doc:
+ * @doc:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
+void 
+open_transformed_window_for_doc(xmlDocPtr doc, 
+				GtkWindow *parent_window)
 {
 	/* Hackish test: */
 
@@ -473,9 +523,16 @@ void open_transformed_window_for_doc(xmlDocPtr doc,
 	g_object_unref(G_OBJECT(cong_doc));
 }
 
-
-void debug_transform(CongPrimaryWindow *primary_window,
-		    const gchar *stylesheet_filename)
+/**
+ * debug_transform:
+ * @primary_window:
+ * @stylesheet_filename:
+ *
+ * TODO: Write me
+ */
+void 
+debug_transform(CongPrimaryWindow *primary_window,
+		const gchar *stylesheet_filename)
 {
 	CongDocument *doc;
 
@@ -566,7 +623,16 @@ void debug_transform(CongPrimaryWindow *primary_window,
 #define DOCBOOK_TO_JAVAHELP_STYLESHEET_FILE ("javahelp/javahelp.xsl")
 #define DOCBOOK_TO_FO_STYLESHEET_FILE ("fo/docbook.xsl")
 
-void menu_callback_debug_transform_docbook_to_html(gpointer callback_data,
+/**
+ * menu_callback_debug_transform_docbook_to_html:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_transform_docbook_to_html(gpointer callback_data,
 				  guint callback_action,
 				  GtkWidget *widget)
 {
@@ -575,7 +641,17 @@ void menu_callback_debug_transform_docbook_to_html(gpointer callback_data,
 	debug_transform (primary_window,
 			 DOCBOOK_TO_HTML_STYLESHEET_FILE);
 }
-void menu_callback_debug_transform_docbook_to_xhtml(gpointer callback_data,
+
+/**
+ * menu_callback_debug_transform_docbook_to_xhtml:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_transform_docbook_to_xhtml(gpointer callback_data,
 						  guint callback_action,
 						  GtkWidget *widget)
 {
@@ -584,7 +660,17 @@ void menu_callback_debug_transform_docbook_to_xhtml(gpointer callback_data,
 	debug_transform (primary_window,
 			 DOCBOOK_TO_XHTML_STYLESHEET_FILE);
 }
-void menu_callback_debug_transform_docbook_to_html_help(gpointer callback_data,
+
+/**
+ * menu_callback_debug_transform_docbook_to_html_help:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_transform_docbook_to_html_help(gpointer callback_data,
 						  guint callback_action,
 						  GtkWidget *widget)
 {
@@ -593,7 +679,17 @@ void menu_callback_debug_transform_docbook_to_html_help(gpointer callback_data,
 	debug_transform (primary_window,
 			 DOCBOOK_TO_HTML_HELP_STYLESHEET_FILE);
 }
-void menu_callback_debug_transform_docbook_to_javahelp(gpointer callback_data,
+
+/**
+ * menu_callback_debug_transform_docbook_to_javahelp:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_transform_docbook_to_javahelp(gpointer callback_data,
 						  guint callback_action,
 						  GtkWidget *widget)
 {
@@ -602,7 +698,17 @@ void menu_callback_debug_transform_docbook_to_javahelp(gpointer callback_data,
 	debug_transform (primary_window,
 			 DOCBOOK_TO_JAVAHELP_STYLESHEET_FILE);
 }
-void menu_callback_debug_transform_docbook_to_fo(gpointer callback_data,
+
+/**
+ * menu_callback_debug_transform_docbook_to_fo:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_transform_docbook_to_fo(gpointer callback_data,
 				  guint callback_action,
 				  GtkWidget *widget)
 {
@@ -633,9 +739,10 @@ my_draw (GnomePrintContext *gpc)
 	gnome_print_showpage (gpc);
 }
 
-void menu_callback_debug_preview_fo(gpointer callback_data,
-				  guint callback_action,
-				  GtkWidget *widget)
+void 
+menu_callback_debug_preview_fo(gpointer callback_data,
+			       guint callback_action,
+                               GtkWidget *widget)
 {
 	/* Open a GnomePrint preview */
 	xmlDocPtr xml_doc;
@@ -678,7 +785,16 @@ void menu_callback_debug_preview_fo(gpointer callback_data,
 }
 #endif /* #if PRINT_TESTS */
 
-void my_hash_scanner(void *payload, void *data, xmlChar *name)
+/**
+ * my_hash_scanner:
+ * @payload:
+ * @data:
+ * @name:
+ *
+ * TODO: Write me
+ */
+void 
+my_hash_scanner(void *payload, void *data, xmlChar *name)
 {
 	g_message("got name \"%s\"", name);
 }
@@ -703,7 +819,14 @@ gchar *get_element_content_string(xmlElementContentPtr content)
 }
 #endif
 
-gchar *get_enumeration_details(xmlEnumerationPtr enum_ptr)
+/**
+ * get_enumeration_details:
+ * @enum_ptr:
+ *
+ * TODO: Write me
+ */
+gchar *
+get_enumeration_details(xmlEnumerationPtr enum_ptr)
 {
 	gchar *temp, *temp2;
 	temp = g_strdup("(");
@@ -721,7 +844,14 @@ gchar *get_enumeration_details(xmlEnumerationPtr enum_ptr)
 	return temp2;
 }
 
-gchar *get_attribute_debug_details(xmlAttributePtr attr)
+/**
+ * get_attribute_debug_details:
+ * @attr:
+ *
+ * TODO: Write me
+ */
+gchar *
+get_attribute_debug_details(xmlAttributePtr attr)
 {
 	gchar *type_str = NULL;
 	g_assert(attr);
@@ -785,7 +915,16 @@ gchar *get_attribute_debug_details(xmlAttributePtr attr)
 
 }
 
-void element_hash_scanner(void *payload, void *data, xmlChar *name)
+/**
+ * element_hash_scanner:
+ * @payload:
+ * @data:
+ * @name:
+ *
+ * TODO: Write me
+ */
+void 
+element_hash_scanner(void *payload, void *data, xmlChar *name)
 {
 	xmlElementPtr element = payload;
 	xmlAttributePtr attr;
@@ -801,12 +940,28 @@ void element_hash_scanner(void *payload, void *data, xmlChar *name)
 	}
 }
 
-void entity_hash_scanner(void *payload, void *data, xmlChar *name)
+/**
+ * entity_hash_scanner:
+ * @payload:
+ * @data:
+ * @name:
+ *
+ * TODO: Write me
+ */
+void 
+entity_hash_scanner(void *payload, void *data, xmlChar *name)
 {
 	g_message("got entity \"%s\"", name);
 }
 
-void debug_log_dtd(xmlDtdPtr dtd)
+/**
+ * debug_log_dtd:
+ * @dtd:
+ *
+ * TODO: Write me
+ */
+void 
+debug_log_dtd(xmlDtdPtr dtd)
 {
 	g_message("Name \"%s\"\n", dtd->name);
 	g_message("ExternalID:\"%s\"\n", dtd->ExternalID);
@@ -846,9 +1001,18 @@ void debug_log_dtd(xmlDtdPtr dtd)
 #endif
 }
 
-void menu_callback_debug_dtd(gpointer callback_data,
-			    guint callback_action,
-			    GtkWidget *widget)
+/**
+ * menu_callback_debug_dtd:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_dtd(gpointer callback_data,
+			guint callback_action,
+			GtkWidget *widget)
 {
 	CongPrimaryWindow *primary_window = callback_data;
 	CongDocument *doc;
@@ -876,7 +1040,14 @@ void menu_callback_debug_dtd(gpointer callback_data,
 	}
 }
 
-GtkWidget *test_dialog_new(GtkWindow *parent_window)
+/**
+ * test_dialog_new:
+ * @parent_window:
+ *
+ * TODO: Write me
+ */
+GtkWidget *
+test_dialog_new(GtkWindow *parent_window)
 {
 	GtkWidget *dialog;
 	GtkWidget *tabs;
@@ -946,9 +1117,18 @@ GtkWidget *test_dialog_new(GtkWindow *parent_window)
 	return dialog;
 }
 
-void menu_callback_debug_dialog(gpointer callback_data,
-				guint callback_action,
-				GtkWidget *widget)
+/**
+ * menu_callback_debug_dialog:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_dialog(gpointer callback_data,
+			   guint callback_action,
+			   GtkWidget *widget)
 {
 	CongPrimaryWindow *primary_window = callback_data;
 
@@ -976,10 +1156,18 @@ static gboolean on_timeout(gpointer user_data)
 	return TRUE;
 }
 
-
-void menu_callback_debug_progress_checklist(gpointer callback_data,
-					    guint callback_action,
-					    GtkWidget *widget)
+/**
+ * menu_callback_debug_progress_checklist:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_progress_checklist(gpointer callback_data,
+				       guint callback_action,
+				       GtkWidget *widget)
 {
 	struct debug_progress_checklist debug_data;
 	CongPrimaryWindow *primary_window = callback_data;
@@ -1024,10 +1212,18 @@ static void make_debug_log_window (CongPrimaryWindow *primary_window,
 	gtk_widget_show(GTK_WIDGET(window));
 }
 
-
-void menu_callback_debug_document_message_log(gpointer callback_data,
-					      guint callback_action,
-					      GtkWidget *widget)
+/**
+ * menu_callback_debug_document_message_log:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_document_message_log(gpointer callback_data,
+					 guint callback_action,
+					 GtkWidget *widget)
 {
 	CongPrimaryWindow *primary_window = callback_data;
 	CongDocument *doc = cong_primary_window_get_document(primary_window);
@@ -1037,9 +1233,18 @@ void menu_callback_debug_document_message_log(gpointer callback_data,
 			       _("Message Log - Conglomerate"));
 }
 
-void menu_callback_debug_document_signal_log(gpointer callback_data,
-					      guint callback_action,
-					      GtkWidget *widget)
+/**
+ * menu_callback_debug_document_signal_log:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_document_signal_log(gpointer callback_data,
+					guint callback_action,
+					GtkWidget *widget)
 {
 	CongPrimaryWindow *primary_window = callback_data;
 	CongDocument *doc = cong_primary_window_get_document(primary_window);
@@ -1049,9 +1254,18 @@ void menu_callback_debug_document_signal_log(gpointer callback_data,
 			       _("Signal Log - Conglomerate"));
 }
 
-void menu_callback_debug_information_alert(gpointer callback_data,
-					   guint callback_action,
-					   GtkWidget *widget)
+/**
+ * menu_callback_debug_information_alert:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_information_alert(gpointer callback_data,
+				      guint callback_action,
+				      GtkWidget *widget)
 {
 	CongPrimaryWindow *primary_window = callback_data;
 	GtkDialog *dialog = cong_dialog_information_alert_new(cong_primary_window_get_toplevel(primary_window),
@@ -1060,15 +1274,24 @@ void menu_callback_debug_information_alert(gpointer callback_data,
 	gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
-void menu_callback_debug_glade_test(gpointer callback_data,
-					   guint callback_action,
-					   GtkWidget *widget)
+/**
+ * menu_callback_debug_glade_test:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_glade_test(gpointer callback_data,
+			       guint callback_action,
+			       GtkWidget *widget)
 {
 	CongPrimaryWindow *primary_window = callback_data;
 
 	gchar* glade_filename = gnome_program_locate_file(cong_app_get_gnome_program (cong_app_singleton()),
 							  GNOME_FILE_DOMAIN_APP_DATADIR,
-							  "test.glade",
+							  "conglomerate/glade/test.glade",
 							  FALSE,
 							  NULL);
 
@@ -1192,9 +1415,18 @@ get_test_fragment(CongPrimaryWindow *primary_window)
 #endif
 }
 
-void menu_callback_debug_insert_xml_fragment(gpointer callback_data,
-					     guint callback_action,
-					     GtkWidget *widget)
+/**
+ * menu_callback_debug_insert_xml_fragment:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_insert_xml_fragment(gpointer callback_data,
+					guint callback_action,
+					GtkWidget *widget)
 {
 	CongPrimaryWindow *primary_window = callback_data;
 	CongDocument *doc = cong_primary_window_get_document(primary_window);
@@ -1211,9 +1443,18 @@ void menu_callback_debug_insert_xml_fragment(gpointer callback_data,
 	g_free(source_fragment);
 }
 
-void menu_callback_debug_command_test (gpointer callback_data,
-				       guint callback_action,
-				       GtkWidget *widget)
+/**
+ * menu_callback_debug_command_test:
+ * @callback_data:
+ * @callback_action:
+ * @widget:
+ *
+ * TODO: Write me
+ */
+void 
+menu_callback_debug_command_test (gpointer callback_data,
+				  guint callback_action,
+				  GtkWidget *widget)
 {
 	CongPrimaryWindow *primary_window = callback_data;
 	CongDocument *doc = cong_primary_window_get_document(primary_window);
@@ -1239,6 +1480,13 @@ menu_callback_debug_objects (gpointer callback_data,
 #endif /* #if ENABLE_DEBUG_MENU */
 
 /* Callbacks for "Help" menu: */
+static void menu_callback_homepage(gpointer callback_data,
+				   guint callback_action,
+				   GtkWidget *widget)
+{
+   gnome_url_show ("http://www.conglomerate.org", NULL);
+}				   
+
 static void menu_callback_about(gpointer callback_data,
 				guint callback_action,
 				GtkWidget *widget)
@@ -1301,7 +1549,9 @@ enum ActionMarkers {
 	ACTION_MARKER_CUT,
 	ACTION_MARKER_COPY,
 	ACTION_MARKER_PASTE,
-	ACTION_MARKER_TOOLS_MENU
+	ACTION_MARKER_TOOLS_MENU,
+	ACTION_MARKER_PRINT_PREVIEW,
+	ACTION_MARKER_PRINT
 };
 
 
@@ -1316,8 +1566,8 @@ static GtkItemFactoryEntry menu_items_with_doc[] =
 	{ N_("/File/Sa_ve a Copy..."), NULL, menu_callback_file_save_copy, 0, "<Item>" },
 #if ENABLE_PRINTING
 	{ N_("/File/"), NULL, NULL, 0, "<Separator>" },
-	{ N_("/File/Print Previe_w..."),   "<shift><control>P", menu_callback_file_print_preview, 0, "<StockItem>", GTK_STOCK_PRINT_PREVIEW },
-	{ N_("/File/_Print..."),           "<control>P", menu_callback_file_print, 0, "<StockItem>", GTK_STOCK_PRINT },
+	{ N_("/File/Print Previe_w..."),   "<shift><control>P", menu_callback_file_print_preview, ACTION_MARKER_PRINT_PREVIEW, "<StockItem>", GTK_STOCK_PRINT_PREVIEW },
+	{ N_("/File/_Print..."),           "<control>P", menu_callback_file_print, ACTION_MARKER_PRINT, "<StockItem>", GTK_STOCK_PRINT },
 #endif
 #if ENABLE_UNIMPLEMENTED_MENUS
 	{ N_("/File/"), NULL, NULL, 0, "<Separator>" },
@@ -1340,12 +1590,12 @@ static GtkItemFactoryEntry menu_items_with_doc[] =
 	{ N_("/Edit/_Copy"),             "<control>C", menu_callback_copy, ACTION_MARKER_COPY, "<StockItem>", GTK_STOCK_COPY },
 	{ N_("/Edit/_Paste"),            "<control>V", menu_callback_paste, ACTION_MARKER_PASTE, "<StockItem>", GTK_STOCK_PASTE },
 	{ N_("/Edit/"), NULL, NULL, 0, "<Separator>" },
-#if ENABLE_UNIMPLEMENTED_MENUS
 	{ N_("/Edit/_Find..."),         "<control>F", menu_callback_find, 0, "<StockItem>", GTK_STOCK_FIND },
 	{ N_("/Edit/Find Ne_xt"),       "<control>G", menu_callback_find_next, 0, "<Item>" },
 	{ N_("/Edit/Find Pre_vious"),   "<shift><control>G", menu_callback_find_prev, 0, "<Item>" },
 	{ N_("/Edit/R_eplace..."),      "<control>R", menu_callback_replace, 0, "<StockItem>", GTK_STOCK_FIND_AND_REPLACE },
 	{ N_("/Edit/"), NULL, NULL, 0, "<Separator>" },
+#if ENABLE_UNIMPLEMENTED_MENUS
 	{ N_("/Edit/_Insert..."),       NULL, unimplemented_menu_item, 0, "<Item>" },
 	{ N_("/Edit/"), NULL, NULL, 0, "<Separator>" },
 #endif /* #if ENABLE_UNIMPLEMENTED_MENUS */
@@ -1354,13 +1604,13 @@ static GtkItemFactoryEntry menu_items_with_doc[] =
 	{ N_("/Edit/Prefere_nces"),     NULL, menu_callback_preferences, 0, NULL },
 
 #if ENABLE_DEBUG_MENU
-	{ ("/Debug"),                 NULL, NULL, 0, "<Branch>" },
-	{ ("/Debug/Begin self-test of error-reporting system..."),           NULL, menu_callback_debug_error, 0, NULL },
-	{ ("/Debug/Transform DocBook to HTML"),       NULL, menu_callback_debug_transform_docbook_to_html, 0, NULL },
-	{ ("/Debug/Transform DocBook to XHTML"),       NULL, menu_callback_debug_transform_docbook_to_xhtml, 0, NULL },
-	{ ("/Debug/Transform DocBook to HTML Help"),       NULL, menu_callback_debug_transform_docbook_to_html_help, 0, NULL },
-	{ ("/Debug/Transform DocBook to Java Help"),       NULL, menu_callback_debug_transform_docbook_to_javahelp, 0, NULL },
-	{ ("/Debug/Transform DocBook to FO"),       NULL, menu_callback_debug_transform_docbook_to_fo, 0, NULL },
+	{ N_("/Debug"),                 NULL, NULL, 0, "<Branch>" },
+	{ N_("/Debug/Begin self-test of error-reporting system..."),           NULL, menu_callback_debug_error, 0, NULL },
+	{ N_("/Debug/Transform DocBook to HTML"),       NULL, menu_callback_debug_transform_docbook_to_html, 0, NULL },
+	{ N_("/Debug/Transform DocBook to XHTML"),       NULL, menu_callback_debug_transform_docbook_to_xhtml, 0, NULL },
+	{ N_("/Debug/Transform DocBook to HTML Help"),       NULL, menu_callback_debug_transform_docbook_to_html_help, 0, NULL },
+	{ N_("/Debug/Transform DocBook to Java Help"),       NULL, menu_callback_debug_transform_docbook_to_javahelp, 0, NULL },
+	{ N_("/Debug/Transform DocBook to FO"),       NULL, menu_callback_debug_transform_docbook_to_fo, 0, NULL },
 #if PRINT_TESTS
 	{ ("/Debug/Preview XSL:FO"),       NULL, menu_callback_debug_preview_fo, 0, NULL },
 #endif /* #if PRINT_TESTS */
@@ -1380,6 +1630,7 @@ static GtkItemFactoryEntry menu_items_with_doc[] =
 
 	{ N_("/_Help"),        NULL, NULL, 0, "<Branch>" },
 	{ N_("/Help/_Contents"), "F1", menu_callback_help, 0, "<StockItem>",GTK_STOCK_HELP },
+	{ N_("/Help/_Homepage"), NULL, menu_callback_homepage, 0, "<StockItem>",GTK_STOCK_HOME },
 	{ N_("/Help/_About"),    NULL, menu_callback_about, 0, "<StockItem>", GNOME_STOCK_ABOUT }
 
 };
@@ -1407,11 +1658,11 @@ static GtkItemFactoryEntry menu_items_without_doc[] =
 	{ ("/Debug/Information Alert"),           NULL, menu_callback_debug_information_alert, 0, NULL },	
 	{ ("/Debug/Glade Test"),           NULL, menu_callback_debug_glade_test, 0, NULL },	
 	{ ("/Debug/Get Plugin Information as XML"),           NULL, menu_callback_debug_plugin_info, 0, NULL },	
-	{ ("/Debug/Objects"),           NULL, menu_callback_debug_objects, 0, NULL },
 #endif /* #if ENABLE_DEBUG_MENU */
 
 	{ N_("/_Help"),        NULL, NULL, 0, "<Branch>" },
 	{ N_("/Help/_Contents"), "F1", menu_callback_help, 0, "<StockItem>",GTK_STOCK_HELP },
+	{ N_("/Help/_Homepage"), NULL, menu_callback_homepage, 0, "<StockItem>",GTK_STOCK_HOME },
 	{ N_("/Help/_About"),    NULL, menu_callback_about, 0, "<StockItem>", GNOME_STOCK_ABOUT }
 
 };
@@ -1511,8 +1762,16 @@ on_selection_changed_cut_menu (CongDocument *document,
 				  cong_range_can_be_cut (range));
 }
 
-void cong_menus_create_items(GtkItemFactory *item_factory, 
-			     CongPrimaryWindow *primary_window)
+/**
+ * cong_menus_create_items:
+ * @item_factory:
+ * @primary_window:
+ *
+ * TODO: Write me
+ */
+void 
+cong_menus_create_items(GtkItemFactory *item_factory, 
+			CongPrimaryWindow *primary_window)
 {
 	g_return_if_fail(item_factory);
 	g_return_if_fail(primary_window);
@@ -1561,6 +1820,12 @@ void cong_menus_create_items(GtkItemFactory *item_factory,
 			GtkWidget *paste =  gtk_item_factory_get_widget_by_action(item_factory,
 										 ACTION_MARKER_PASTE);
 			/* FIXME: What signal to connect paste to in order to update sensitivity? */
+#if ENABLE_PRINTING
+			GtkWidget *print =  gtk_item_factory_get_widget_by_action(item_factory,
+										  ACTION_MARKER_PRINT);
+			GtkWidget *print_preview =  gtk_item_factory_get_widget_by_action(item_factory,
+											  ACTION_MARKER_PRINT_PREVIEW);
+#endif
 
 			g_signal_connect (G_OBJECT(history),
 					  "changed",
@@ -1584,6 +1849,11 @@ void cong_menus_create_items(GtkItemFactory *item_factory,
 			gtk_widget_set_sensitive (paste, cong_document_can_paste(doc));
 			gtk_widget_set_sensitive (copy, FALSE);
 			gtk_widget_set_sensitive (cut, FALSE);
+
+#if ENABLE_PRINTING
+			gtk_widget_set_sensitive (print, cong_document_can_print(doc));
+			gtk_widget_set_sensitive (print_preview, cong_document_can_print(doc));
+#endif
 		}
 
 	} else {

@@ -80,7 +80,7 @@ struct CongEditorNodePrivate
 	gboolean is_selected;
 };
 
-static enum CongFlowType
+static CongFlowType
 get_flow_type(CongEditorNode *editor_node);
 
 #if 0
@@ -125,6 +125,15 @@ CONG_DEFINE_CLASS_BEGIN(CongEditorNode,
 	klass->get_flow_type = get_flow_type;
 CONG_DEFINE_CLASS_END()
 
+/**
+ * cong_editor_node_construct:
+ * @editor_node:
+ * @widget:
+ * @traversal_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNode*
 cong_editor_node_construct (CongEditorNode *editor_node,
 			    CongEditorWidget3* editor_widget,
@@ -147,13 +156,21 @@ cong_editor_node_dispose (GObject *object)
 	}	
 }
 
+/**
+ * cong_editor_node_manufacture:
+ * @widget:
+ * @traversal_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNode*
 cong_editor_node_manufacture (CongEditorWidget3* widget,
 			      CongTraversalNode *traversal_node)
 {
 	CongDocument *doc;
 	CongNodePtr xml_node;
-	enum CongNodeType type;
+	CongNodeType type;
 
 	g_return_val_if_fail (IS_CONG_EDITOR_WIDGET3 (widget), NULL);
 	g_return_val_if_fail (IS_CONG_TRAVERSAL_NODE (traversal_node), NULL);
@@ -300,8 +317,13 @@ cong_editor_node_manufacture (CongEditorWidget3* widget,
 	}
 }
 
-
-
+/**
+ * cong_editor_node_get_widget:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorWidget3*
 cong_editor_node_get_widget (CongEditorNode *editor_node)
 {
@@ -310,6 +332,13 @@ cong_editor_node_get_widget (CongEditorNode *editor_node)
 	return PRIVATE(editor_node)->widget;
 }
 
+/**
+ * cong_editor_node_get_document:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDocument*
 cong_editor_node_get_document (CongEditorNode *editor_node)
 {
@@ -318,6 +347,13 @@ cong_editor_node_get_document (CongEditorNode *editor_node)
 	return cong_editor_widget3_get_document( cong_editor_node_get_widget(editor_node));
 }
 
+/**
+ * cong_editor_node_get_node:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongNodePtr
 cong_editor_node_get_node (CongEditorNode *editor_node)
 {
@@ -326,6 +362,13 @@ cong_editor_node_get_node (CongEditorNode *editor_node)
 	return cong_traversal_node_get_node (PRIVATE(editor_node)->traversal_node);
 }
 
+/**
+ * cong_editor_node_get_traversal_node:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongTraversalNode*
 cong_editor_node_get_traversal_node (CongEditorNode *editor_node)
 {
@@ -334,6 +377,13 @@ cong_editor_node_get_traversal_node (CongEditorNode *editor_node)
 	return PRIVATE(editor_node)->traversal_node;	
 }
 
+/**
+ * cong_editor_node_get_traversal_parent:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNode*
 cong_editor_node_get_traversal_parent (CongEditorNode *editor_node)
 {
@@ -347,6 +397,13 @@ cong_editor_node_get_traversal_parent (CongEditorNode *editor_node)
 								       traversal_node_parent);
 }
 
+/**
+ * cong_editor_node_is_selected:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_editor_node_is_selected (CongEditorNode *editor_node)
 {
@@ -355,6 +412,13 @@ cong_editor_node_is_selected (CongEditorNode *editor_node)
 	return PRIVATE(editor_node)->is_selected;	
 }
 
+/**
+ * cong_editor_node_private_set_selected:
+ * @editor_node:
+ * @is_selected:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_node_private_set_selected (CongEditorNode *editor_node,
 				       gboolean is_selected)
@@ -414,6 +478,13 @@ cong_editor_node_needs_area_regeneration (CongEditorNode *editor_node,
 }
 
 #if 0
+/**
+ * cong_editor_node_generate_block_area:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_node_generate_block_area (CongEditorNode *editor_node)
 {
@@ -427,6 +498,15 @@ cong_editor_node_generate_block_area (CongEditorNode *editor_node)
 						       (editor_node));
 }
 
+/**
+ * cong_editor_node_generate_line_areas_recursive:
+ * @editor_node:
+ * @line_width:
+ * @initial_indent:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorLineFragments*
 cong_editor_node_generate_line_areas_recursive (CongEditorNode *editor_node,
 						gint line_width,
@@ -448,6 +528,12 @@ cong_editor_node_generate_line_areas_recursive (CongEditorNode *editor_node,
 }
 #endif
 
+/**
+ * cong_editor_node_line_regeneration_required:
+ * @editor_node:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_node_line_regeneration_required (CongEditorNode *editor_node)
 {
@@ -457,10 +543,17 @@ cong_editor_node_line_regeneration_required (CongEditorNode *editor_node)
 		       signals[LINE_REGENERATION_REQUIRED], 0);
 }
 
-enum CongFlowType
+/**
+ * cong_editor_node_get_flow_type:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
+CongFlowType
 cong_editor_node_get_flow_type (CongEditorNode *editor_node)
 {
-	enum CongFlowType flow_type;
+	CongFlowType flow_type;
 		
 	g_return_val_if_fail (editor_node, CONG_FLOW_TYPE_BLOCK);
 
@@ -486,6 +579,13 @@ cong_editor_node_get_flow_type (CongEditorNode *editor_node)
 }
 
 #if 1
+/**
+ * cong_editor_node_is_referenced_entity_decl:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_editor_node_is_referenced_entity_decl (CongEditorNode *editor_node)
 {
@@ -498,6 +598,13 @@ cong_editor_node_is_referenced_entity_decl (CongEditorNode *editor_node)
 	return cong_traversal_node_is_referenced_entity_decl (traversal_node);
 }
 
+/**
+ * cong_editor_node_get_prev:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNode*
 cong_editor_node_get_prev (CongEditorNode *editor_node)
 {
@@ -531,6 +638,13 @@ cong_editor_node_get_prev (CongEditorNode *editor_node)
 	}
 }
 
+/**
+ * cong_editor_node_get_next:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNode*
 cong_editor_node_get_next (CongEditorNode *editor_node)
 {
@@ -563,6 +677,13 @@ cong_editor_node_get_next (CongEditorNode *editor_node)
 	}
 }
 #else
+/**
+ * cong_editor_node_is_referenced_entity_decl:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_editor_node_is_referenced_entity_decl (CongEditorNode *editor_node)
 {
@@ -578,6 +699,13 @@ cong_editor_node_is_referenced_entity_decl (CongEditorNode *editor_node)
 	return FALSE;
 }
 
+/**
+ * cong_editor_node_get_prev:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNode*
 cong_editor_node_get_prev (CongEditorNode *editor_node)
 {
@@ -602,6 +730,13 @@ cong_editor_node_get_prev (CongEditorNode *editor_node)
 	}
 }
 
+/**
+ * cong_editor_node_get_next:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorNode*
 cong_editor_node_get_next (CongEditorNode *editor_node)
 {
@@ -651,6 +786,13 @@ cong_editor_node_set_line_manager_for_children (CongEditorNode *editor_node,
 	g_object_ref (G_OBJECT (line_manager));
 }
 #else
+/**
+ * cong_editor_node_get_child_policy:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorChildPolicy*
 cong_editor_node_get_child_policy (CongEditorNode *editor_node)
 {
@@ -659,6 +801,13 @@ cong_editor_node_get_child_policy (CongEditorNode *editor_node)
 	return PRIVATE(editor_node)->child_policy;
 }
 
+/**
+ * cong_editor_node_set_child_policy:
+ * @editor_node:
+ * @child_policy:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_node_set_child_policy (CongEditorNode *editor_node,
 				   CongEditorChildPolicy *child_policy)
@@ -668,6 +817,13 @@ cong_editor_node_set_child_policy (CongEditorNode *editor_node,
 	PRIVATE(editor_node)->child_policy = child_policy;
 }
 
+/**
+ * cong_editor_node_get_parents_child_policy:
+ * @editor_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorChildPolicy*
 cong_editor_node_get_parents_child_policy (CongEditorNode *editor_node)
 {
@@ -676,6 +832,13 @@ cong_editor_node_get_parents_child_policy (CongEditorNode *editor_node)
 	return PRIVATE(editor_node)->parents_child_policy;
 }
 
+/**
+ * cong_editor_node_set_parents_child_policy:
+ * @editor_node:
+ * @child_policy:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_node_set_parents_child_policy (CongEditorNode *editor_node,
 					   CongEditorChildPolicy *child_policy)
@@ -779,7 +942,7 @@ cong_editor_node_empty_create_area (CongEditorNode *editor_node,
 	}
 }
 
-static enum CongFlowType
+static CongFlowType
 get_flow_type(CongEditorNode *editor_node)
 {
 	return CONG_FLOW_TYPE_BLOCK;

@@ -95,6 +95,14 @@ cong_editor_area_flow_holder_blocks_instance_init (CongEditorAreaFlowHolderBlock
 }
 
 /* Exported function definitions: */
+/**
+ * cong_editor_area_flow_holder_blocks_construct:
+ * @area_flow_holder_blocks:
+ * @editor_widget:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_flow_holder_blocks_construct (CongEditorAreaFlowHolderBlocks *area_flow_holder_blocks,
 					CongEditorWidget3 *editor_widget)
@@ -117,6 +125,13 @@ cong_editor_area_flow_holder_blocks_construct (CongEditorAreaFlowHolderBlocks *a
 	return CONG_EDITOR_AREA (area_flow_holder_blocks);
 }
 
+/**
+ * cong_editor_area_flow_holder_blocks_new:
+ * @editor_widget:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_flow_holder_blocks_new (CongEditorWidget3 *editor_widget)
 {
@@ -129,6 +144,14 @@ cong_editor_area_flow_holder_blocks_new (CongEditorWidget3 *editor_widget)
 		 editor_widget);
 }
 
+/**
+ * cong_editor_area_flow_holder_get_child_flow_holder_for_node:
+ * @area_flow_holder_blocks:
+ * @doc_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorAreaFlowHolder*
 cong_editor_area_flow_holder_get_child_flow_holder_for_node (CongEditorAreaFlowHolderBlocks *area_flow_holder_blocks,
 							     CongNodePtr doc_node)
@@ -201,7 +224,7 @@ insert_areas_for_node (CongEditorAreaFlowHolder *area_flow_holder,
 	CongEditorNode *iter;
 	GList *list_of_removed_nodes = NULL;
 
-	enum CongFlowType flow_type;
+	CongFlowType flow_type;
 
 	flow_type = cong_editor_node_get_flow_type (editor_node);
 

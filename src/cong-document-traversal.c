@@ -107,6 +107,7 @@ static void
 on_signal_set_parent_notify_before (CongDocument *doc, 
 				    CongNodePtr node, 
 				    CongNodePtr adoptive_parent, 
+				    gboolean add_to_end,
 				    gpointer user_data);
 
 /* Callbacks attached after the default handler: */
@@ -124,6 +125,7 @@ static void
 on_signal_set_parent_notify_after (CongDocument *doc, 
 				   CongNodePtr node, 
 				   CongNodePtr adoptive_parent, 
+				   gboolean add_to_end,
 				   gpointer user_data);
 
 
@@ -187,6 +189,14 @@ cong_document_traversal_instance_init (CongDocumentTraversal *doc)
 	doc->private = g_new0(CongDocumentTraversalDetails,1);
 }
 
+/**
+ * cong_document_traversal_construct:
+ * @doc_traversal:
+ * @doc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDocumentTraversal*
 cong_document_traversal_construct (CongDocumentTraversal *doc_traversal,
 				   CongDocument *doc)
@@ -215,6 +225,13 @@ cong_document_traversal_construct (CongDocumentTraversal *doc_traversal,
 	return doc_traversal;
 }
 
+/**
+ * cong_document_traversal_new:
+ * @doc:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDocumentTraversal*
 cong_document_traversal_new (CongDocument *doc)
 {
@@ -222,6 +239,13 @@ cong_document_traversal_new (CongDocument *doc)
 						  doc);
 }
 
+/**
+ * cong_document_traversal_get_document:
+ * @doc_traversal:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDocument*
 cong_document_traversal_get_document(CongDocumentTraversal *doc_traversal)
 {
@@ -230,6 +254,13 @@ cong_document_traversal_get_document(CongDocumentTraversal *doc_traversal)
 	return PRIVATE(doc_traversal)->doc;
 }
 
+/**
+ * cong_document_traversal_get_root_traversal_node:
+ * @doc_traversal:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongTraversalNode*
 cong_document_traversal_get_root_traversal_node (CongDocumentTraversal *doc_traversal)
 {
@@ -240,6 +271,15 @@ cong_document_traversal_get_root_traversal_node (CongDocumentTraversal *doc_trav
 							   NULL);
 }
 
+/**
+ * cong_document_traversal_for_each_traversal_node:
+ * @doc_traversal:
+ * @xml_node:
+ * @callback:
+ * @user_data:
+ *
+ * TODO: Write me
+ */
 void
 cong_document_traversal_for_each_traversal_node (CongDocumentTraversal *doc_traversal,
 						 CongNodePtr xml_node,
@@ -265,6 +305,15 @@ cong_document_traversal_for_each_traversal_node (CongDocumentTraversal *doc_trav
 	}
 }
 
+/**
+ * cong_document_traversal_get_traversal_node:
+ * @doc_traversal:
+ * @xml_node:
+ * @traversal_parent:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongTraversalNode*
 cong_document_traversal_get_traversal_node (CongDocumentTraversal *doc_traversal,
 					    CongNodePtr xml_node,
@@ -300,6 +349,14 @@ foreach_cb_store (gpointer key,
 	*result = CONG_TRAVERSAL_NODE (value);
 }
 
+/**
+ * cong_document_traversal_get_a_traversal_node:
+ * @doc_traversal:
+ * @xml_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongTraversalNode*
 cong_document_traversal_get_a_traversal_node (CongDocumentTraversal *doc_traversal,
 					      CongNodePtr xml_node)
@@ -329,6 +386,13 @@ cong_document_traversal_get_a_traversal_node (CongDocumentTraversal *doc_travers
 }
 
 /* Internal function definitions: */
+/**
+ * cong_node_mapping_new:
+ * @xml_node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 NodeMapping*
 cong_node_mapping_new (CongNodePtr xml_node)
 {
@@ -345,6 +409,12 @@ cong_node_mapping_new (CongNodePtr xml_node)
 	return mapping;
 }
 
+/**
+ * cong_node_mapping_free:
+ * @mapping:
+ *
+ * TODO: Write me
+ */
 void
 cong_node_mapping_free (NodeMapping* mapping)
 {
@@ -355,6 +425,14 @@ cong_node_mapping_free (NodeMapping* mapping)
 	g_free (mapping);
 }
 
+/**
+ * cong_node_mapping_add_traversal_node:
+ * @mapping:
+ * @traversal_parent:
+ * @traversal_node:
+ *
+ * TODO: Write me
+ */
 void
 cong_node_mapping_add_traversal_node (NodeMapping* mapping,
 				      CongTraversalNode *traversal_parent,
@@ -371,6 +449,13 @@ cong_node_mapping_add_traversal_node (NodeMapping* mapping,
 	
 }
 
+/**
+ * cong_node_mapping_remove_traversal_node:
+ * @mapping:
+ * @traversal_parent:
+ *
+ * TODO: Write me
+ */
 void
 cong_node_mapping_remove_traversal_node (NodeMapping* mapping,
 					 CongTraversalNode *traversal_parent)
@@ -402,6 +487,15 @@ node_mapping_foreach_cb (gpointer key,
 				      foreach_data->outer_user_data);
 }
 
+/**
+ * cong_node_mapping_for_each_traversal_node:
+ * @node_mapping:
+ * @doc_traversal:
+ * @callback:
+ * @user_data:
+ *
+ * TODO: Write me
+ */
 void
 cong_node_mapping_for_each_traversal_node (NodeMapping* node_mapping,
 					   CongDocumentTraversal *doc_traversal,
@@ -702,6 +796,13 @@ dispose (GObject *object)
 	GNOME_CALL_PARENT (G_OBJECT_CLASS, dispose, (object));
 }
 
+/**
+ * should_have_traversal_node:
+ * @node:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 should_have_traversal_node (CongNodePtr node)
 {
@@ -773,6 +874,7 @@ static void
 on_signal_set_parent_notify_before (CongDocument *doc, 
 				    CongNodePtr node, 
 				    CongNodePtr adoptive_parent, 
+				    gboolean add_to_end,				    
 				    gpointer user_data)
 {
 	CongDocumentTraversal *doc_traversal = CONG_DOCUMENT_TRAVERSAL (user_data);
@@ -791,9 +893,9 @@ on_signal_set_parent_notify_before (CongDocument *doc,
 
 /* Callbacks attached after the default handler: */
 static void on_signal_add_after_notify_after (CongDocument *doc, 
-				       CongNodePtr node, 
-				       CongNodePtr older_sibling, 
-				       gpointer user_data)
+					      CongNodePtr node, 
+					      CongNodePtr older_sibling, 
+					      gpointer user_data)
 {
 	CongDocumentTraversal *doc_traversal = CONG_DOCUMENT_TRAVERSAL (user_data);
 	g_assert (node);
@@ -803,6 +905,7 @@ static void on_signal_add_after_notify_after (CongDocument *doc,
 						       node);
 
 }
+
 static void on_signal_add_before_notify_after (CongDocument *doc, 
 					CongNodePtr node, 
 					CongNodePtr younger_sibling, 
@@ -817,10 +920,12 @@ static void on_signal_add_before_notify_after (CongDocument *doc,
 
 
 }
+
 static void on_signal_set_parent_notify_after (CongDocument *doc, 
-					CongNodePtr node, 
-					CongNodePtr adoptive_parent, 
-					gpointer user_data)
+					       CongNodePtr node, 
+					       CongNodePtr adoptive_parent, 
+					       gboolean add_to_end,					      
+					       gpointer user_data)
 {	
 	CongDocumentTraversal *doc_traversal = CONG_DOCUMENT_TRAVERSAL (user_data);
 	g_assert (node);

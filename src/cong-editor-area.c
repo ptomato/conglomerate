@@ -208,6 +208,14 @@ cong_editor_area_instance_init (CongEditorArea *area)
 	area->private = g_new0(CongEditorAreaDetails,1);
 }
 
+/**
+ * cong_editor_area_construct:
+ * @area:
+ * @editor_widget:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_construct (CongEditorArea *area,
 			    CongEditorWidget3* editor_widget)
@@ -231,7 +239,13 @@ cong_editor_area_construct (CongEditorArea *area,
 	return area;
 }
 
-
+/**
+ * cong_editor_area_get_widget:
+ * @area:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorWidget3*
 cong_editor_area_get_widget (CongEditorArea *area)
 {
@@ -240,6 +254,13 @@ cong_editor_area_get_widget (CongEditorArea *area)
 	return PRIVATE(area)->editor_widget;
 }
 
+/**
+ * cong_editor_area_get_document:
+ * @area:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongDocument*
 cong_editor_area_get_document (CongEditorArea *area)
 {
@@ -248,14 +269,25 @@ cong_editor_area_get_document (CongEditorArea *area)
 	return cong_editor_widget3_get_document (cong_editor_area_get_widget (area));
 }
 
-
+/**
+ * cong_editor_area_is_hidden:
+ * @area:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean 
 cong_editor_area_is_hidden (CongEditorArea *area)
 {
 	return PRIVATE(area)->is_hidden;
 }
 
-
+/**
+ * cong_editor_area_show:
+ * @area:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_show (CongEditorArea *area)
 {
@@ -263,6 +295,12 @@ cong_editor_area_show (CongEditorArea *area)
 	/* FIXME: do we need to emit any events? */
 }
 
+/**
+ * cong_editor_area_hide:
+ * @area:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_hide (CongEditorArea *area)
 {
@@ -270,6 +308,13 @@ cong_editor_area_hide (CongEditorArea *area)
 	/* FIXME: do we need to emit any events? */
 }
 
+/**
+ * cong_editor_area_get_state:
+ * @editor_area:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GtkStateType
 cong_editor_area_get_state (CongEditorArea *area)
 {
@@ -278,6 +323,13 @@ cong_editor_area_get_state (CongEditorArea *area)
 	return PRIVATE(area)->state;
 }
 
+/**
+ * cong_editor_area_set_state:
+ * @editor_area:
+ * @state:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_set_state (CongEditorArea *area,
 			    GtkStateType state)
@@ -292,6 +344,13 @@ cong_editor_area_set_state (CongEditorArea *area,
 	}
 }
 
+/**
+ * cong_editor_area_get_cursor:
+ * @area:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkCursor*
 cong_editor_area_get_cursor (CongEditorArea *area)
 {
@@ -303,6 +362,13 @@ cong_editor_area_get_cursor (CongEditorArea *area)
 	}
 }
 
+/**
+ * cong_editor_area_set_cursor:
+ * @area:
+ * @cursor:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_set_cursor (CongEditorArea *area,
 			     GdkCursor *cursor)
@@ -320,8 +386,14 @@ cong_editor_area_set_cursor (CongEditorArea *area,
 	}
 }
 
-
 #if 1
+/**
+ * cong_editor_area_get_window_coords:
+ * @area:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 const GdkRectangle*
 cong_editor_area_get_window_coords (CongEditorArea *area)
 {
@@ -331,7 +403,15 @@ cong_editor_area_get_window_coords (CongEditorArea *area)
 }
 #endif
 
-
+/**
+ * cong_editor_area_get_requisition:
+ * @area:
+ * @orientation:
+ * @width_hint:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 guint
 cong_editor_area_get_requisition (CongEditorArea *area,
 				  GtkOrientation orientation,
@@ -377,6 +457,14 @@ cong_editor_area_get_requisition (CongEditorArea *area,
 	return cache->last_calculated_requisition;
 }
 
+/**
+ * cong_editor_area_get_requisition_width:
+ * @area:
+ * @width_hint:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gint
 cong_editor_area_get_requisition_width (CongEditorArea *area,
 					int width_hint)
@@ -387,6 +475,14 @@ cong_editor_area_get_requisition_width (CongEditorArea *area,
 
 }
 
+/**
+ * cong_editor_area_get_requisition_height:
+ * @area:
+ * @width_hint:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gint
 cong_editor_area_get_requisition_height (CongEditorArea *area,
 					 int width_hint)
@@ -396,6 +492,14 @@ cong_editor_area_get_requisition_height (CongEditorArea *area,
 						 width_hint);
 }
 
+/**
+ * cong_editor_area_get_cached_requisition:
+ * @area:
+ * @orientation:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gint
 cong_editor_area_get_cached_requisition (CongEditorArea *area,
 					 GtkOrientation orientation)
@@ -408,7 +512,6 @@ cong_editor_area_get_cached_requisition (CongEditorArea *area,
 
 	return cache->last_calculated_requisition;
 }
-
 
 #if 0
 void 
@@ -423,6 +526,13 @@ cong_editor_area_set_requisition (CongEditorArea *area,
 }
 #endif
 
+/**
+ * cong_editor_area_debug_render_area:
+ * @area:
+ * @gc:
+ *
+ * TODO: Write me
+ */
 void 
 cong_editor_area_debug_render_area (CongEditorArea *area,
 				    GdkGC *gc)
@@ -439,6 +549,12 @@ cong_editor_area_debug_render_area (CongEditorArea *area,
 			    PRIVATE(area)->window_area.height-1);
 }
 
+/**
+ * cong_editor_area_debug_render_state:
+ * @area:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_debug_render_state (CongEditorArea *area)
 {
@@ -473,6 +589,13 @@ cong_editor_area_debug_render_state (CongEditorArea *area)
 
 
 /* CongEditorArea methods: */
+/**
+ * cong_editor_area_get_parent:
+ * @area:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_get_parent (CongEditorArea *area)
 {
@@ -491,6 +614,13 @@ do_recursive_render (CongEditorArea *area,
 	return FALSE;
 }
 
+/**
+ * cong_editor_area_recursive_render:
+ * @area:
+ * @widget_rect:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_recursive_render (CongEditorArea *area,
 				   const GdkRectangle *widget_rect)
@@ -540,6 +670,14 @@ cong_editor_area_recursive_render (CongEditorArea *area,
 	}
 }
 
+/**
+ * cong_editor_area_on_button_press:
+ * @editor_area:
+ * @event:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_editor_area_on_button_press (CongEditorArea *editor_area, 
 				  GdkEventButton *event)
@@ -557,6 +695,14 @@ cong_editor_area_on_button_press (CongEditorArea *editor_area,
 	return result;
 }
 
+/**
+ * cong_editor_area_on_motion_notify:
+ * @editor_area:
+ * @event:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_editor_area_on_motion_notify (CongEditorArea *editor_area, 
 				   GdkEventMotion *event)
@@ -574,6 +720,14 @@ cong_editor_area_on_motion_notify (CongEditorArea *editor_area,
 	return result;
 }
 
+/**
+ * cong_editor_area_on_key_press:
+ * @editor_area:
+ * @event:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_editor_area_on_key_press (CongEditorArea *editor_area, 
 			       GdkEventKey *event)
@@ -591,6 +745,15 @@ cong_editor_area_on_key_press (CongEditorArea *editor_area,
 	return result;
 }
 
+/**
+ * cong_editor_area_calc_requisition:
+ * @editor_area:
+ * @orientation:
+ * @width_hint:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 guint
 cong_editor_area_calc_requisition (CongEditorArea *editor_area, 
 				   GtkOrientation orientation,
@@ -604,6 +767,16 @@ cong_editor_area_calc_requisition (CongEditorArea *editor_area,
 						       (editor_area, orientation, width_hint));
 }
 
+/**
+ * cong_editor_area_set_allocation:
+ * @editor_area:
+ * @x:
+ * @y:
+ * @width:
+ * @height:
+ *
+ * TODO: Write me
+ */
 void 
 cong_editor_area_set_allocation (CongEditorArea *editor_area,
 				 gint x,
@@ -655,7 +828,12 @@ cong_editor_area_set_allocation (CongEditorArea *editor_area,
 	}
 }
 
-
+/**
+ * cong_editor_area_queue_redraw:
+ * @editor_area:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_queue_redraw (CongEditorArea *editor_area)
 {
@@ -672,6 +850,13 @@ cong_editor_area_queue_redraw (CongEditorArea *editor_area)
 				    rect->height);
 }
 
+/**
+ * cong_editor_area_flush_requisition_cache:
+ * @editor_area:
+ * @orientation:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_flush_requisition_cache (CongEditorArea *editor_area,
 					  GtkOrientation orientation)
@@ -699,6 +884,15 @@ cong_editor_area_flush_requisition_cache (CongEditorArea *editor_area,
 	}
 }
 
+/**
+ * cong_editor_area_for_all:
+ * @editor_area:
+ * @func:
+ * @user_data:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_for_all (CongEditorArea *editor_area, 
 			  CongEditorAreaCallbackFunc func, 
@@ -778,6 +972,15 @@ cong_editor_area_recurse (CongEditorArea *editor_area,
 }
 #endif
 
+/**
+ * cong_editor_area_covers_xy:
+ * @editor_area:
+ * @x:
+ * @y:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 gboolean
 cong_editor_area_covers_xy (CongEditorArea *editor_area, 
 			    gint x,
@@ -805,6 +1008,15 @@ static gboolean is_area_at_xy (CongEditorArea *editor_area,
 }
 
 /* Function gets immediate child (either "internal" or "non-internal") at the coords, if any: */
+/**
+ * cong_editor_area_get_immediate_child_at:
+ * @area:
+ * @x:
+ * @y:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_get_immediate_child_at (CongEditorArea *area,
 					 gint x,
@@ -819,6 +1031,16 @@ cong_editor_area_get_immediate_child_at (CongEditorArea *area,
 					 is_area_at_xy,
 					 &search);
 }
+
+/**
+ * cong_editor_area_get_deepest_child_at:
+ * @area:
+ * @x:
+ * @y:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 CongEditorArea*
 cong_editor_area_get_deepest_child_at (CongEditorArea *area,
 				       gint x,
@@ -850,6 +1072,13 @@ cong_editor_area_get_deepest_child_at (CongEditorArea *area,
 	return NULL;
 }
 
+/**
+ * cong_editor_area_get_gdk_window:
+ * @editor_area:
+ *
+ * TODO: Write me
+ * Returns:
+ */
 GdkWindow*
 cong_editor_area_get_gdk_window(CongEditorArea *editor_area)
 {
@@ -859,6 +1088,13 @@ cong_editor_area_get_gdk_window(CongEditorArea *editor_area)
 }
 
 /* Associate the editor area with a particular editor node: */
+/**
+ * cong_editor_area_connect_node_signals:
+ * @area:
+ * @editor_node:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_connect_node_signals (CongEditorArea *area,
 				       CongEditorNode *editor_node)
@@ -891,6 +1127,13 @@ cong_editor_area_connect_node_signals (CongEditorArea *area,
 }
 
 /* Protected stuff: */
+/**
+ * cong_editor_area_protected_postprocess_add_internal_child:
+ * @area:
+ * @internal_child:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_protected_postprocess_add_internal_child (CongEditorArea *area,
 							   CongEditorArea *internal_child)
@@ -904,6 +1147,13 @@ cong_editor_area_protected_postprocess_add_internal_child (CongEditorArea *area,
 			  area);
 }
 
+/**
+ * cong_editor_area_protected_set_parent:
+ * @area:
+ * @parent:
+ *
+ * TODO: Write me
+ */
 void
 cong_editor_area_protected_set_parent (CongEditorArea *area,
 				       CongEditorArea *parent)
