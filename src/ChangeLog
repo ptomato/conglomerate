@@ -1,5 +1,9 @@
 2004-03-10  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* cong-editor-line-iter-span-wrapper.c
+
+	Fixed stupid typo that was ref-ing rather than unref-ing in the dispose handler.  I believe the code no longer leaks any CongEditorLineIter objects.
+	
 	* cong-editor-line-manager.c
 
 	Suppress some debug logging; fix reference leaks to CongEditorLineIter objects

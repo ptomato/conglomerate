@@ -73,7 +73,7 @@ cong_editor_line_iter_span_wrapper_dispose (GObject *object)
 	CongEditorLineIterSpanWrapper *span_wrapper_iter = CONG_EDITOR_LINE_ITER_SPAN_WRAPPER (object);
 
 	if (span_wrapper_iter->outer_iter) {
-		g_object_ref (G_OBJECT (span_wrapper_iter->outer_iter));
+		g_object_unref (G_OBJECT (span_wrapper_iter->outer_iter));
 		span_wrapper_iter->outer_iter = NULL;
 	}
 	
