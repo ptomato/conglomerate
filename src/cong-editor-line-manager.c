@@ -116,6 +116,8 @@ struct PerNodeData
 	CongEditorLineIter *end_line_iter;
 
 	CongEditorCreationRecord *creation_record;
+
+	gulong signal_handler_id;
 };
 
 /* Internal function declarations: */
@@ -145,6 +147,11 @@ regenerate_successor_nodes (CongEditorLineManager *line_manager,
 			    CongEditorNode *successor_node,
 			    CongEditorLineIter *new_start_iter,
 			    CongAreaCreationGeometry *new_start_creation_geometry);
+
+static void
+on_line_regeneration_required (CongEditorNode *editor_node,
+			       gpointer user_data);
+
 
 /* Exported function implementations: */
 void
@@ -211,7 +218,14 @@ cong_editor_line_manager_add_node (CongEditorLineManager *line_manager,
 		}
 	}
 	
+	per_node_data->signal_handler_id = g_signal_connect (G_OBJECT(editor_node),
+							     "line_regeneration_required",
+							     G_CALLBACK(on_line_regeneration_required),
+							     line_manager);
+	g_object_ref (G_OBJECT (line_manager));
+
 	LOG_EVENT ("create areas for new node", editor_node);
+
 
 	create_areas_for_node (line_manager,
 			       editor_node,
@@ -239,6 +253,14 @@ cong_editor_line_manager_remove_node (CongEditorLineManager *line_manager,
 					   editor_node);
 	g_assert (per_node_data);
 
+	/* Disconnect from signals: */
+	g_assert (per_node_data->signal_handler_id);
+	g_signal_handler_disconnect (G_OBJECT(editor_node),
+				     per_node_data->signal_handler_id);
+	per_node_data->signal_handler_id = 0;
+	g_object_unref (G_OBJECT (line_manager)); /* we added a reference with the signal */
+
+	/* Destroy areas: */
 	destroy_areas_for_node (line_manager,
 				editor_node);
 
@@ -528,6 +550,9 @@ create_areas_for_node (CongEditorLineManager *line_manager,
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
 	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
 
+	/* Ensure arguments stay "live": */
+	g_object_ref (G_OBJECT (start_line_iter));
+
 	per_node_data = get_data_for_node (line_manager,
 					   editor_node);
 	g_assert (per_node_data);
@@ -577,6 +602,9 @@ create_areas_for_node (CongEditorLineManager *line_manager,
 	}
 	per_node_data->end_creation_geometry = cong_area_creation_geometry_new (line_manager,
 										per_node_data->end_line_iter);
+
+	/* Finished ensuring arguments stay "live": */
+	g_object_unref (G_OBJECT (start_line_iter));
 }
 
 static void
@@ -656,4 +684,31 @@ regenerate_successor_nodes (CongEditorLineManager *line_manager,
 			return;
 		}
 	}
+}
+
+static void
+on_line_regeneration_required (CongEditorNode *editor_node,
+			       gpointer user_data)
+{
+	CongEditorLineManager *line_manager = CONG_EDITOR_LINE_MANAGER (user_data);
+	PerNodeData *per_node_data;
+
+	per_node_data = get_data_for_node (line_manager,
+					   editor_node);
+	g_assert (per_node_data);
+
+	LOG_EVENT ("on_line_regeneration_required for node", editor_node);
+
+	/* 
+	   We always regenerate this node's area: the subclass asked for it (e.g. the user has typed text and changed the content of a CongEditorNodeText)
+	 */
+	regenerate_areas_for_node (line_manager,
+				   editor_node,
+				   per_node_data->start_line_iter);
+
+	/* Potentially regenerate successors: */
+	regenerate_successor_nodes (line_manager,
+				    cong_editor_node_get_next (editor_node),
+				    per_node_data->end_line_iter,
+				    per_node_data->end_creation_geometry);
 }
