@@ -1,3 +1,9 @@
+2004-05-05  Geert Stappers <stappers@stappers.nl>
+
+	* configure.in
+	
+	gtk-doc is default disabled. (working on bugzilla #131600)
+
 2004-04-10  Adam Weinberger  <adamw@gnome.org>
 
 	* configure.in: Added en_CA to ALL_LINGUAS.
