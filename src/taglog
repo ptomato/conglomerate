@@ -6,3 +6,4 @@ bz-132884-0  Begin of a crash fixing patch
 bz-132884-e  End of applying a crash fixing patch
 bz-134966-0  link to website in the application
 bz-134966-1  Patch applied
+bz-131746-0  xml:space
