@@ -1,3 +1,9 @@
+2004-01-20  Dave Malcolm  <david@davemalcolm.demon.co.uk>
+
+	* .cvsignore, plugin-random.c, Makefile.am, cong-app.c, cong-dispspec.c, cong-dispspec.h, cong-dtd.c, cong-dtd.h, cong-fake-plugin-hooks.h, cong-file-new.c, cong-node-properties-dialog.c, cong-node.c, cong-primary-window.c, cong-service-document-factory.h, plugin-dtd.c, plugin-tests.c
+
+	Merged changes from HEAD into the WidgetPlayground branch (random document generation, plus DTD content model view in node Properties dialog)
+	
 2004-01-19  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
 	* cong-editor-line-manager-simple.c, cong-editor-line-manager-simple.h, cong-editor-line-manager.c, cong-editor-node.c, cong-editor-widget3.c
@@ -45,6 +51,10 @@
 	There should be a "new document" button if no document is loaded.
 
 2004-01-16  Dave Malcolm  <david@davemalcolm.demon.co.uk>
+
+	* cong-editor-widget3.c, cong-node.c:
+
+	Bulletproofing for the Cleanup XML Source tool
 
 	* cong-editor-widget3.c
 
