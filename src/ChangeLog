@@ -1,5 +1,9 @@
 2004-01-23  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* cong-editor-line-iter-simple.c, cong-editor-line-iter-simple.h, cong-editor-line-iter-span-wrapper.c, cong-editor-line-iter-span-wrapper.h, cong-editor-line-iter.c, cong-editor-line-iter.h
+
+	New files
+
 	* cong-editor-area-line.c, cong-editor-line-manager-simple.c, cong-editor-line-manager-span-wrapper.c, cong-editor-line-manager.c, cong-editor-line-manager.h, cong-editor-node-text.c, cong-editor-node.c, cong-editor-node.h, cong-editor-widget.h, cong-editor-widget3.c
 
 	CongEditorLineManager objects are now responsible for managing the EditorAreas of EditorNodes; created a CongEditorLineIter struct to allow insertion of new nodes with their areas in the correct positions relative to existing ones; span tags are currently broken
