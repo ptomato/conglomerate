@@ -1,5 +1,9 @@
 2004-01-19  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* plugin-print-source.c, cong-app.c, cong-fake-plugin-hooks.h
+
+	New (stub) plugin for printing documents as syntax-highlighted XML sourcec
+
 	* cong-editor-line-manager-simple.c, cong-editor-node.c, cong-editor-widget3.c
 
 	Visual improvements to the layout of the new implementation, trying to match the spacings of the old one

@@ -1020,6 +1020,10 @@ cong_app_private_load_plugins (CongApp *app)
 			plugin_paragraph_plugin_register,
 			plugin_paragraph_plugin_configure);
 
+	register_plugin(app,"print-source",
+			plugin_print_source_plugin_register,
+			plugin_print_source_plugin_configure);
+
 	register_plugin(app,"save-dispspec",
 			plugin_save_dispspec_plugin_register,
 			plugin_save_dispspec_plugin_configure);
