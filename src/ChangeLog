@@ -1,5 +1,9 @@
 2004-01-18  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* Makefile.am, cong-editor-area-flow-holder-blocks.c, cong-editor-area-flow-holder-blocks.h, cong-editor-area-flow-holder-single.c, cong-editor-area-flow-holder-single.h, cong-editor-area-flow-holder.c, cong-editor-area-flow-holder.h, cong-editor-child-policy-flow-holder.c, cong-editor-child-policy-flow-holder.h, cong-editor-child-policy-inline.c, cong-editor-child-policy-inline.h, cong-editor-child-policy.c, cong-editor-child-policy.h
+
+	Added new files; removed dead code
+
 	* cong-editor-line-manager.h, cong-editor-line-manager.c, cong-editor-line-manager-simple.h, cong-editor-line-manager-simple.c, cong-editor-line-manager-span-wrapper.h, cong-editor-line-manager-span-wrapper.c
 
 	New files

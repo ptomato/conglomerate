@@ -1,5 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 
+#error This file should not be in use any more
+
 /*
  * cong-editor-area-flow-holder-single.c
  *

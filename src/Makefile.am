@@ -45,10 +45,6 @@ conglomerate_SOURCES =      \
   cong-editor-area-entity-decl.h \
   cong-editor-area-entity-ref.h \
   cong-editor-area-expander.h \
-  cong-editor-area-flow-holder.h \
-  cong-editor-area-flow-holder-blocks.h \
-  cong-editor-area-flow-holder-inlines.h \
-  cong-editor-area-flow-holder-single.h \
   cong-editor-area-labelled.h \
   cong-editor-area-line.h \
   cong-editor-area-pixbuf.h \
@@ -61,10 +57,10 @@ conglomerate_SOURCES =      \
   cong-editor-area-structural-tag.h \
   cong-editor-area-underline.h \
   cong-editor-area-unknown-tag.h   \
-  cong-editor-child-policy.h \
-  cong-editor-child-policy-flow-holder.h \
-  cong-editor-child-policy-inline.h \
   cong-editor-line-fragments.h \
+  cong-editor-line-manager.h \
+  cong-editor-line-manager-simple.h \
+  cong-editor-line-manager-span-wrapper.h \
   cong-editor-node.h        \
   cong-editor-node-comment.h \
   cong-editor-node-document.h \
@@ -160,10 +156,6 @@ conglomerate_SOURCES =      \
   cong-editor-area-entity-decl.c \
   cong-editor-area-entity-ref.c \
   cong-editor-area-expander.c \
-  cong-editor-area-flow-holder.c \
-  cong-editor-area-flow-holder-blocks.c \
-  cong-editor-area-flow-holder-inlines.c \
-  cong-editor-area-flow-holder-single.c \
   cong-editor-area-labelled.c \
   cong-editor-area-line.c \
   cong-editor-area-pixbuf.c \
@@ -176,10 +168,10 @@ conglomerate_SOURCES =      \
   cong-editor-area-structural-tag.c \
   cong-editor-area-underline.c \
   cong-editor-area-unknown-tag.c   \
-  cong-editor-child-policy.c \
-  cong-editor-child-policy-flow-holder.c \
-  cong-editor-child-policy-inline.c \
   cong-editor-line-fragments.c \
+  cong-editor-line-manager.c \
+  cong-editor-line-manager-simple.c \
+  cong-editor-line-manager-span-wrapper.c \
   cong-editor-node.c        \
   cong-editor-node-comment.c \
   cong-editor-node-document.c \
@@ -291,6 +283,7 @@ conglomerate_SOURCES =      \
   plugin-paragraph-area-paragraph.c \
   plugin-paragraph-node-element-paragraph.h \
   plugin-paragraph-node-element-paragraph.c \
+  plugin-print-source.c     \
   plugin-save-dispspec.c    \
   plugin-sgml.c             \
   plugin-tests.c            \
