@@ -1610,12 +1610,25 @@ enum CongWhitespaceHandling
 cong_node_get_whitespace_handling (CongDocument *doc,
 				   CongNodePtr text_node)
 {
+	CongXMLChar *attr;
+	xmlNsPtr ns;
+	CongDispspecElement *ds_element;
+
 	g_return_val_if_fail (doc, CONG_WHITESPACE_NORMALIZE);
 	g_return_val_if_fail (text_node, CONG_WHITESPACE_NORMALIZE);
 	g_return_val_if_fail (cong_node_type (text_node)==CONG_NODE_TYPE_TEXT, CONG_WHITESPACE_NORMALIZE);
+	
+	ns = cong_node_get_ns_for_prefix (text_node->parent, "xml");
+	attr = cong_node_get_attribute (text_node->parent, ns, "space");
 
+	if (attr != NULL && (strcmp (attr, "preserve") == 0)) {
+	    xmlFree (attr);
+	    return CONG_WHITESPACE_PRESERVE;
+	  }
+	  
+	xmlFree (attr);
 	if (cong_node_type (text_node->parent)==CONG_NODE_TYPE_ELEMENT) {
-		CongDispspecElement *ds_element = cong_document_get_dispspec_element_for_node  (doc, text_node->parent);
+		ds_element = cong_document_get_dispspec_element_for_node  (doc, text_node->parent);
 
 		if (ds_element) {
 			return cong_dispspec_element_get_whitespace (ds_element);
