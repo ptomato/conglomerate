@@ -513,6 +513,7 @@ create_areas (CongEditorNode *editor_node,
 #endif
 
 			cong_editor_line_manager_add_to_line (creation_info->line_manager,
+							      creation_info->creation_record,
 							      creation_info->line_iter,
 							      text_fragment);
 			/* FIXME: will eventually need to end the lines if we're preserving whitespace */

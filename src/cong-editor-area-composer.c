@@ -576,7 +576,7 @@ remove_child ( CongEditorAreaContainer *area_container,
 	}
 
 	/* Not found: */
-	g_error ("CongEditorAreaComposer::remove_child called for an area that wawn't a child");
+	g_error ("CongEditorAreaComposer::remove_child called for an area that wasn't a child");
 }
 
 static void

@@ -31,6 +31,13 @@
 
 G_BEGIN_DECLS
 
+enum CongEditorCreationEvent
+{
+	CONG_EDITOR_CREATION_EVENT_BEGIN_LINE,
+	CONG_EDITOR_CREATION_EVENT_END_LINE,
+	CONG_EDITOR_CREATION_EVENT_ADD_AREA
+};
+
 #define DEBUG_EDITOR_LINE_MANAGER_LIFETIMES 0
 
 #define CONG_EDITOR_LINE_MANAGER_TYPE	      (cong_editor_line_manager_get_type ())
@@ -46,13 +53,29 @@ CONG_DECLARE_CLASS_BEGIN (CongEditorLineManager, cong_editor_line_manager, GObje
      CongEditorLineIter* (*make_iter) (CongEditorLineManager *line_manager);
 
      /* Manipulating the lines: */
+     /* Creating areas: */
      void (*begin_line) (CongEditorLineManager *line_manager,
+			 CongEditorCreationRecord *creation_record,
 			 CongEditorLineIter *line_iter);
      void (*add_to_line) (CongEditorLineManager *line_manager,
+			  CongEditorCreationRecord *creation_record,
 			  CongEditorLineIter *line_iter,
 			  CongEditorArea *area);
      void (*end_line) (CongEditorLineManager *line_manager,
+		       CongEditorCreationRecord *creation_record,
 		       CongEditorLineIter *line_iter);
+
+     /* Destroying them: */
+#if 1
+     void (*undo_change) (CongEditorLineManager *line_manager,
+			  enum CongEditorCreationEvent event,
+			  CongEditorLineIter *iter_before,
+			  CongEditorLineIter *iter_after);
+#else
+     void (*delete_areas) (CongEditorLineManager *line_manager,
+			   CongEditorLineIter *start_iter,
+			   CongEditorLineIter *end_iter);
+#endif
 
      /* Getting data about the lines: */
      gint (*get_line_width) (CongEditorLineManager *line_manager,
@@ -79,16 +102,32 @@ cong_editor_line_manager_remove_node (CongEditorLineManager *line_manager,
 /* V-Func invocation: */
 void
 cong_editor_line_manager_begin_line (CongEditorLineManager *line_manager,
+				     CongEditorCreationRecord *creation_record,
 				     CongEditorLineIter *line_iter);
 
 void
 cong_editor_line_manager_add_to_line (CongEditorLineManager *line_manager,
+				      CongEditorCreationRecord *creation_record,
 				      CongEditorLineIter *line_iter,
 				      CongEditorArea *area);
 
 void
 cong_editor_line_manager_end_line (CongEditorLineManager *line_manager,
+				   CongEditorCreationRecord *creation_record,
 				   CongEditorLineIter *line_iter);
+
+#if 1
+void 
+cong_editor_line_manager_undo_change (CongEditorLineManager *line_manager,
+				      enum CongEditorCreationEvent event,
+				      CongEditorLineIter *iter_before,
+				      CongEditorLineIter *iter_after);
+#else
+void 
+cong_editor_line_manager_delete_areas (CongEditorLineManager *line_manager,
+				       CongEditorLineIter *start_iter,
+				       CongEditorLineIter *end_iter);
+#endif
 
 gint
 cong_editor_line_manager_get_line_width (CongEditorLineManager *line_manager,

@@ -51,6 +51,8 @@ cong_editor_line_iter_simple_construct (CongEditorLineIterSimple *line_iter,
 CongEditorLineIterSimple*
 cong_editor_line_iter_simple_new (CongEditorLineManagerSimple *simple)
 {
+	g_return_val_if_fail (IS_CONG_EDITOR_LINE_MANAGER_SIMPLE (simple), NULL);
+
 	return cong_editor_line_iter_simple_construct (g_object_new (CONG_EDITOR_LINE_ITER_SIMPLE_TYPE, NULL),
 						       simple);
 }

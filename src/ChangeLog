@@ -1,3 +1,13 @@
+2004-03-08  Dave Malcolm  <david@davemalcolm.demon.co.uk>
+
+	* cong-editor-creation-record.c, cong-editor-creation-record.h, Makefile.am, cong-editor-area-composer.c, cong-editor-area-line.c, cong-editor-area.c, cong-editor-line-iter-simple.c, cong-editor-line-iter-span-wrapper.c, cong-editor-line-iter-span-wrapper.h, cong-editor-line-manager-simple.c, cong-editor-line-manager-span-wrapper.c, cong-editor-line-manager-span-wrapper.h, cong-editor-line-manager.c, cong-editor-line-manager.h, cong-editor-node-element-span.c, cong-editor-node-text.c, cong-editor-node.c, cong-editor-node.h, cong-editor-widget.h
+
+	First attempt at cleaning up the areas from deleted nodes in this branch of the code.  Works some of the time; currently lots of bugs (but a good place to work from I think)
+
+	* cong-editor-creation-record.c, cong-editor-creation-record.h
+
+	New files
+
 2004-03-04  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
 	* Makefile.am

@@ -37,16 +37,32 @@ make_iter (CongEditorLineManager *line_manager);
 
 static void 
 begin_line (CongEditorLineManager *line_manager,
+	    CongEditorCreationRecord *creation_record,
 	    CongEditorLineIter *line_iter);
 
 static void
 add_to_line (CongEditorLineManager *line_manager,
+	     CongEditorCreationRecord *creation_record,
 	     CongEditorLineIter *line_iter,
 	     CongEditorArea *area);
 
 static void 
 end_line (CongEditorLineManager *line_manager,
+	  CongEditorCreationRecord *creation_record,
 	  CongEditorLineIter *line_iter);
+
+#if 1
+static void 
+undo_change (CongEditorLineManager *line_manager,
+	     enum CongEditorCreationEvent event,
+	     CongEditorLineIter *iter_before,
+	     CongEditorLineIter *iter_after);
+#else
+static void 
+delete_areas (CongEditorLineManager *line_manager,
+	      CongEditorLineIter *start_iter,
+	      CongEditorLineIter *end_iter);
+#endif
 
 static gint
 get_line_width (CongEditorLineManager *line_manager,
@@ -60,7 +76,7 @@ get_current_indent (CongEditorLineManager *line_manager,
 typedef struct PerLineData PerLineData;
 struct PerLineData
 {
-	CongEditorArea *span_area;
+	CongEditorAreaSpanTag *span_area;
 	CongEditorArea *inner_line;
 };
 
@@ -77,6 +93,7 @@ struct CongEditorLineManagerSpanWrapperPrivate
 	CongEditorNode *editor_node;
 
 	CongEditorLineManager *outer_line_manager;
+	CongEditorCreationRecord *outer_creation_record;
 	CongEditorLineIter *outer_iter;
 
 	GHashTable *hash_of_line_to_data;
@@ -92,6 +109,12 @@ CONG_DEFINE_CLASS_BEGIN (CongEditorLineManagerSpanWrapper, cong_editor_line_mana
 	lm_klass->add_to_line = add_to_line;
 	lm_klass->end_line = end_line;
 
+#if 1
+	lm_klass->undo_change = undo_change;	
+#else
+	lm_klass->delete_areas = delete_areas;
+#endif
+
 	lm_klass->get_line_width = get_line_width;
 	lm_klass->get_current_indent = get_current_indent;
 }
@@ -103,6 +126,7 @@ cong_editor_line_manager_span_wrapper_construct (CongEditorLineManagerSpanWrappe
 						 CongEditorWidget3 *widget,
 						 CongEditorNode *editor_node,
 						 CongEditorLineManager *outer_line_manager,
+						 CongEditorCreationRecord *outer_creation_record,
 						 CongEditorLineIter *outer_iter)
 {
 	g_return_val_if_fail (IS_CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager), NULL);
@@ -114,6 +138,7 @@ cong_editor_line_manager_span_wrapper_construct (CongEditorLineManagerSpanWrappe
 
 	PRIVATE (line_manager)->editor_node = editor_node;
 	PRIVATE (line_manager)->outer_line_manager = outer_line_manager;
+	PRIVATE (line_manager)->outer_creation_record = outer_creation_record;
 	PRIVATE (line_manager)->outer_iter = outer_iter;
 
 	PRIVATE (line_manager)->hash_of_line_to_data = g_hash_table_new_full (g_direct_hash,
@@ -129,17 +154,21 @@ CongEditorLineManager*
 cong_editor_line_manager_span_wrapper_new (CongEditorWidget3 *widget,
 					   CongEditorNode *editor_node,
 					   CongEditorLineManager *outer_line_manager,
+					   CongEditorCreationRecord *outer_creation_record,
 					   CongEditorLineIter *outer_iter)
 {
 	return CONG_EDITOR_LINE_MANAGER (cong_editor_line_manager_span_wrapper_construct (g_object_new (CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER_TYPE, NULL),
 											  widget,
 											  editor_node,
 											  outer_line_manager,
+											  outer_creation_record,
 											  outer_iter));	
 }
 
-static CongEditorArea*
-make_span_area (CongEditorLineManagerSpanWrapper *span_wrapper)
+static CongEditorAreaSpanTag*
+make_span_area (CongEditorLineManagerSpanWrapper *span_wrapper,
+		gboolean is_at_start,
+		gboolean is_at_end)
 {
 	CongEditorArea *area;
 	CongDispspecElement *ds_element;
@@ -159,8 +188,8 @@ make_span_area (CongEditorLineManagerSpanWrapper *span_wrapper)
 					      ds_element,
 					      pixbuf,
 					      title_text,
-					      TRUE, /* is_at_start, */
-					      TRUE /* is_at_end */);
+					      is_at_start,
+					      is_at_end);
 
 	if (pixbuf) {
 		g_object_unref (G_OBJECT(pixbuf));
@@ -168,7 +197,7 @@ make_span_area (CongEditorLineManagerSpanWrapper *span_wrapper)
 
 	g_free (title_text);
 
-	return area;
+	return CONG_EDITOR_AREA_SPAN_TAG (area);
 }
 
 static CongEditorArea*
@@ -200,20 +229,29 @@ make_iter (CongEditorLineManager *line_manager)
 
 static void
 begin_line (CongEditorLineManager *line_manager,
+	    CongEditorCreationRecord *creation_record,
 	    CongEditorLineIter *line_iter)
 {
 	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
 	CongEditorLineIterSpanWrapper *span_wrapper_iter = CONG_EDITOR_LINE_ITER_SPAN_WRAPPER (line_iter);
 
-	span_wrapper_iter->current_prev_area_on_line = NULL;
+	span_wrapper_iter->prev_area_on_current_line = NULL;
 
 	/* Delegate: */
 	cong_editor_line_manager_begin_line (PRIVATE (span_wrapper)->outer_line_manager,
+					     PRIVATE (span_wrapper)->outer_creation_record,
 					     span_wrapper_iter->outer_iter);
+
+	/* how do we handle this creation_record stuff? Perhaps we should it, and do the recording inside the line manager?
+	   But how do we distinguish between stuff done by a node, and stuff done by the children of a node?  Wouldn't this mean
+	   cleaning out parts of the change list when a child is removed?
+	   Perhaps I should try to get the Simple subclass working (line removal) as I think about this?
+	 */
 }
 
 static void
 add_to_line (CongEditorLineManager *line_manager,
+	     CongEditorCreationRecord *creation_record,
 	     CongEditorLineIter *line_iter,
 	     CongEditorArea *area)
 {
@@ -227,6 +265,7 @@ add_to_line (CongEditorLineManager *line_manager,
 	if (NULL==line) {
 		/* Need to start a new line:*/
 		cong_editor_line_manager_begin_line (line_manager,
+						     creation_record,
 						     line_iter);
 		line = cong_editor_line_iter_get_line (line_iter);
 	}
@@ -242,15 +281,18 @@ add_to_line (CongEditorLineManager *line_manager,
 				     line,
 				     line_data);
 
-		line_data->span_area = make_span_area (span_wrapper);
+		line_data->span_area = make_span_area (span_wrapper,
+						       TRUE, /* is_at_start, */
+						       TRUE /* is_at_end */);
 		line_data->inner_line = make_inner_line (span_wrapper);
 
 		/* FIXME:  what about inserting at the start of a line which already has stuff on it? */
-		span_wrapper_iter->current_prev_area_on_line = NULL;
+		span_wrapper_iter->prev_area_on_current_line = NULL;
 
 		cong_editor_line_manager_add_to_line (PRIVATE (span_wrapper)->outer_line_manager,
+						      PRIVATE (span_wrapper)->outer_creation_record,
 						      span_wrapper_iter->outer_iter,
-						      line_data->span_area);
+						      CONG_EDITOR_AREA (line_data->span_area));
 
 		cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (line_data->span_area),
 						      line_data->inner_line);
@@ -258,32 +300,109 @@ add_to_line (CongEditorLineManager *line_manager,
 	g_assert (line_data->span_area);
 	g_assert (line_data->inner_line);
 
-	if (span_wrapper_iter->current_prev_area_on_line) {
+	if (span_wrapper_iter->prev_area_on_current_line) {
 		cong_editor_area_container_add_child_after (CONG_EDITOR_AREA_CONTAINER (line_data->inner_line),
 							    area,
-							    span_wrapper_iter->current_prev_area_on_line);
+							    span_wrapper_iter->prev_area_on_current_line);
 	} else {
 		/* FIXME: shouldn't we be adding to the start, not the end? */
 		cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (line_data->inner_line),
 						      area);
 	}
 
-	span_wrapper_iter->current_prev_area_on_line = area;
+	span_wrapper_iter->prev_area_on_current_line = area;
 }
 
 static void 
 end_line (CongEditorLineManager *line_manager,
+	  CongEditorCreationRecord *creation_record,
 	  CongEditorLineIter *line_iter)
 {
 	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
 	CongEditorLineIterSpanWrapper *span_wrapper_iter = CONG_EDITOR_LINE_ITER_SPAN_WRAPPER (line_iter);
 
-	span_wrapper_iter->current_prev_area_on_line = NULL;
+	span_wrapper_iter->prev_area_on_current_line = NULL;
 	
 	/* Delegate: */
 	return cong_editor_line_manager_end_line (PRIVATE (span_wrapper)->outer_line_manager,
+						  PRIVATE (span_wrapper)->outer_creation_record,
 						  span_wrapper_iter->outer_iter);
 }
+
+#if 1
+static void 
+undo_change (CongEditorLineManager *line_manager,
+	     enum CongEditorCreationEvent event,
+	     CongEditorLineIter *iter_before,
+	     CongEditorLineIter *iter_after)
+{
+	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
+	/*CongEditorLineIterSpanWrapper *iter_before_span_wrapper = CONG_EDITOR_LINE_ITER_SPAN_WRAPPER (iter_before);*/
+	CongEditorLineIterSpanWrapper *iter_after_span_wrapper = CONG_EDITOR_LINE_ITER_SPAN_WRAPPER (iter_after);
+
+	switch (event) {
+	default: g_assert_not_reached ();
+	case CONG_EDITOR_CREATION_EVENT_BEGIN_LINE:
+		g_message ("FIXME: unimplemented CongEditorLineManagerSpanWrapper::undo_change (BEGIN_LINE)");
+		break;
+
+	case CONG_EDITOR_CREATION_EVENT_END_LINE:
+		g_message ("FIXME: unimplemented CongEditorLineManagerSpanWrapper::undo_change (END_LINE)");
+		break;
+
+	case CONG_EDITOR_CREATION_EVENT_ADD_AREA:
+		{
+			CongEditorAreaLine *line;
+			PerLineData *line_data;
+			
+			line = cong_editor_line_iter_get_line (iter_after);
+			g_assert (line);
+
+			line_data = get_data_for_line (span_wrapper,
+						       line);
+			g_assert (line_data);
+
+			/* This should be the area that was added: */
+			g_assert (iter_after_span_wrapper->prev_area_on_current_line);
+
+			/* This should be the line that the area was added to: */
+			g_assert (line_data->inner_line);
+
+			cong_editor_area_container_remove_child (CONG_EDITOR_AREA_CONTAINER (line_data->inner_line),
+								 iter_after_span_wrapper->prev_area_on_current_line);
+
+#if 0
+			G_BREAKPOINT ();
+#error 
+			/* Why is this not called when removing a span tag?
+			   Seems to be called when you "cut" the element in the Raw XML sidebar.
+			   What about undoing the removal of a simple span tag?
+			*/
+#endif
+		}
+		break;
+
+	}
+
+}
+#else
+static void 
+delete_areas (CongEditorLineManager *line_manager,
+	      CongEditorLineIter *start_iter,
+	      CongEditorLineIter *end_iter)
+{
+	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
+	CongEditorLineIterSpanWrapper *start_iter_span_wrapper = CONG_EDITOR_LINE_ITER_SPAN_WRAPPER (start_iter);
+	CongEditorLineIterSpanWrapper *end_iter_span_wrapper = CONG_EDITOR_LINE_ITER_SPAN_WRAPPER (end_iter);
+
+	/* Delegate: */
+	/* FIXME: does this actually work?  what are the semantics of an iter? */
+	cong_editor_line_manager_delete_areas (PRIVATE (span_wrapper)->outer_line_manager,
+					       start_iter_span_wrapper->outer_iter,
+					       end_iter_span_wrapper->outer_iter);
+
+}
+#endif
 
 static gint
 get_line_width (CongEditorLineManager *line_manager,

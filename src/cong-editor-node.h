@@ -45,6 +45,9 @@ struct CongAreaCreationInfo
 {
 	CongEditorLineManager *line_manager;
 
+	/* record of the various nodes added, lines begun and ended: */
+	CongEditorCreationRecord *creation_record;
+
 	/* Position at which to add areas (so that when a node is inserted between two existing nodes, 
 	   we can add the areas between their areas.  Note, though that subsequent areas may well need regenerating
 	   since the word-wrap will often start at a different place).

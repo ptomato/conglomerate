@@ -133,6 +133,7 @@ create_areas (CongEditorNode *editor_node,
 	line_manager = cong_editor_line_manager_span_wrapper_new (cong_editor_node_get_widget (editor_node),
 								  editor_node,
 								  creation_info->line_manager,
+								  creation_info->creation_record,
 								  creation_info->line_iter);
 
 	cong_editor_node_set_line_manager_for_children (editor_node,

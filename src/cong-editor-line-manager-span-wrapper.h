@@ -42,6 +42,7 @@ CongEditorLineManager*
 cong_editor_line_manager_span_wrapper_new (CongEditorWidget3 *widget,
 					   CongEditorNode *editor_node,
 					   CongEditorLineManager *outer_line_manager,
+					   CongEditorCreationRecord *outer_creation_record,
 					   CongEditorLineIter *outer_iter);
 
 

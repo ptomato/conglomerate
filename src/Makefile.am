@@ -64,6 +64,7 @@ conglomerate_SOURCES =      \
   cong-editor-area-structural-tag.h \
   cong-editor-area-underline.h \
   cong-editor-area-unknown-tag.h   \
+  cong-editor-creation-record.h   \
   cong-editor-line-fragments.h \
   cong-editor-line-iter.h \
   cong-editor-line-iter-simple.h \
@@ -181,6 +182,7 @@ conglomerate_SOURCES =      \
   cong-editor-area-structural-tag.c \
   cong-editor-area-underline.c \
   cong-editor-area-unknown-tag.c   \
+  cong-editor-creation-record.c   \
   cong-editor-line-fragments.c \
   cong-editor-line-iter.c \
   cong-editor-line-iter-simple.c \

@@ -50,6 +50,7 @@ typedef struct CongEditorLineIter CongEditorLineIter;
 typedef struct CongEditorLineManager CongEditorLineManager;
 typedef struct CongEditorLineManagerSimple CongEditorLineManagerSimple;
 typedef struct CongEditorLineManagerSpanWrapper CongEditorLineManagerSpanWrapper;
+typedef struct CongEditorCreationRecord CongEditorCreationRecord;
 
 /* CongEditorArea and some common subclasses: */
 typedef struct CongEditorArea CongEditorArea;

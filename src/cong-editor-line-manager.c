@@ -27,6 +27,7 @@
 #include "cong-editor-line-iter.h"
 #include "cong-editor-area.h"
 #include "cong-editor-node.h"
+#include "cong-editor-creation-record.h"
 #include "cong-eel.h"
 
 struct CongEditorLineManagerPrivate
@@ -41,7 +42,6 @@ CONG_DEFINE_CLASS_BEGIN (CongEditorLineManager, cong_editor_line_manager, CONG_E
 CONG_DEFINE_CLASS_END ()
 CONG_DEFINE_EMPTY_DISPOSE(cong_editor_line_manager)
 
-
 /* Data stored about each editor node: */
 typedef struct PerNodeData PerNodeData;
 struct PerNodeData
@@ -53,8 +53,13 @@ struct PerNodeData
 	/* FIXME: perhaps these ought to be added to struct CongAreaCreationInfo ? */
 #endif
 
+	/* Record of insertion position at the start of this node: */
+	CongEditorLineIter *start_line_iter;
+
 	/* Insertion position for areas _after_ this node: */
-	CongEditorLineIter *trailing_line_iter;
+	CongEditorLineIter *end_line_iter;
+
+	CongEditorCreationRecord *creation_record;
 };
 
 static void
@@ -103,18 +108,23 @@ cong_editor_line_manager_add_node (CongEditorLineManager *line_manager,
 				PerNodeData *per_node_data_prev = get_data_for_node (line_manager,
 										     editor_node_prev);
 				
-				per_node_data->trailing_line_iter = cong_editor_line_iter_clone (per_node_data_prev->trailing_line_iter);
+				per_node_data->start_line_iter = cong_editor_line_iter_clone (per_node_data_prev->end_line_iter);
 			} else {
 				/* We have a start node; use the factory method: */
-				per_node_data->trailing_line_iter = CONG_EEL_CALL_METHOD_WITH_RETURN_VALUE (CONG_EDITOR_LINE_MANAGER_CLASS,
-													    line_manager,
-													    make_iter,
-													    (line_manager));
+				per_node_data->start_line_iter = CONG_EEL_CALL_METHOD_WITH_RETURN_VALUE (CONG_EDITOR_LINE_MANAGER_CLASS,
+													 line_manager,
+													 make_iter,
+													 (line_manager));
 			}
-			g_assert (per_node_data->trailing_line_iter);
+			per_node_data->end_line_iter = cong_editor_line_iter_clone (per_node_data->start_line_iter);
+			g_assert (per_node_data->start_line_iter);
+			g_assert (per_node_data->end_line_iter);
 		}
+
+		/* Set up creation record: */
+		per_node_data->creation_record = cong_editor_creation_record_new (line_manager);
 		
-		/* ...and add to the hash table: */
+		/* We're done; add this to the hash table: */
 		g_hash_table_insert (PRIVATE (line_manager)->hash_of_editor_node_to_data,
 				     editor_node,
 				     per_node_data);
@@ -125,7 +135,8 @@ cong_editor_line_manager_add_node (CongEditorLineManager *line_manager,
 		CongAreaCreationInfo creation_info;
 
 		creation_info.line_manager = line_manager;
-		creation_info.line_iter = per_node_data->trailing_line_iter; /* note that this will be modified */
+		creation_info.creation_record = per_node_data->creation_record;
+		creation_info.line_iter = per_node_data->end_line_iter; /* note that this will be modified */
 
 		CONG_EEL_CALL_METHOD (CONG_EDITOR_NODE_CLASS,
 				      editor_node,
@@ -142,40 +153,64 @@ cong_editor_line_manager_add_node (CongEditorLineManager *line_manager,
 
 void
 cong_editor_line_manager_remove_node (CongEditorLineManager *line_manager,
-				      CongEditorNode *node)
+				      CongEditorNode *editor_node)
 {
+	PerNodeData *per_node_data;
+
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
-	g_return_if_fail (IS_CONG_EDITOR_NODE (node));
+	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
 
-	/* FIXME: unimplemented */
-	g_assert_not_reached ();
+	per_node_data = get_data_for_node (line_manager,
+					   editor_node);
+	g_assert (per_node_data);
 
-	/* Use difference between iters to remove the areas of this node. */
-	/* Easier said than done... */
+#if 1
+	/* Delete all areas recorded for this node: */
+	cong_editor_creation_record_undo_changes (per_node_data->creation_record);
+	g_object_unref (G_OBJECT (per_node_data->creation_record));
 
 	/* Potentially update successor nodes' area creation info, recreating areas as necessary, which may trigger further updates: */
 	{
 		/* FIXME: unwritten */
+
 	}
+#else
+	/* Go backwards, deleting all sibling's areas (recursaively?) including this one, then regenerate siblings forwards? */ 
+#endif
 
 	/* Remove from hash: */
 	{
 		g_hash_table_remove (PRIVATE (line_manager)->hash_of_editor_node_to_data,
-				     node);
+				     editor_node);
 	}
 }
 
 void
 cong_editor_line_manager_begin_line (CongEditorLineManager *line_manager,
+				     CongEditorCreationRecord *creation_record,
 				     CongEditorLineIter *line_iter)
 {
+	CongEditorLineIter *iter_before;
+	CongEditorLineIter *iter_after;
+
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (IS_CONG_EDITOR_CREATION_RECORD (creation_record));
 	g_return_if_fail (line_iter);
+
+	iter_before = cong_editor_line_iter_clone (line_iter);
 
 	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
 			      line_manager,
 			      begin_line, 
-			      (line_manager, line_iter));
+			      (line_manager, creation_record, line_iter));
+
+	iter_after = cong_editor_line_iter_clone (line_iter);
+
+	/* Record the change: */
+	cong_editor_creation_record_add_change (creation_record,
+						CONG_EDITOR_CREATION_EVENT_BEGIN_LINE,
+						iter_before,
+						iter_after);
 
 	/* We should now have a line at the iter: */
 	g_assert (cong_editor_line_iter_get_line (line_iter));
@@ -183,10 +218,15 @@ cong_editor_line_manager_begin_line (CongEditorLineManager *line_manager,
 
 void
 cong_editor_line_manager_add_to_line (CongEditorLineManager *line_manager,
+				      CongEditorCreationRecord *creation_record,
 				      CongEditorLineIter *line_iter,
 				      CongEditorArea *area)
 {
+	CongEditorLineIter *iter_before;
+	CongEditorLineIter *iter_after;
+
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (IS_CONG_EDITOR_CREATION_RECORD (creation_record));
 	g_return_if_fail (line_iter);
 	g_return_if_fail (IS_CONG_EDITOR_AREA (area));
 
@@ -201,29 +241,114 @@ cong_editor_line_manager_add_to_line (CongEditorLineManager *line_manager,
 		if (area_width>width_available) {
 			/* Force a line-break: */
 			cong_editor_line_manager_end_line (line_manager,
+							   creation_record,
 							   line_iter);
 		}
 	}
 
+	iter_before = cong_editor_line_iter_clone (line_iter);
+
 	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
 			      line_manager,
 			      add_to_line, 
-			      (line_manager, line_iter, area));
+			      (line_manager, creation_record, line_iter, area));
+
+	iter_after = cong_editor_line_iter_clone (line_iter);
+
+	/* Record the change: */
+	cong_editor_creation_record_add_change (creation_record,
+						CONG_EDITOR_CREATION_EVENT_ADD_AREA,
+						iter_before,
+						iter_after);
 }
 
 void
 cong_editor_line_manager_end_line (CongEditorLineManager *line_manager,
+				   CongEditorCreationRecord *creation_record,
 				   CongEditorLineIter *line_iter)
 {
+	CongEditorLineIter *iter_before;
+	CongEditorLineIter *iter_after;
+
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (IS_CONG_EDITOR_CREATION_RECORD (creation_record));
 	g_return_if_fail (line_iter);
+
+	iter_before = cong_editor_line_iter_clone (line_iter);
 
 	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
 			      line_manager,
 			      end_line,
-			      (line_manager, line_iter));
+			      (line_manager, creation_record, line_iter));
+
+	iter_after = cong_editor_line_iter_clone (line_iter);
+
+	/* Record the change: */
+	cong_editor_creation_record_add_change (creation_record,
+						CONG_EDITOR_CREATION_EVENT_END_LINE,
+						iter_before,
+						iter_after);
 }
 
+#if 1
+static const gchar*
+get_string_for_event_type (enum CongEditorCreationEvent event)
+{
+	switch (event) {
+	default: g_assert_not_reached ();
+	case CONG_EDITOR_CREATION_EVENT_BEGIN_LINE:
+		return "BEGIN_LINE";
+
+	case CONG_EDITOR_CREATION_EVENT_END_LINE:
+		return "END_LINE";
+
+	case CONG_EDITOR_CREATION_EVENT_ADD_AREA:
+		return "ADD_AREA";
+	}
+}
+
+void
+cong_editor_line_manager_undo_change (CongEditorLineManager *line_manager,
+				      enum CongEditorCreationEvent event,
+				      CongEditorLineIter *iter_before,
+				      CongEditorLineIter *iter_after)
+{
+	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (iter_before);
+	g_return_if_fail (iter_after);
+
+	g_message ("%s::undo_change (%s)", G_OBJECT_TYPE_NAME (G_OBJECT (line_manager)), get_string_for_event_type (event));
+
+	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
+			      line_manager,
+			      undo_change, 
+			      (line_manager, 
+			       event,
+			       iter_before, 
+			       iter_after));
+
+
+}
+#else
+void
+cong_editor_line_manager_delete_areas (CongEditorLineManager *line_manager,
+				       CongEditorLineIter *start_iter,
+				       CongEditorLineIter *end_iter)
+{
+	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (start_iter);
+	g_return_if_fail (end_iter);
+
+	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
+			      line_manager,
+			      delete_areas, 
+			      (line_manager, 
+			       start_iter, 
+			       end_iter));
+
+
+}
+#endif
 
 gint
 cong_editor_line_manager_get_line_width (CongEditorLineManager *line_manager,
@@ -272,7 +397,8 @@ hash_value_destroy_func (gpointer data)
 {
 	PerNodeData *per_node_data = (PerNodeData*)data;
 
-	g_object_unref (G_OBJECT (per_node_data->trailing_line_iter));
+	g_object_unref (G_OBJECT (per_node_data->start_line_iter));
+	g_object_unref (G_OBJECT (per_node_data->end_line_iter));
 
 	g_free (per_node_data);
 }

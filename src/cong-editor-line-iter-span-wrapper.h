@@ -39,7 +39,7 @@ typedef struct CongEditorLineIterSpanWrapper CongEditorLineIterSpanWrapper;
 
 CONG_DECLARE_CLASS_PUBLIC_DATA (CongEditorLineIterSpanWrapper, cong_editor_line_iter_span_wrapper, CongEditorLineIter,
 				CongEditorLineIter *outer_iter;
-				CongEditorArea *current_prev_area_on_line;
+				CongEditorArea *prev_area_on_current_line;
 				, )
 
 CongEditorLineIterSpanWrapper*

@@ -38,16 +38,32 @@ make_iter (CongEditorLineManager *line_manager);
 
 static void 
 begin_line (CongEditorLineManager *line_manager,
+	    CongEditorCreationRecord *creation_record,
 	    CongEditorLineIter *line_iter);
 
 static void
 add_to_line (CongEditorLineManager *line_manager,
+	     CongEditorCreationRecord *creation_record,
 	     CongEditorLineIter *line_iter,
 	     CongEditorArea *area);
 
 static void 
 end_line (CongEditorLineManager *line_manager,
+	  CongEditorCreationRecord *creation_record,
 	  CongEditorLineIter *line_iter);
+
+#if 1
+static void 
+undo_change (CongEditorLineManager *line_manager,
+	     enum CongEditorCreationEvent event,
+	     CongEditorLineIter *iter_before,
+	     CongEditorLineIter *iter_after);
+#else
+static void 
+delete_areas (CongEditorLineManager *line_manager,
+	      CongEditorLineIter *start_iter,
+	      CongEditorLineIter *end_iter);
+#endif
 
 static gint
 get_line_width (CongEditorLineManager *line_manager,
@@ -71,6 +87,12 @@ CONG_DEFINE_CLASS_BEGIN (CongEditorLineManagerSimple, cong_editor_line_manager_s
 	lm_klass->begin_line = begin_line;
 	lm_klass->add_to_line = add_to_line;
 	lm_klass->end_line = end_line;
+
+#if 1
+	lm_klass->undo_change = undo_change;	
+#else
+	lm_klass->delete_areas = delete_areas;
+#endif
 
 	lm_klass->get_line_width = get_line_width;
 	lm_klass->get_current_indent = get_current_indent;
@@ -117,6 +139,7 @@ make_iter (CongEditorLineManager *line_manager)
 
 static void 
 begin_line (CongEditorLineManager *line_manager,
+	    CongEditorCreationRecord *creation_record,
 	    CongEditorLineIter *line_iter)
 {
 	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
@@ -149,6 +172,7 @@ begin_line (CongEditorLineManager *line_manager,
 
 static void
 add_to_line (CongEditorLineManager *line_manager,
+	     CongEditorCreationRecord *creation_record,
 	     CongEditorLineIter *line_iter,
 	     CongEditorArea *area)
 {
@@ -157,8 +181,9 @@ add_to_line (CongEditorLineManager *line_manager,
 
 	/* Ensure we have a line to add the area to: */
 	if (NULL==line_iter_simple->current_line) {
-		begin_line (line_manager,
-			    line_iter);
+		cong_editor_line_manager_begin_line (line_manager,
+						     creation_record,
+						     line_iter);
 	}
 
 	if (line_iter_simple->current_prev_area) {
@@ -176,6 +201,7 @@ add_to_line (CongEditorLineManager *line_manager,
 
 static void 
 end_line (CongEditorLineManager *line_manager,
+	  CongEditorCreationRecord *creation_record,
 	  CongEditorLineIter *line_iter)
 {
 	/* CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager); */
@@ -186,6 +212,93 @@ end_line (CongEditorLineManager *line_manager,
 	}
 	line_iter_simple->current_line = NULL;
 }
+
+#if 0
+static void
+delete_whole_line (CongEditorLineManager *line_manager,
+		   CongEditorAreaLine *line)
+{
+#error
+}
+#endif
+
+#if 1
+static void 
+undo_change (CongEditorLineManager *line_manager,
+	     enum CongEditorCreationEvent event,
+	     CongEditorLineIter *iter_before,
+	     CongEditorLineIter *iter_after)
+{
+	/*CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager); */
+	/*CongEditorLineIterSimple *iter_before_simple = CONG_EDITOR_LINE_ITER_SIMPLE (iter_before);*/
+	CongEditorLineIterSimple *iter_after_simple = CONG_EDITOR_LINE_ITER_SIMPLE (iter_after);
+
+	switch (event) {
+	default: g_assert_not_reached ();
+	case CONG_EDITOR_CREATION_EVENT_BEGIN_LINE:
+		g_message ("FIXME: unimplemented CongEditorLineManagerSimple::undo_change (BEGIN_LINE)");
+		break;
+
+	case CONG_EDITOR_CREATION_EVENT_END_LINE:
+		g_message ("FIXME: unimplemented CongEditorLineManagerSimple::undo_change (END_LINE)");
+		break;
+
+	case CONG_EDITOR_CREATION_EVENT_ADD_AREA:
+		{
+			/* This should be the area that was added: */
+			g_assert (iter_after_simple->current_prev_area);
+
+			/* This should be the line that the area was added to: */
+			g_assert (iter_after_simple->current_line);
+
+			cong_editor_area_container_remove_child (CONG_EDITOR_AREA_CONTAINER (iter_after_simple->current_line),
+								 iter_after_simple->current_prev_area);
+		}
+		break;
+
+	}
+}
+#else
+static void 
+delete_areas (CongEditorLineManager *line_manager,
+	      CongEditorLineIter *start_iter,
+	      CongEditorLineIter *end_iter)
+{
+	g_assert_not_reached ();
+#if 0
+	/*	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager); */
+	CongEditorLineIterSimple *start_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (start_iter);
+	CongEditorLineIterSimple *end_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (end_iter);
+
+	if (start_iter_simple->current_line == end_iter_simple->current_line) {
+		/* Simple case: both on the same line: */
+		g_assert_not_reached ();
+	} else {
+		/* Complex case: they are on different lines: */
+		CongEditorAreaLine *current_line = start_iter_simple->current_line;
+		
+		/* Delete final stuff on first line: */
+		
+		/* Delete entire lines: */
+		while (current_line!=end_iter_simple->current_line) {
+			CongEditorAreaLine *next_line = ;
+			delete_whole_line (line_manager_simple,
+					   current_line);
+
+			
+			
+		}
+		
+		/* Delete initial stuff on last line: */
+		cong_editor_area_container
+		delete_from_line (
+	}
+#endif
+
+
+}
+#endif
+
 
 static gint
 get_line_width (CongEditorLineManager *line_manager,
