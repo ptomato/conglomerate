@@ -1,3 +1,9 @@
+2004-03-11  Dave Malcolm  <david@davemalcolm.demon.co.uk>
+
+	* cong-editor-widget3.c, cong-plugin.c
+
+	Suppressing more debug log spewage
+
 2004-03-10  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
 	* cong-editor-line-iter-span-wrapper.c

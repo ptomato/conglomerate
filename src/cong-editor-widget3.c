@@ -88,8 +88,8 @@ struct CongEditorWidget3Details
 #define DEBUG_EDITOR_WIDGET_VIEW  0
 #define LOG_GTK_WIDGET_SIGNALS    0
 #define LOG_CONG_DOCUMENT_SIGNALS 0
-#define LOG_EDITOR_NODES 1
-#define LOG_EDITOR_AREAS 1
+#define LOG_EDITOR_NODES 0
+#define LOG_EDITOR_AREAS 0
 
 #if DEBUG_EDITOR_WIDGET_VIEW
 #define CONG_EDITOR_VIEW_SELF_TEST(details) (cong_element_editor_recursive_self_test(details->root_editor))
@@ -120,9 +120,14 @@ struct CongEditorWidget3Details
 #if LOG_EDITOR_NODES
 #define LOG_EDITOR_NODE1(x) g_message(x)
 #define LOG_EDITOR_NODE2(x, a) g_message((x), (a))
+static void
+log_editor_node_event (const gchar *msg,
+		       CongEditorNode *editor_node);
+#define LOG_EDITOR_NODE_EVENT(msg, node) log_editor_node_event (msg, node)
 #else
 #define LOG_EDITOR_NODE1(x) ((void)0)
 #define LOG_EDITOR_NODE2(x, a) ((void)0)
+#define LOG_EDITOR_NODE_EVENT(msg, node) ((void)0)
 #endif
 
 #if LOG_EDITOR_AREAS
@@ -662,6 +667,24 @@ cong_editor_widget3_get_preedit_data (CongEditorWidget3 *editor_widget,
 
 
 /* Internal function implementations: */
+#if LOG_EDITOR_NODES
+static void
+log_editor_node_event (const gchar *msg,
+		       CongEditorNode *editor_node)
+{
+	gchar *debug_desc;
+
+	g_assert (msg);
+	g_assert (editor_node);
+
+	debug_desc = cong_node_debug_description (cong_editor_node_get_node (editor_node));
+
+	g_message ("%s:%s: %s", msg, G_OBJECT_TYPE_NAME (G_OBJECT (editor_node)), debug_desc);
+
+	g_free (debug_desc);
+}
+#endif
+
 /* Definitions of misc stuff: */
 #if 0
 static void 
@@ -1434,6 +1457,8 @@ potentially_add_editor_node (CongEditorWidget3 *editor_widget,
 				     traversal_node,
 				     editor_node);
 
+		LOG_EDITOR_NODE_EVENT("Adding editor node", editor_node);
+
 		create_areas (editor_widget,
 			      editor_node);
 	}	
@@ -1460,6 +1485,8 @@ potentially_remove_editor_node (CongEditorWidget3 *editor_widget,
 		if (xml_node == PRIVATE (editor_widget)->selected_xml_node) {
 			PRIVATE (editor_widget)->selected_xml_node = NULL;
 		}
+
+		LOG_EDITOR_NODE_EVENT("Removing editor node", editor_node);
 		
 		destroy_areas (editor_widget,
 			       editor_node);
