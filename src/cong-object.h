@@ -49,6 +49,20 @@ cong_object_debug_get_instance_count_for_class (GObjectClass *klass);
 guint32
 cong_object_debug_get_instance_count_for_type (GType type);
 
+void
+cong_object_debug_for_each_class (void 
+				  (*callback) (GType type,
+					       gpointer user_data),
+				  gpointer user_data);
+
+void
+cong_object_debug_for_each_instance (GType type,
+				     void 
+				     (*callback) (GType type,
+						  GObject *object,
+						  gpointer user_data),
+				     gpointer user_data);
+
 #if 1
 #define CONG_OBJECT_DEBUG_INSTANCE_INIT(object, type) cong_object_debug_instance_init (object, type)
 #define CONG_OBJECT_DEBUG_FINALIZE(object, type) cong_object_debug_finalize (object, type)
@@ -170,7 +184,8 @@ cong_object_debug_get_instance_count_for_type (GType type);
        GNOME_CALL_PARENT (G_OBJECT_CLASS, dispose, (object)); \
      }
 
-
+void
+cong_object_debug_window (GtkWindow *parent_window);
 
 G_END_DECLS
 
