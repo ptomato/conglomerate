@@ -143,7 +143,8 @@ create_areas (CongEditorNode *editor_node,
 									FALSE);
 	cong_editor_node_create_block_area (editor_node,
 					    creation_info,
-					    block_area);
+					    block_area,
+					    FALSE);
 	/* FIXME: should we attach signals, or store the area anywhere? */
 }
 #else

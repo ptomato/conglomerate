@@ -99,7 +99,8 @@ create_areas (CongEditorNode *editor_node,
 	      const CongAreaCreationInfo *creation_info)
 {
 	cong_editor_node_empty_create_area (editor_node,
-					    creation_info);
+					    creation_info,
+					    TRUE);
 }
 #else
 static CongEditorArea*

@@ -1,5 +1,9 @@
 2004-01-18  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* cong-editor-line-manager-span-wrapper.c, cong-editor-line-manager-span-wrapper.h, cong-editor-line-manager.h, cong-editor-node-comment.c, cong-editor-node-document.c, cong-editor-node-dtd.c, cong-editor-node-element-span.c, cong-editor-node-element-structural.c, cong-editor-node-element-unknown.c, cong-editor-node-entity-decl.c, cong-editor-node-entity-ref.c, cong-editor-node-unimplemented.c, cong-editor-node.c, cong-editor-node.h, plugin-admonition-node-element.c, plugin-lists-node-element-listitem.c, plugin-paragraph-node-element-paragraph.c
+
+	Span tags now work (kind-of); new implementation can now load and display various complex files, including examples/test-docbook.xml and doc/C/faq.xml
+
 	* cong-editor-line-manager-simple.c, cong-editor-line-manager-simple.h, cong-editor-line-manager.c, cong-editor-line-manager.h, cong-editor-node-comment.c, cong-editor-node-document.c, cong-editor-node-dtd.c, cong-editor-node-element-span.c, cong-editor-node-element-structural.c, cong-editor-node-element-unknown.c, cong-editor-node-entity-decl.c, cong-editor-node-entity-ref.c, cong-editor-node-text.c, cong-editor-node-unimplemented.c, cong-editor-node.c, cong-editor-node.h, cong-editor-widget3.c, plugin-lists-node-element-listitem.c, plugin-paragraph-node-element-paragraph.c
 
 	First working version of area creation using new internal API; lots of things are currently broken, though, including editing.

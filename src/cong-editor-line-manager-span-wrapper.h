@@ -38,6 +38,11 @@ G_BEGIN_DECLS
 CONG_DECLARE_CLASS_BEGIN (CongEditorLineManagerSpanWrapper, cong_editor_line_manager_span_wrapper, CongEditorLineManager)
 CONG_DECLARE_CLASS_END ()
 
+CongEditorLineManager*
+cong_editor_line_manager_span_wrapper_new (CongEditorWidget3 *widget,
+					   CongEditorNode *editor_node,
+					   CongEditorLineManager *outer_line_manager);
+
 
 G_END_DECLS
 

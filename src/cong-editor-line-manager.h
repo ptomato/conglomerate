@@ -77,6 +77,9 @@ cong_editor_line_manager_get_line_width (CongEditorLineManager *line_manager);
 gint
 cong_editor_line_manager_get_current_indent (CongEditorLineManager *line_manager);
 
+gint
+cong_editor_line_manager_get_current_width_available (CongEditorLineManager *line_manager);
+
 G_END_DECLS
 
 #endif

@@ -211,19 +211,22 @@ cong_editor_node_set_parents_child_policy (CongEditorNode *editor_node,
  * @editor_node: the #CongEditorNode
  * @creation_info:
  * @block_area: the block-style area that will represent this editor node.
+ * @allow_children: Can this node have children?  If so, then the block area must be a subclass of #CongEditorAreaContainer
  *
  * Utility function for implementing the create_areas function for node subclasses that expect to create a single block area.
  */
 void
 cong_editor_node_create_block_area (CongEditorNode *editor_node,
 				    const CongAreaCreationInfo *creation_info,
-				    CongEditorArea *block_area);
+				    CongEditorArea *block_area,
+				    gboolean allow_children);
 
 /* Utility placeholder function for node subclasses that don't really create an area themselves (e.g. for the document, for DTDs etc;
    might be empty, might not; not sure yet. */
 void
 cong_editor_node_empty_create_area (CongEditorNode *editor_node,
-				    const CongAreaCreationInfo *creation_info);
+				    const CongAreaCreationInfo *creation_info,
+				    gboolean allow_children);
 
 G_END_DECLS
 

@@ -642,6 +642,8 @@ set_up_line_manager (CongEditorNode *editor_node,
 	CongEditorArea *area_lines;
 	CongEditorWidget3 *widget;
 
+	g_assert (IS_CONG_EDITOR_AREA_CONTAINER (block_area));
+
 	widget = cong_editor_node_get_widget (editor_node);
 
 	/* Set up area for children: */
@@ -663,7 +665,8 @@ set_up_line_manager (CongEditorNode *editor_node,
 void
 cong_editor_node_create_block_area (CongEditorNode *editor_node,
 				    const CongAreaCreationInfo *creation_info,
-				    CongEditorArea *block_area)
+				    CongEditorArea *block_area,
+				    gboolean allow_children)
 {
 	g_return_if_fail (IS_CONG_EDITOR_NODE (editor_node));
 	g_return_if_fail (creation_info);
@@ -676,13 +679,18 @@ cong_editor_node_create_block_area (CongEditorNode *editor_node,
 					      block_area);
 	cong_editor_line_manager_end_line (creation_info->line_manager);
 
-	set_up_line_manager (editor_node,
-			     block_area);
+	if (allow_children) {
+		g_assert (IS_CONG_EDITOR_AREA_CONTAINER (block_area));
+
+		set_up_line_manager (editor_node,
+				     block_area);
+	}
 }
 
 void
 cong_editor_node_empty_create_area (CongEditorNode *editor_node,
-				    const CongAreaCreationInfo *creation_info)
+				    const CongAreaCreationInfo *creation_info,
+				    gboolean allow_children)
 {
 	CongEditorArea *dummy_area;
 
@@ -694,8 +702,10 @@ cong_editor_node_empty_create_area (CongEditorNode *editor_node,
 	cong_editor_line_manager_add_to_line (creation_info->line_manager,
 					      dummy_area);
 
-	set_up_line_manager (editor_node,
-			     dummy_area);
+	if (allow_children) {
+		set_up_line_manager (editor_node,
+				     dummy_area);
+	}
 }
 
 static enum CongFlowType

@@ -146,7 +146,8 @@ create_areas (CongEditorNode *editor_node,
 
 	cong_editor_node_create_block_area (editor_node,
 					    creation_info,
-					    block_area);	
+					    block_area,
+					    TRUE);	
 }
 #else
 static CongEditorArea*
