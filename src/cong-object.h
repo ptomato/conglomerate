@@ -30,6 +30,28 @@ G_BEGIN_DECLS
 /* Macros for declaring GObject subclasses */
 #define PRIVATE(x) ((x)->priv)
 
+/* Debugging system, to try to make it easier to spot reference leaks: */
+void 
+cong_object_debug_instance_init (GObject *object);
+
+void
+cong_object_debug_finalize (GObject *object);
+
+guint32
+cong_object_debug_get_instance_count (void);
+
+guint32
+cong_object_debug_get_instance_count_for_class (GObjectClass *klass);
+
+#if 1
+#define CONG_OBJECT_DEBUG_INSTANCE_INIT(object) cong_object_debug_instance_init (object)
+#define CONG_OBJECT_DEBUG_FINALIZE(object) cong_object_debug_finalize (object)
+#else
+#define CONG_OBJECT_DEBUG_INSTANCE_INIT(object) ((void)0)
+#define CONG_OBJECT_DEBUG_FINALIZE(object) ((void)0)
+#endif
+
+/* Macros for declaring and defining GObject subclasses in various ways: */
 #define CONG_DECLARE_CLASS_BEGIN(MyClass, my_class, BaseClass) \
 extern GType my_class##_get_type (void); \
 typedef struct MyClass##Class MyClass##Class; \
@@ -76,11 +98,13 @@ static void \
 my_class##_instance_init (MyClass *obj) \
 { \
 obj->priv = g_new0 (MyClass##Private, 1); \
+CONG_OBJECT_DEBUG_INSTANCE_INIT( G_OBJECT(obj)); \
 } \
 static void \
 my_class##_finalize (GObject *object) \
 { \
 	MyClass *my_obj = MY_CLASS(object); \
+        CONG_OBJECT_DEBUG_FINALIZE (object); \
 	g_assert (my_obj->priv); \
 	g_free (my_obj->priv); \
 	my_obj->priv = NULL; \
@@ -104,11 +128,13 @@ GNOME_CLASS_BOILERPLATE(MyClass, my_class, BaseClass, BASE_CLASS_TYPE) \
 static void \
 my_class##_instance_init (MyClass *obj) \
 { \
+CONG_OBJECT_DEBUG_INSTANCE_INIT (G_OBJECT (obj)); \
 } \
 static void \
 my_class##_finalize (GObject *object) \
 { \
 	/*MyClass *my_obj = MY_CLASS(object);*/ \
+        CONG_OBJECT_DEBUG_FINALIZE (object); \
 	G_OBJECT_CLASS (parent_class)->finalize (object); \
 } \
 static void \

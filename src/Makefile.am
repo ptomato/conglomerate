@@ -236,6 +236,7 @@ conglomerate_SOURCES =      \
   cong-node-modification-set-attribute.c  \
   cong-node-modification-remove-attribute.c  \
   cong-node-properties-dialog.c \
+  cong-object.c             \
   cong-overview-view.c      \
   cong-parser-error.c       \
   cong-plugin.c             \
