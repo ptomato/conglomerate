@@ -99,6 +99,12 @@ finalize (GObject *object);
 static void
 dispose (GObject *object);
 
+
+#if 1
+static void 
+create_areas (CongEditorNode *editor_node,
+	      const CongAreaCreationInfo *creation_info);
+#else
 static CongEditorArea*
 generate_block_area (CongEditorNode *editor_node);
 
@@ -106,6 +112,7 @@ static CongEditorLineFragments*
 generate_line_areas_recursive (CongEditorNode *editor_node,
 			       gint line_width,
 			       gint initial_indent);
+#endif
 
 static enum CongFlowType
 get_flow_type (CongEditorNode *editor_node);
@@ -176,8 +183,12 @@ cong_editor_node_text_class_init (CongEditorNodeTextClass *klass)
 	G_OBJECT_CLASS (klass)->finalize = finalize;
 	G_OBJECT_CLASS (klass)->dispose = dispose;
 
+#if 1
+	node_klass->create_areas = create_areas;
+#else
 	node_klass->generate_block_area = generate_block_area;
 	node_klass->generate_line_areas_recursive = generate_line_areas_recursive;
+#endif
 	node_klass->get_flow_type = get_flow_type;
 }
 
@@ -428,7 +439,14 @@ cong_editor_node_text_calc_down (CongEditorNodeText *editor_node_text,
 									 output_byte_offset);
 }
 
-
+#if 1
+static void 
+create_areas (CongEditorNode *editor_node,
+	      const CongAreaCreationInfo *creation_info)
+{
+	g_assert_not_reached (); /* FIXME */
+}
+#else
 static CongEditorArea*
 generate_block_area (CongEditorNode *editor_node)
 {
@@ -470,6 +488,7 @@ generate_block_area (CongEditorNode *editor_node)
 #endif
 	
 }
+#endif
 
 #if 1
 gboolean
@@ -584,6 +603,7 @@ cong_selection_get_end_byte_offset (CongSelection *selection,
 }
 #endif
 
+#if 0
 static CongEditorLineFragments*
 generate_line_areas_recursive (CongEditorNode *editor_node,
 			       gint line_width,
@@ -682,6 +702,7 @@ generate_line_areas_recursive (CongEditorNode *editor_node,
 
 	return result;
 }
+#endif
 
 /* Definitions of the CongDocument event handlers: */
 static void 

@@ -53,8 +53,14 @@ finalize (GObject *object);
 static void
 dispose (GObject *object);
 
+#if 1
+static void 
+create_areas (CongEditorNode *editor_node,
+	      const CongAreaCreationInfo *creation_info);
+#else
 static CongEditorArea*
 generate_block_area (CongEditorNode *editor_node);
+#endif
 
 static const gchar*
 get_icon_filename (CongEditorNodeElementAdmonition *editor_node_element_admonition);
@@ -76,7 +82,11 @@ cong_editor_node_element_admonition_class_init (CongEditorNodeElementAdmonitionC
 	G_OBJECT_CLASS (klass)->finalize = finalize;
 	G_OBJECT_CLASS (klass)->dispose = dispose;
 
+#if 1
+	node_klass->create_areas = create_areas;
+#else
 	node_klass->generate_block_area = generate_block_area;
+#endif
 }
 
 static void
@@ -136,6 +146,14 @@ dispose (GObject *object)
 	GNOME_CALL_PARENT (G_OBJECT_CLASS, dispose, (object));
 }
 
+#if 1
+static void 
+create_areas (CongEditorNode *editor_node,
+	      const CongAreaCreationInfo *creation_info)
+{
+	g_assert_not_reached (); /* FIXME */
+}
+#else
 static CongEditorArea*
 generate_block_area (CongEditorNode *editor_node)
 {
@@ -162,6 +180,7 @@ generate_block_area (CongEditorNode *editor_node)
 
 	return new_area;
 }
+#endif
 
 static const gchar*
 get_icon_filename (CongEditorNodeElementAdmonition *editor_node_element_admonition)

@@ -36,8 +36,14 @@ struct CongEditorNodeDtdDetails
 	int dummy;
 };
 
+#if 1
+static void 
+create_areas (CongEditorNode *editor_node,
+	      const CongAreaCreationInfo *creation_info);
+#else
 static CongEditorArea*
 generate_block_area (CongEditorNode *editor_node);
+#endif
 
 /* Exported function definitions: */
 GNOME_CLASS_BOILERPLATE(CongEditorNodeDtd, 
@@ -51,7 +57,11 @@ cong_editor_node_dtd_class_init (CongEditorNodeDtdClass *klass)
 
 	CongEditorNodeClass *node_klass = CONG_EDITOR_NODE_CLASS(klass);
 
+#if 1
+	node_klass->create_areas = create_areas;
+#else
 	node_klass->generate_block_area = generate_block_area;
+#endif
 }
 
 static void
@@ -84,6 +94,14 @@ cong_editor_node_dtd_new (CongEditorWidget3 *widget,
 				 );
 }
 
+#if 1
+static void 
+create_areas (CongEditorNode *editor_node,
+	      const CongAreaCreationInfo *creation_info)
+{
+	g_assert_not_reached (); /* FIXME */
+}
+#else
 static CongEditorArea*
 generate_block_area (CongEditorNode *editor_node)
 {
@@ -95,3 +113,4 @@ generate_block_area (CongEditorNode *editor_node)
 
 	return new_area;
 }
+#endif

@@ -62,8 +62,12 @@ struct CongEditorNodeDetails
 
 	CongTraversalNode *traversal_node;
 
+#if 1
+	CongEditorLineManager *line_manager;
+#else
 	CongEditorChildPolicy *child_policy;
 	CongEditorChildPolicy *parents_child_policy;
+#endif
 
 	gboolean is_selected;
 };
@@ -355,7 +359,7 @@ cong_editor_node_private_set_selected (CongEditorNode *editor_node,
 	}	
 }
 
-
+#if 0
 CongEditorArea*
 cong_editor_node_generate_block_area (CongEditorNode *editor_node)
 {
@@ -388,6 +392,7 @@ cong_editor_node_generate_line_areas_recursive (CongEditorNode *editor_node,
 						       generate_line_areas_recursive, 
 						       (editor_node, line_width, initial_indent));
 }
+#endif
 
 void
 cong_editor_node_line_regeneration_required (CongEditorNode *editor_node)
@@ -411,6 +416,7 @@ cong_editor_node_get_flow_type (CongEditorNode *editor_node)
 							    get_flow_type, 
 							    (editor_node));
 
+#if 0
 	switch (flow_type) {
 	default: g_assert_not_reached();
 	case CONG_FLOW_TYPE_BLOCK:
@@ -420,6 +426,7 @@ cong_editor_node_get_flow_type (CongEditorNode *editor_node)
 		g_assert (CONG_EDITOR_NODE_CLASS (G_OBJECT_GET_CLASS (editor_node))->generate_line_areas_recursive != NULL);
 		break;
 	}
+#endif
 	
 	return flow_type;
 }
@@ -565,6 +572,8 @@ cong_editor_node_get_next (CongEditorNode *editor_node)
 }
 #endif
 
+
+#if 0
 CongEditorChildPolicy*
 cong_editor_node_get_child_policy (CongEditorNode *editor_node)
 {
@@ -598,6 +607,7 @@ cong_editor_node_set_parents_child_policy (CongEditorNode *editor_node,
 
 	PRIVATE(editor_node)->parents_child_policy = child_policy;
 }
+#endif
 
 static enum CongFlowType
 get_flow_type(CongEditorNode *editor_node)

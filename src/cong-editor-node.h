@@ -39,6 +39,13 @@ G_BEGIN_DECLS
 
 typedef struct CongEditorNodeDetails CongEditorNodeDetails;
 
+typedef struct CongAreaCreationCreationInfo CongAreaCreationInfo;
+
+struct CongAreaCreationCreationInfo
+{
+	CongEditorLineManager *line_manager;
+};
+
 /**
  * CongEditorNode
  * 
@@ -70,13 +77,17 @@ struct CongEditorNodeClass
 	GObjectClass klass;
 
 	/* Methods? */
-
+#if 1
+	void (*create_areas) (CongEditorNode *editor_node,
+			      const CongAreaCreationInfo *creation_info);
+#else
 	/* Simplistic interface for now: */
 	CongEditorArea* (*generate_block_area) (CongEditorNode *editor_node);
 
 	CongEditorLineFragments* (*generate_line_areas_recursive) (CongEditorNode *editor_node,
 								   gint line_width,
 								   gint initial_indent);
+#endif
 
 	void (*line_regeneration_required) (CongEditorNode *editor_node);
 	
@@ -123,17 +134,12 @@ void
 cong_editor_node_private_set_selected (CongEditorNode *editor_node,
 				       gboolean is_selected);
 
-/* 
-   Simplistic node->area interface (1-1 for now).
-*/
-#if 0
-CongEditorArea*
-cong_editor_node_get_primary_area (CongEditorNode *editor_node);
 
-CongEditorArea*
-cong_editor_node_get_inner_area (CongEditorNode *editor_node);
-#endif
-
+#if 1
+void 
+cong_editor_node_create_areas (CongEditorNode *editor_node,
+			       const CongAreaCreationInfo *creation_info);
+#else
 CongEditorArea*
 cong_editor_node_generate_block_area (CongEditorNode *editor_node);
 
@@ -142,6 +148,7 @@ CongEditorLineFragments*
 cong_editor_node_generate_line_areas_recursive (CongEditorNode *editor_node,
 						gint line_width,
 						gint initial_indent);
+#endif
 
 void
 cong_editor_node_line_regeneration_required (CongEditorNode *editor_node);
@@ -170,6 +177,10 @@ cong_editor_node_get_prev (CongEditorNode *editor_node);
 CongEditorNode*
 cong_editor_node_get_next (CongEditorNode *editor_node);
 
+#if 1
+CongEditorLineManager*
+cong_editor_node_get_line_manager_for_children (CongEditorNode *editor_node);
+#else
 /* Get the child policy; should only be needed by internals of widget implementation: */
 CongEditorChildPolicy*
 cong_editor_node_get_child_policy (CongEditorNode *editor_node);
@@ -187,6 +198,7 @@ cong_editor_node_get_parents_child_policy (CongEditorNode *editor_node);
 void
 cong_editor_node_set_parents_child_policy (CongEditorNode *editor_node,
 					   CongEditorChildPolicy *child_policy);
+#endif
 
 
 G_END_DECLS

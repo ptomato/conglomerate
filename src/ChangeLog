@@ -1,5 +1,9 @@
 2004-01-18  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* cong-editor-node-comment.c, cong-editor-node-document.c, cong-editor-node-dtd.c, cong-editor-node-element-span.c, cong-editor-node-element-structural.c, cong-editor-node-element-unknown.c, cong-editor-node-entity-decl.c, cong-editor-node-entity-ref.c, cong-editor-node-text.c, cong-editor-node-unimplemented.c, cong-editor-node.c, cong-editor-node.h, cong-editor-widget.h, cong-editor-widget3.c, plugin-admonition-node-element.c, plugin-lists-node-element-listitem.c, plugin-paragraph-node-element-paragraph.c
+
+	Moving over to new internal API for area creation
+
 	* Makefile.am, cong-editor-area-flow-holder-blocks.c, cong-editor-area-flow-holder-blocks.h, cong-editor-area-flow-holder-single.c, cong-editor-area-flow-holder-single.h, cong-editor-area-flow-holder.c, cong-editor-area-flow-holder.h, cong-editor-child-policy-flow-holder.c, cong-editor-child-policy-flow-holder.h, cong-editor-child-policy-inline.c, cong-editor-child-policy-inline.h, cong-editor-child-policy.c, cong-editor-child-policy.h
 
 	Added new files; removed dead code

@@ -31,11 +31,6 @@
 
 #include <gtk/gtkdrawingarea.h>
 
-#include "cong-editor-area-flow-holder.h"
-#include "cong-editor-area-flow-holder-blocks.h"
-#include "cong-editor-child-policy.h"
-#include "cong-editor-child-policy-flow-holder.h"
-
 /* Test code: */
 #include "cong-editor-area-border.h"
 #include "cong-editor-area-composer.h"
@@ -373,6 +368,7 @@ cong_editor_widget3_construct (CongEditorWidget3 *editor_widget,
 				  G_CALLBACK(on_root_requisition_change),
 				  editor_widget);
 		
+#if 0
 		PRIVATE(editor_widget)->root_flow_holder = CONG_EDITOR_AREA_FLOW_HOLDER(cong_editor_area_flow_holder_blocks_new(editor_widget));
 
 		cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER(PRIVATE(editor_widget)->root_area),
@@ -380,6 +376,7 @@ cong_editor_widget3_construct (CongEditorWidget3 *editor_widget,
 
 		PRIVATE(editor_widget)->root_child_policy = cong_editor_child_policy_flow_holder_new (NULL,
 												      PRIVATE(editor_widget)->root_flow_holder);
+#endif
 	}
 
 	/* Traverse the doc, adding EditorNodes and EditorAreas: */
@@ -1575,6 +1572,7 @@ create_areas(CongEditorWidget3 *widget,
 	g_message("flow type = %s", cong_flow_type_get_debug_string(flow_type));
 #endif
 
+#if 0
 	/* Determine the parent area where the new area should be inserted: */
 	{
 		if (node->parent) {
@@ -1629,6 +1627,7 @@ create_areas(CongEditorWidget3 *widget,
 				     flow_holder);
 	}
 #endif
+#endif
 }
 
 static void 
@@ -1648,6 +1647,7 @@ destroy_areas(CongEditorWidget3 *widget,
 	}
 #endif
 
+#if 0
 	if (node->parent) {
 		parents_child_policy = cong_editor_widget3_get_parents_child_policy_for_editor_node (widget,
 												     editor_node);
@@ -1665,6 +1665,7 @@ destroy_areas(CongEditorWidget3 *widget,
 						   NULL);
 	cong_editor_node_set_child_policy (editor_node,
 					   NULL);
+#endif
 
 #if 0
 	g_hash_table_remove (PRIVATE(widget)->hash_of_editor_node_to_parents_child_policy,
@@ -1674,68 +1675,3 @@ destroy_areas(CongEditorWidget3 *widget,
 #endif
 }
 
-#if 1
-CongEditorChildPolicy*
-cong_editor_widget3_get_child_policy_for_editor_node (CongEditorWidget3 *widget,
-						      CongEditorNode *editor_node)
-{
-	g_return_val_if_fail (widget, NULL);
-	g_return_val_if_fail (IS_CONG_EDITOR_NODE(editor_node), NULL);
-
-#if 1
-	return cong_editor_node_get_child_policy (editor_node);						  
-#else
-	return CONG_EDITOR_CHILD_POLICY(g_hash_table_lookup (PRIVATE(widget)->hash_of_editor_node_to_child_policy,
-							     editor_node));
-#endif
-	
-}
-CongEditorChildPolicy*
-cong_editor_widget3_get_parents_child_policy_for_editor_node (CongEditorWidget3 *widget,
-							      CongEditorNode *editor_node)
-{
-	g_return_val_if_fail (widget, NULL);
-	g_return_val_if_fail (IS_CONG_EDITOR_NODE(editor_node), NULL);
-
-#if 1
-	return cong_editor_node_get_parents_child_policy (editor_node);
-#else
-	return CONG_EDITOR_CHILD_POLICY(g_hash_table_lookup (PRIVATE(widget)->hash_of_editor_node_to_parents_child_policy,
-							     editor_node));
-#endif
-	
-}
-#else
-CongEditorArea*
-cong_editor_widget3_get_primary_area_for_editor_node (CongEditorWidget3 *widget,
-						      CongEditorNode *editor_node)
-{
-	g_return_val_if_fail (widget, NULL);
-	g_return_val_if_fail (IS_CONG_EDITOR_NODE(editor_node), NULL);
-
-	return CONG_EDITOR_AREA(g_hash_table_lookup (PRIVATE(widget)->hash_of_editor_node_to_primary_area,
-						     editor_node));
-}
-
-CongEditorAreaFlowHolder*
-cong_editor_widget3_get_parent_flow_holder_for_editor_node (CongEditorWidget3 *widget,
-							    CongEditorNode *editor_node)
-{
-	g_return_val_if_fail (widget, NULL);
-	g_return_val_if_fail (IS_CONG_EDITOR_NODE(editor_node), NULL);
-
-	return CONG_EDITOR_AREA_FLOW_HOLDER(g_hash_table_lookup (PRIVATE(widget)->hash_of_editor_node_to_parent_flow_holder,
-								 editor_node));
-}
-
-CongEditorAreaFlowHolder*
-cong_editor_widget3_get_child_flow_holder_for_editor_node (CongEditorWidget3 *widget,
-							   CongEditorNode *editor_node)
-{
-	g_return_val_if_fail (widget, NULL);
-	g_return_val_if_fail (IS_CONG_EDITOR_NODE(editor_node), NULL);
-
-	return CONG_EDITOR_AREA_FLOW_HOLDER(g_hash_table_lookup (PRIVATE(widget)->hash_of_editor_node_to_child_flow_holder,
-								editor_node));
-}
-#endif
