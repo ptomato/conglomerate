@@ -30,20 +30,33 @@
 #include "cong-editor-area-composer.h"
 
 static void 
-begin_line (CongEditorLineManager *line_manager);
+add_node (CongEditorLineManager *line_manager,
+	  CongEditorNode *node);
+
+static void 
+remove_node (CongEditorLineManager *line_manager,
+	     CongEditorNode *node);
+
+static void 
+begin_line (CongEditorLineManager *line_manager,
+	    CongEditorLineIter *line_iter);
 
 static void
 add_to_line (CongEditorLineManager *line_manager,
+	     CongEditorLineIter *line_iter,
 	     CongEditorArea *area);
 
 static void 
-end_line (CongEditorLineManager *line_manager);
+end_line (CongEditorLineManager *line_manager,
+	  CongEditorLineIter *line_iter);
 
 static gint
-get_line_width (CongEditorLineManager *line_manager);
+get_line_width (CongEditorLineManager *line_manager,
+		CongEditorLineIter *line_iter);
 
 static gint
-get_current_indent (CongEditorLineManager *line_manager);
+get_current_indent (CongEditorLineManager *line_manager,
+		    CongEditorLineIter *line_iter);
 
 struct CongEditorLineManagerSpanWrapperPrivate
 {
@@ -57,6 +70,9 @@ struct CongEditorLineManagerSpanWrapperPrivate
 CONG_DEFINE_CLASS_BEGIN (CongEditorLineManagerSpanWrapper, cong_editor_line_manager_span_wrapper, CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER, CongEditorLineManager, CONG_EDITOR_LINE_MANAGER_TYPE)
 {
 	CongEditorLineManagerClass *lm_klass = CONG_EDITOR_LINE_MANAGER_CLASS (klass);
+
+	lm_klass->add_node = add_node;
+	lm_klass->remove_node = remove_node;
 
 	lm_klass->begin_line = begin_line;
 	lm_klass->add_to_line = add_to_line;
@@ -150,8 +166,33 @@ make_inner_line (CongEditorLineManagerSpanWrapper *span_wrapper)
 	return inner_line;
 }
 
+static void 
+add_node (CongEditorLineManager *line_manager,
+	  CongEditorNode *node)
+{
+	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
+
+	/* FIXME: unimplemented */
+	/*We can't simply delegate, can we?  Maybe we can...
+	  Perhaps we delegate the area and line addition/removal, but keep control of the nodes ourselves...
+	 */
+	g_assert_not_reached ();
+}
+
+
+static void 
+remove_node (CongEditorLineManager *line_manager,
+	     CongEditorNode *node)
+{
+	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
+	
+	/* FIXME: unimplemented */
+	g_assert_not_reached ();
+}
+
 static void
-begin_line (CongEditorLineManager *line_manager)
+begin_line (CongEditorLineManager *line_manager,
+	    CongEditorLineIter *line_iter)
 {
 	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
 
@@ -159,11 +200,13 @@ begin_line (CongEditorLineManager *line_manager)
 	PRIVATE (span_wrapper)->current_inner_line = NULL;
 
 	/* Delegate: */
-	cong_editor_line_manager_begin_line (PRIVATE (span_wrapper)->outer_line_manager);       
+	cong_editor_line_manager_begin_line (PRIVATE (span_wrapper)->outer_line_manager,
+					     line_iter);       
 }
 
 static void
 add_to_line (CongEditorLineManager *line_manager,
+	     CongEditorLineIter *line_iter,
 	     CongEditorArea *area)
 {
 	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
@@ -173,6 +216,7 @@ add_to_line (CongEditorLineManager *line_manager,
 		PRIVATE (span_wrapper)->current_inner_line = make_inner_line (span_wrapper);
 
 		cong_editor_line_manager_add_to_line (PRIVATE (span_wrapper)->outer_line_manager,
+						      line_iter,
 						      PRIVATE (span_wrapper)->current_span_area);
 
 		cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (PRIVATE (span_wrapper)->current_span_area),
@@ -186,7 +230,8 @@ add_to_line (CongEditorLineManager *line_manager,
 }
 
 static void 
-end_line (CongEditorLineManager *line_manager)
+end_line (CongEditorLineManager *line_manager,
+	  CongEditorLineIter *line_iter)
 {
 	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
 
@@ -194,23 +239,28 @@ end_line (CongEditorLineManager *line_manager)
 	PRIVATE (span_wrapper)->current_inner_line = NULL;
 	
 	/* Delegate: */
-	return cong_editor_line_manager_end_line (PRIVATE (span_wrapper)->outer_line_manager);
+	return cong_editor_line_manager_end_line (PRIVATE (span_wrapper)->outer_line_manager,
+						  line_iter);
 }
 
 static gint
-get_line_width (CongEditorLineManager *line_manager)
+get_line_width (CongEditorLineManager *line_manager,
+		CongEditorLineIter *line_iter)
 {
 	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
 
 	/* Delegate: */
-	return cong_editor_line_manager_get_line_width (PRIVATE (span_wrapper)->outer_line_manager);
+	return cong_editor_line_manager_get_line_width (PRIVATE (span_wrapper)->outer_line_manager,
+							line_iter);
 }
 
 static gint
-get_current_indent (CongEditorLineManager *line_manager)
+get_current_indent (CongEditorLineManager *line_manager,
+		    CongEditorLineIter *line_iter)
 {
 	CongEditorLineManagerSpanWrapper *span_wrapper = CONG_EDITOR_LINE_MANAGER_SPAN_WRAPPER (line_manager);
 
 	/* Delegate: */
-	return cong_editor_line_manager_get_current_indent (PRIVATE (span_wrapper)->outer_line_manager);
+	return cong_editor_line_manager_get_current_indent (PRIVATE (span_wrapper)->outer_line_manager,
+							    line_iter);
 }

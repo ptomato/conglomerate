@@ -46,6 +46,7 @@ typedef struct CongEditorWidget3 CongEditorWidget3;
 typedef struct CongEditorWidget3Class CongEditorWidget3Class;
 typedef struct CongEditorWidget3Details CongEditorWidget3Details;
 
+typedef struct CongEditorLineIter CongEditorLineIter;
 typedef struct CongEditorLineManager CongEditorLineManager;
 typedef struct CongEditorLineManagerSimple CongEditorLineManagerSimple;
 typedef struct CongEditorLineManagerSpanWrapper CongEditorLineManagerSpanWrapper;

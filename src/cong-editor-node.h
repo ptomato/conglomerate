@@ -44,6 +44,14 @@ typedef struct CongAreaCreationInfo CongAreaCreationInfo;
 struct CongAreaCreationInfo
 {
 	CongEditorLineManager *line_manager;
+
+	/* Position at which to add areas (so that when a node is inserted between two existing nodes, 
+	   we can add the areas between their areas.  Note, though that subsequent areas may well need regenerating
+	   since the word-wrap will often start at a different place).
+
+	   The line_iter will get modified as actions are performed on it; it represents the "current" position.
+	*/
+	CongEditorLineIter *line_iter;
 };
 
 /**

@@ -1410,6 +1410,7 @@ potentially_add_editor_node (CongEditorWidget3 *editor_widget,
 	g_return_if_fail (IS_CONG_TRAVERSAL_NODE (traversal_node));
 
 	xml_node = cong_traversal_node_get_node (traversal_node);
+	g_assert (xml_node);
 
 	should_add_node = cong_node_should_be_visible_in_editor (xml_node);
 
@@ -1550,34 +1551,11 @@ cong_editor_widget3_node_should_have_editor_node (CongNodePtr node)
 	}
 }
 
-static void 
-create_areas(CongEditorWidget3 *widget,
-	     CongEditorNode *editor_node)
+static CongEditorLineManager*
+get_line_manager_for_node (CongEditorWidget3 *widget,
+			   CongEditorNode *editor_node)
 {
-	CongEditorLineManager *parent_line_manager = NULL;
-#if 0
-	CongEditorChildPolicy *parents_child_policy = NULL;
-	CongEditorChildPolicy *this_child_policy = NULL;
-#endif
-	enum CongFlowType flow_type;
 	CongNodePtr node = cong_editor_node_get_node (editor_node);
-
-#if LOG_EDITOR_AREAS
-	{
-		gchar *node_desc = cong_node_debug_description(node);
-
-		LOG_EDITOR_AREA2("create_areas for %s", node_desc);
-
-		g_free(node_desc);
-	}
-#endif
-
-	flow_type = cong_editor_node_get_flow_type (editor_node);
-
-#if LOG_EDITOR_AREAS
-	g_message("flow type = %s", cong_flow_type_get_debug_string(flow_type));
-#endif
-
 
 	/* Determine the parent area where the new area should be inserted: */
 	if (node->parent) {
@@ -1586,81 +1564,62 @@ create_areas(CongEditorWidget3 *widget,
 		parent_editor_node = cong_editor_node_get_traversal_parent (editor_node);
 		g_assert (parent_editor_node);
 		
-		parent_line_manager = cong_editor_node_get_line_manager_for_children (parent_editor_node);
+		return cong_editor_node_get_line_manager_for_children (parent_editor_node);
 		
 	} else {
 		/* Root of the document; insert below the widget's root_area: */
 		g_assert(cong_node_type(node) == CONG_NODE_TYPE_DOCUMENT);
 		
-		parent_line_manager = PRIVATE (widget)->root_line_manager;
+		return PRIVATE (widget)->root_line_manager;
 	}
+}
 
+static void 
+create_areas(CongEditorWidget3 *widget,
+	     CongEditorNode *editor_node)
+{
+	CongEditorLineManager *parent_line_manager = NULL;
+#if 0
+	enum CongFlowType flow_type;
+#endif
+
+#if LOG_EDITOR_AREAS
+	{
+		CongNodePtr node = cong_editor_node_get_node (editor_node);
+		gchar *node_desc = cong_node_debug_description(node);
+
+		LOG_EDITOR_AREA2("create_areas for %s", node_desc);
+
+		g_free(node_desc);
+	}
+#endif
+
+#if 0
+	flow_type = cong_editor_node_get_flow_type (editor_node);
+
+#if LOG_EDITOR_AREAS
+	g_message("flow type = %s", cong_flow_type_get_debug_string(flow_type));
+#endif
+#endif
+
+	parent_line_manager = get_line_manager_for_node (widget,
+							 editor_node);
 	g_assert (parent_line_manager);
 	g_assert (IS_CONG_EDITOR_LINE_MANAGER (parent_line_manager));
 
-	/* Invoke "create_areas" method for node: */
-	{
-		CongAreaCreationInfo creation_info;
-
-		creation_info.line_manager = parent_line_manager;
-
-		CONG_EEL_CALL_METHOD (CONG_EDITOR_NODE_CLASS,
-				      editor_node,
-				      create_areas,
-				      (editor_node, &creation_info));
-	}
-	
-#if 0
-	cong_editor_node_set_parents_child_policy (editor_node,
-						   parents_child_policy);
-	
-	g_assert(parents_child_policy);
-	
-#if 1
-	this_child_policy = cong_editor_child_policy_insert_areas_for_node (parents_child_policy,
-									    editor_node);
-
-	cong_editor_node_set_child_policy (editor_node,
-					   this_child_policy);
-
-#else
-	this_area = cong_editor_area_flow_holder_insert_areas_for_node (parent_flow_holder,
-									editor_node);	
-
-	g_hash_table_insert (PRIVATE(widget)->hash_of_editor_node_to_primary_area,
-			     editor_node,
-			     this_area);
-
-	/* If this node can ever have children, we need to add a container for them:
-	   FIXME:  slightly hackish test */
-	if (IS_CONG_EDITOR_AREA_CONTAINER(this_area) ) {
-		CongEditorAreaFlowHolder *flow_holder;
-
-		flow_holder = cong_editor_area_flow_holder_manufacture (widget,
-									flow_type);
-
-		cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (this_area),
-						      CONG_EDITOR_AREA(flow_holder));
-
-		g_hash_table_insert (PRIVATE(widget)->hash_of_editor_node_to_child_flow_holder,
-				     editor_node,
-				     flow_holder);
-	}
-#endif
-#endif
+	cong_editor_line_manager_add_node (parent_line_manager,
+					   editor_node);	
 }
 
 static void 
 destroy_areas(CongEditorWidget3 *widget,
 	      CongEditorNode *editor_node)
 {
-#if 0
-	CongEditorChildPolicy *parents_child_policy = NULL;
-#endif
-	CongNodePtr node = cong_editor_node_get_node (editor_node);
+	CongEditorLineManager *parent_line_manager = NULL;
 
 #if LOG_EDITOR_AREAS
 	{
+		CongNodePtr node = cong_editor_node_get_node (editor_node);
 		gchar *node_desc = cong_node_debug_description(node);
 
 		LOG_EDITOR_AREA2("destroy_areas for %s", node_desc);
@@ -1669,31 +1628,12 @@ destroy_areas(CongEditorWidget3 *widget,
 	}
 #endif
 
-#if 0
-	if (node->parent) {
-		parents_child_policy = cong_editor_widget3_get_parents_child_policy_for_editor_node (widget,
-												     editor_node);
-	} else {
-		g_assert(cong_node_type(node) == CONG_NODE_TYPE_DOCUMENT);
-		parents_child_policy = PRIVATE(widget)->root_child_policy;
-	}
+	parent_line_manager = get_line_manager_for_node (widget,
+							 editor_node);
+	g_assert (parent_line_manager);
+	g_assert (IS_CONG_EDITOR_LINE_MANAGER (parent_line_manager));
 
-	g_assert(parents_child_policy);
-
-	cong_editor_child_policy_remove_areas_for_node (parents_child_policy,
-							editor_node);
-
-	cong_editor_node_set_parents_child_policy (editor_node,
-						   NULL);
-	cong_editor_node_set_child_policy (editor_node,
-					   NULL);
-#endif
-
-#if 0
-	g_hash_table_remove (PRIVATE(widget)->hash_of_editor_node_to_parents_child_policy,
-			     editor_node);
-	g_hash_table_remove (PRIVATE(widget)->hash_of_editor_node_to_child_policy,
-			     editor_node);
-#endif
+	cong_editor_line_manager_remove_node (parent_line_manager,
+					      editor_node);
 }
 

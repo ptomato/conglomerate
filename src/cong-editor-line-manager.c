@@ -25,6 +25,7 @@
 #include "global.h"
 #include "cong-editor-line-manager.h"
 #include "cong-editor-area.h"
+#include "cong-editor-node.h"
 #include "cong-eel.h"
 
 struct CongEditorLineManagerPrivate
@@ -53,87 +54,128 @@ cong_editor_line_manager_get_widget (CongEditorLineManager *line_manager)
 	return PRIVATE (line_manager)->widget;
 }
 
-void
-cong_editor_line_manager_begin_line (CongEditorLineManager *line_manager)
+void 
+cong_editor_line_manager_add_node (CongEditorLineManager *line_manager,
+				   CongEditorNode *node)
 {
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (IS_CONG_EDITOR_NODE (node));
+
+	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
+			      line_manager,
+			      add_node, 
+			      (line_manager, node));
+}
+
+void 
+cong_editor_line_manager_remove_node (CongEditorLineManager *line_manager,
+				      CongEditorNode *node)
+{
+	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (IS_CONG_EDITOR_NODE (node));
+
+	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
+			      line_manager,
+			      remove_node, 
+			      (line_manager, node));
+}
+
+void
+cong_editor_line_manager_begin_line (CongEditorLineManager *line_manager,
+				     CongEditorLineIter *line_iter)
+{
+	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (line_iter);
 
 	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
 			      line_manager,
 			      begin_line, 
-			      (line_manager));
+			      (line_manager, line_iter));
 
 }
 
 void
 cong_editor_line_manager_add_to_line (CongEditorLineManager *line_manager,
+				      CongEditorLineIter *line_iter,
 				      CongEditorArea *area)
 {
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (line_iter);
 	g_return_if_fail (IS_CONG_EDITOR_AREA (area));
 
 	/* Line wrapping: */
 	{
 		/* The areas we are getting should hopefully either be exactly the correct size to line-wrap appropriately,
 		   or should stop short due to things like span tags starting/stopping, or simply due to running out of content etc: */
+		gint width_available = cong_editor_line_manager_get_current_width_available (line_manager, 
+											     line_iter);
 		gint area_width = cong_editor_area_get_requisition_width (area,
-									  cong_editor_line_manager_get_current_width_available (line_manager));		
-		if (area_width>cong_editor_line_manager_get_current_width_available (line_manager)) {
+									  width_available);
+		if (area_width>width_available) {
 			/* Force a line-break: */
-			cong_editor_line_manager_end_line (line_manager);
+			cong_editor_line_manager_end_line (line_manager,
+							   line_iter);
 		}
 	}
 
 	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
 			      line_manager,
 			      add_to_line, 
-			      (line_manager, area));
+			      (line_manager, line_iter, area));
 }
 
 void
-cong_editor_line_manager_end_line (CongEditorLineManager *line_manager)
+cong_editor_line_manager_end_line (CongEditorLineManager *line_manager,
+				   CongEditorLineIter *line_iter)
 {
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_if_fail (line_iter);
 
 	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
 			      line_manager,
 			      end_line,
-			      (line_manager));
+			      (line_manager, line_iter));
 }
 
 
 gint
-cong_editor_line_manager_get_line_width (CongEditorLineManager *line_manager)
+cong_editor_line_manager_get_line_width (CongEditorLineManager *line_manager,
+					 CongEditorLineIter *line_iter)
 {
-	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_val_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager), 0);
+	g_return_val_if_fail (line_iter, 0);
 
 	return CONG_EEL_CALL_METHOD_WITH_RETURN_VALUE (CONG_EDITOR_LINE_MANAGER_CLASS,
 						       line_manager,
 						       get_line_width,
-						       (line_manager));
+						       (line_manager, line_iter));
 }
 
 gint
-cong_editor_line_manager_get_current_indent (CongEditorLineManager *line_manager)
+cong_editor_line_manager_get_current_indent (CongEditorLineManager *line_manager,
+					     CongEditorLineIter *line_iter)
 {
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_val_if_fail (line_iter, 0);
 
 	return CONG_EEL_CALL_METHOD_WITH_RETURN_VALUE (CONG_EDITOR_LINE_MANAGER_CLASS,
 						       line_manager,
 						       get_current_indent,
-						       (line_manager));
+						       (line_manager, line_iter));
 }
 
 gint
-cong_editor_line_manager_get_current_width_available (CongEditorLineManager *line_manager)
+cong_editor_line_manager_get_current_width_available (CongEditorLineManager *line_manager,
+						      CongEditorLineIter *line_iter)
 {
 	gint line_width;
 	gint current_indent;
 
 	g_return_val_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager), 0);
+	g_return_val_if_fail (line_iter, 0);
 
-	line_width = cong_editor_line_manager_get_line_width (line_manager);
-	current_indent = cong_editor_line_manager_get_current_indent (line_manager);
+	line_width = cong_editor_line_manager_get_line_width (line_manager, line_iter);
+	current_indent = cong_editor_line_manager_get_current_indent (line_manager, line_iter);
 
 	return line_width - current_indent;
 }

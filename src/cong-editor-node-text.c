@@ -38,6 +38,7 @@
 #include "cong-dispspec.h"
 #include "cong-command.h"
 #include "cong-traversal-node.h"
+#include "cong-editor-line-manager.h"
 
 enum FragmentState {
 	FRAG_NORMAL,
@@ -62,6 +63,7 @@ add_attrs_for_state (PangoAttrList *attr_list,
 		     enum FragmentState state);
 
 
+#undef PRIVATE
 #define PRIVATE(x) ((x)->private)
 
 typedef struct CongEditorNodeTextSelectionState CongEditorNodeTextSelectionState;
@@ -453,10 +455,12 @@ create_areas (CongEditorNode *editor_node,
 
 	/* Set the "geometry" of the PangoLayout: */
 	pango_layout_set_width (PRIVATE(node_text)->pango_layout,
-				cong_editor_line_manager_get_line_width (creation_info->line_manager)*PANGO_SCALE);
+				PANGO_SCALE * cong_editor_line_manager_get_line_width (creation_info->line_manager,
+										       creation_info->line_iter));
 
 	pango_layout_set_indent (PRIVATE(node_text)->pango_layout,
-				cong_editor_line_manager_get_current_indent (creation_info->line_manager)*PANGO_SCALE);
+				 PANGO_SCALE * cong_editor_line_manager_get_current_indent (creation_info->line_manager,
+											    creation_info->line_iter));
 
 	/* Add areas for the PangoLayoutLines: */
 	{
@@ -508,8 +512,10 @@ create_areas (CongEditorNode *editor_node,
 #endif
 
 			cong_editor_line_manager_add_to_line (creation_info->line_manager,
+							      creation_info->line_iter,
 							      text_fragment);
 			/* FIXME: will eventually need to end the lines if we're preserving whitespace */
+
 		}
 
 		pango_layout_iter_free (layout_iter);

@@ -58,6 +58,11 @@ static void
 add_child (CongEditorAreaContainer *area_container,
 	   CongEditorArea *child);
 
+static void
+add_child_after (CongEditorAreaContainer *area_container,
+		 CongEditorArea *child,
+		 CongEditorArea *relative_to);
+
 static gboolean 
 set_to_not_expand_cb (CongEditorArea *editor_area, 
 		      gpointer user_data);
@@ -79,6 +84,7 @@ cong_editor_area_line_class_init (CongEditorAreaLineClass *klass)
 	area_klass->for_all = for_all;
 
 	container_klass->add_child = add_child;
+	container_klass->add_child_after = add_child_after;
 }
 
 static void
@@ -242,6 +248,22 @@ add_child (CongEditorAreaContainer *area_container,
 
 
 }	
+
+static void
+add_child_after (CongEditorAreaContainer *area_container,
+		 CongEditorArea *child,
+		 CongEditorArea *relative_to)
+{
+	CongEditorAreaLine *line = CONG_EDITOR_AREA_LINE(area_container);
+
+	/* Delegate, set not to expand: */
+	cong_editor_area_composer_pack_after (CONG_EDITOR_AREA_COMPOSER (PRIVATE(line)->outer_compose),
+					      child,
+					      relative_to,
+					      FALSE,
+					      FALSE,
+					      0);
+}
 
 static gboolean 
 set_to_not_expand_cb (CongEditorArea *editor_area, 

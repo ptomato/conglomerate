@@ -1,3 +1,9 @@
+2004-01-23  Dave Malcolm  <david@davemalcolm.demon.co.uk>
+
+	* cong-editor-area-line.c, cong-editor-line-manager-simple.c, cong-editor-line-manager-span-wrapper.c, cong-editor-line-manager.c, cong-editor-line-manager.h, cong-editor-node-text.c, cong-editor-node.c, cong-editor-node.h, cong-editor-widget.h, cong-editor-widget3.c
+
+	CongEditorLineManager objects are now responsible for managing the EditorAreas of EditorNodes; created a CongEditorLineIter struct to allow insertion of new nodes with their areas in the correct positions relative to existing ones; span tags are currently broken
+
 2004-01-20  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
 	* .cvsignore, plugin-random.c, Makefile.am, cong-app.c, cong-dispspec.c, cong-dispspec.h, cong-dtd.c, cong-dtd.h, cong-fake-plugin-hooks.h, cong-file-new.c, cong-node-properties-dialog.c, cong-node.c, cong-primary-window.c, cong-service-document-factory.h, plugin-dtd.c, plugin-tests.c

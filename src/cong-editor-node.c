@@ -683,10 +683,13 @@ cong_editor_node_create_block_area (CongEditorNode *editor_node,
 
 	g_assert (IS_CONG_EDITOR_LINE_MANAGER (creation_info->line_manager));
 
-	cong_editor_line_manager_begin_line (creation_info->line_manager);
+	cong_editor_line_manager_begin_line (creation_info->line_manager,
+					     creation_info->line_iter);
 	cong_editor_line_manager_add_to_line (creation_info->line_manager,
+					      creation_info->line_iter,
 					      block_area);
-	cong_editor_line_manager_end_line (creation_info->line_manager);
+	cong_editor_line_manager_end_line (creation_info->line_manager,
+					   creation_info->line_iter);
 
 	if (allow_children) {
 		g_assert (IS_CONG_EDITOR_AREA_CONTAINER (block_area));
@@ -709,6 +712,7 @@ cong_editor_node_empty_create_area (CongEditorNode *editor_node,
 	dummy_area = cong_editor_area_lines_new (cong_editor_node_get_widget (editor_node));
 
 	cong_editor_line_manager_add_to_line (creation_info->line_manager,
+					      creation_info->line_iter,
 					      dummy_area);
 
 	if (allow_children) {
