@@ -46,6 +46,7 @@ build-stamp: patch config.status
 	$(MAKE)
 	# `cd doc/C ; ./manpage.make`, asume that manual is up-to-date
 	cp src/conglomerate src/conglomerate-dbg
+	cp src/conglomerate src/conglomerate-dbgwod
 
 	touch build-stamp
 
@@ -79,7 +80,9 @@ install: build
 	# and for the debug package conglomerate-dbg
 	mkdir -p $(CURDIR)/debian/conglomerate-dbg/usr/bin
 	cp src/conglomerate-dbg $(CURDIR)/debian/conglomerate-dbg/usr/bin/
+	cp src/conglomerate-dbgwod $(CURDIR)/debian/conglomerate-dbg/usr/bin/
 	chmod 755 $(CURDIR)/debian/conglomerate-dbg/usr/bin/conglomerate-dbg
+	chmod 755 $(CURDIR)/debian/conglomerate-dbg/usr/bin/conglomerate-dbgwod
 
 
 # Build architecture-independent files here.
@@ -97,7 +100,7 @@ binary-arch: build install
 	dh_installman doc/C/conglomerate.1
 	dh_scrollkeeper
 	dh_link
-	dh_strip --exclude=conglomerate-dbg
+	dh_strip --exclude=conglomerate-dbg conglomerate-dbgwod
 	dh_compress
 	dh_fixperms
 	dh_installdeb
