@@ -259,7 +259,8 @@ begin_line (CongEditorLineManager *line_manager,
 					     PRIVATE (span_wrapper)->outer_creation_record,
 					     span_wrapper_iter->outer_iter);
 
-	/* how do we handle this creation_record stuff? Perhaps we should it, and do the recording inside the line manager?
+	/* Bugzilla 145474:
+	   how do we handle this creation_record stuff? Perhaps we should it, and do the recording inside the line manager?
 	   But how do we distinguish between stuff done by a node, and stuff done by the children of a node?  Wouldn't this mean
 	   cleaning out parts of the change list when a child is removed?
 	   Perhaps I should try to get the Simple subclass working (line removal) as I think about this?

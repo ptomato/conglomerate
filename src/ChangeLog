@@ -1,4 +1,14 @@
+2004-07-05  David Malcolm  <david@davemalcolm.demon.co.uk>
+
+	* cong-editor-line-manager-span-wrapper.c (begin_line): Added reference to bugzilla 145474
+
 2004-07-03  David Malcolm  <david@davemalcolm.demon.co.uk>
+
+	* cong-editor-area-bin.c, cong-editor-area-composer.c, cong-editor-area-container.c, cong-editor-area-container.h, cong-editor-area-entity-decl.c, cong-editor-area-entity-ref.c, cong-editor-area-labelled.c, cong-editor-area-line.c, cong-editor-area-span-tag.c, cong-editor-area-structural.c, cong-editor-area-unknown-tag.c, cong-editor-line-manager-simple.c, cong-editor-line-manager-span-wrapper.c, cong-editor-node.c
+
+	Added an add_to_end boolean for cong_editor_area_container_add_child
+
+	----
 
         Merged changes from HEAD: result of using "cvs update -j HEAD" and fixing the various conflicts
 
