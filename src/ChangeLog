@@ -1,5 +1,9 @@
 2004-03-10  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* cong-editor-line-manager.c
+
+	Suppress some debug logging; fix reference leaks to CongEditorLineIter objects
+
 	* cong-traversal-node.c, cong-traversal-node.h, cong-document.h
 
 	Ported CongTraversalNode over to cong-object macros in order to track reference leaks

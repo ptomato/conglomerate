@@ -30,6 +30,8 @@
 #include "cong-editor-creation-record.h"
 #include "cong-eel.h"
 
+#define DEBUG_LOG 0
+
 struct CongEditorLineManagerPrivate
 {
 	CongEditorWidget3* widget;
@@ -219,6 +221,8 @@ cong_editor_line_manager_begin_line (CongEditorLineManager *line_manager,
 						CONG_EDITOR_CREATION_EVENT_BEGIN_LINE,
 						iter_before,
 						iter_after);
+	g_object_unref (G_OBJECT (iter_before));
+	g_object_unref (G_OBJECT (iter_after));
 
 	/* We should now have a line at the iter: */
 	g_assert (cong_editor_line_iter_get_line (line_iter));
@@ -268,6 +272,9 @@ cong_editor_line_manager_add_to_line (CongEditorLineManager *line_manager,
 						CONG_EDITOR_CREATION_EVENT_ADD_AREA,
 						iter_before,
 						iter_after);
+	g_object_unref (G_OBJECT (iter_before));
+	g_object_unref (G_OBJECT (iter_after));
+
 }
 
 void
@@ -296,9 +303,12 @@ cong_editor_line_manager_end_line (CongEditorLineManager *line_manager,
 						CONG_EDITOR_CREATION_EVENT_END_LINE,
 						iter_before,
 						iter_after);
+	g_object_unref (G_OBJECT (iter_before));
+	g_object_unref (G_OBJECT (iter_after));
 }
 
 #if 1
+#if DEBUG_LOG
 static const gchar*
 get_string_for_event_type (enum CongEditorCreationEvent event)
 {
@@ -314,6 +324,7 @@ get_string_for_event_type (enum CongEditorCreationEvent event)
 		return "ADD_AREA";
 	}
 }
+#endif
 
 void
 cong_editor_line_manager_undo_change (CongEditorLineManager *line_manager,
@@ -325,7 +336,9 @@ cong_editor_line_manager_undo_change (CongEditorLineManager *line_manager,
 	g_return_if_fail (iter_before);
 	g_return_if_fail (iter_after);
 
+#if DEBUG_LOG
 	g_message ("%s::undo_change (%s)", G_OBJECT_TYPE_NAME (G_OBJECT (line_manager)), get_string_for_event_type (event));
+#endif
 
 	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
 			      line_manager,
