@@ -379,7 +379,7 @@ cong_editor_widget3_construct (CongEditorWidget3 *editor_widget,
 
 		/* Set up root line manager: */
 		PRIVATE (editor_widget)->root_line_manager = cong_editor_line_manager_simple_new (editor_widget,
-												  PRIVATE(editor_widget)->root_area);	
+												  CONG_EDITOR_AREA_LINES (PRIVATE(editor_widget)->root_area));
 	}
 
 	/* Traverse the doc, adding EditorNodes and EditorAreas: */

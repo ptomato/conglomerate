@@ -649,13 +649,7 @@ set_up_line_manager (CongEditorNode *editor_node,
 	widget = cong_editor_node_get_widget (editor_node);
 
 	/* Set up area for children: */
-#if 1
 	area_lines = cong_editor_area_lines_new (widget);
-#else
-	area_lines = cong_editor_area_composer_new (widget,
-						    GTK_ORIENTATION_VERTICAL,
-						    10);
-#endif
 
 	/* Add a border between the block_area and the area_lines in the hierarchy */
 	area_border = cong_editor_area_border_new (widget, 
@@ -672,7 +666,7 @@ set_up_line_manager (CongEditorNode *editor_node,
 
 	/* Set up line manager: */
 	line_manager = cong_editor_line_manager_simple_new (widget,
-							    area_lines);
+							    CONG_EDITOR_AREA_LINES (area_lines));
 	cong_editor_node_set_line_manager_for_children (editor_node,
 							line_manager);
 }

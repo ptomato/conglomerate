@@ -28,6 +28,8 @@
 #include "cong-editor-area-line.h"
 #include "cong-editor-area-composer.h"
 
+#define HACKED_WIDTH (150)
+
 static void 
 begin_line (CongEditorLineManager *line_manager);
 
@@ -46,7 +48,7 @@ get_current_indent (CongEditorLineManager *line_manager);
 
 struct CongEditorLineManagerSimplePrivate
 {
-	CongEditorArea *area_lines;
+	CongEditorAreaLines *area_lines;
 	CongEditorAreaLine *current_line;
 };
 
@@ -68,10 +70,10 @@ CONG_DEFINE_EMPTY_DISPOSE(cong_editor_line_manager_simple)
 CongEditorLineManager*
 cong_editor_line_manager_simple_construct (CongEditorLineManagerSimple *line_manager,
 					   CongEditorWidget3 *widget,
-					   CongEditorArea *area_lines)
+					   CongEditorAreaLines *area_lines)
 {
 	g_return_val_if_fail (IS_CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager), NULL);
-	g_return_val_if_fail (IS_CONG_EDITOR_AREA (area_lines), NULL);
+	g_return_val_if_fail (IS_CONG_EDITOR_AREA_LINES (area_lines), NULL);
 
 	cong_editor_line_manager_construct (CONG_EDITOR_LINE_MANAGER (line_manager),
 					    widget);
@@ -83,7 +85,7 @@ cong_editor_line_manager_simple_construct (CongEditorLineManagerSimple *line_man
 
 CongEditorLineManager*
 cong_editor_line_manager_simple_new (CongEditorWidget3 *widget,
-				     CongEditorArea *area_lines)
+				     CongEditorAreaLines *area_lines)
 {
 	g_return_val_if_fail (IS_CONG_EDITOR_AREA (area_lines), NULL);
 
@@ -100,7 +102,7 @@ begin_line (CongEditorLineManager *line_manager)
 	CongEditorAreaLine *new_line;
 
 	new_line = CONG_EDITOR_AREA_LINE (cong_editor_area_line_new (cong_editor_line_manager_get_widget (line_manager),
-								     300)); /* FIXME */
+								     HACKED_WIDTH)); /* FIXME */
 	PRIVATE (simple)->current_line = new_line;
 
 	cong_editor_area_composer_pack_end (CONG_EDITOR_AREA_COMPOSER (PRIVATE (simple)->area_lines),
@@ -116,11 +118,10 @@ add_to_line (CongEditorLineManager *line_manager,
 {
 	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
 
+	/* Ensure we have a line to add the area to: */
 	if (NULL==PRIVATE (simple)->current_line) {
 		begin_line (line_manager);
 	}
-
-	/* FIXME: need to have some logic to do line wrapping here */
 
 	cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (PRIVATE (simple)->current_line),
 					      area);
@@ -139,7 +140,7 @@ get_line_width (CongEditorLineManager *line_manager)
 {
 	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
 
-	return 300; /* FIXME */
+	return HACKED_WIDTH; /* FIXME */
 }
 
 static gint
@@ -156,6 +157,6 @@ get_current_indent (CongEditorLineManager *line_manager)
 #else
 	return cong_editor_area_get_requisition (CONG_EDITOR_AREA (PRIVATE (simple)->current_line),
 						 GTK_ORIENTATION_HORIZONTAL,
-						 300); /* FIXME */
+						 HACKED_WIDTH); /* FIXME */
 #endif
 }

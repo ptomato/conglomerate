@@ -1,5 +1,9 @@
 2004-01-19  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* cong-editor-line-manager-simple.c, cong-editor-line-manager-simple.h, cong-editor-line-manager.c, cong-editor-node.c, cong-editor-widget3.c
+
+	Improvements to linewrapping within the new layout implementation
+	
 	* plugin-print-source.c, cong-app.c, cong-fake-plugin-hooks.h
 
 	New (stub) plugin for printing documents as syntax-highlighted XML sourcec

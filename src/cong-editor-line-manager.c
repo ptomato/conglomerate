@@ -72,6 +72,18 @@ cong_editor_line_manager_add_to_line (CongEditorLineManager *line_manager,
 	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
 	g_return_if_fail (IS_CONG_EDITOR_AREA (area));
 
+	/* Line wrapping: */
+	{
+		/* The areas we are getting should hopefully either be exactly the correct size to line-wrap appropriately,
+		   or should stop short due to things like span tags starting/stopping, or simply due to running out of content etc: */
+		gint area_width = cong_editor_area_get_requisition_width (area,
+									  cong_editor_line_manager_get_current_width_available (line_manager));		
+		if (area_width>cong_editor_line_manager_get_current_width_available (line_manager)) {
+			/* Force a line-break: */
+			cong_editor_line_manager_end_line (line_manager);
+		}
+	}
+
 	CONG_EEL_CALL_METHOD (CONG_EDITOR_LINE_MANAGER_CLASS,
 			      line_manager,
 			      add_to_line, 
@@ -110,4 +122,18 @@ cong_editor_line_manager_get_current_indent (CongEditorLineManager *line_manager
 						       line_manager,
 						       get_current_indent,
 						       (line_manager));
+}
+
+gint
+cong_editor_line_manager_get_current_width_available (CongEditorLineManager *line_manager)
+{
+	gint line_width;
+	gint current_indent;
+
+	g_return_val_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager), 0);
+
+	line_width = cong_editor_line_manager_get_line_width (line_manager);
+	current_indent = cong_editor_line_manager_get_current_indent (line_manager);
+
+	return line_width - current_indent;
 }
