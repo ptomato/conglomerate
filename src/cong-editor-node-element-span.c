@@ -125,11 +125,12 @@ create_areas (CongEditorNode *editor_node,
 	CongEditorLineManager *line_manager;
 
 	/* Create no areas; the children will add their areas via our LineManager, and this will create the wrapper areas */
-	
+
 	/* Need to set up the line manager though: */
 	line_manager = cong_editor_line_manager_span_wrapper_new (cong_editor_node_get_widget (editor_node),
 								  editor_node,
-								  creation_info->line_manager);
+								  creation_info->line_manager,
+								  creation_info->line_iter);
 
 	cong_editor_node_set_line_manager_for_children (editor_node,
 							line_manager);

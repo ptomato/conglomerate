@@ -45,6 +45,20 @@ struct MyClass##Class \
 #define CONG_DECLARE_CLASS_END() \
 };
 
+#define CONG_DECLARE_CLASS_PUBLIC_DATA(MyClass, my_class, BaseClass, PublicDataDecls, ClassFunctionDecls) \
+typedef struct MyClass##Class MyClass##Class; \
+typedef struct MyClass##Private MyClass##Private; \
+struct MyClass \
+{ \
+	BaseClass base_obj; \
+        PublicDataDecls \
+}; \
+struct MyClass##Class \
+{ \
+	BaseClass##Class base_class; \
+        ClassFunctionDecls \
+};
+
 #define CONG_DECLARE_CLASS(MyClass, my_class, BaseClass) \
 CONG_DECLARE_CLASS_BEGIN(MyClass, my_class, BaseClass) \
 CONG_DECLARE_CLASS_END()
@@ -77,6 +91,30 @@ my_class##_class_init (MyClass##Class *klass) \
 	G_OBJECT_CLASS (klass)->dispose = my_class##_dispose; \
 
 #define CONG_DEFINE_CLASS_END() \
+};
+
+#define CONG_DEFINE_CLASS_PUBLIC_DATA(MyClass, my_class, MY_CLASS, BaseClass, BASE_CLASS_TYPE, ClassInitCodeFragment) \
+static void my_class##_finalize (GObject *object); \
+static void my_class##_dispose (GObject *object); \
+\
+GNOME_CLASS_BOILERPLATE(MyClass, my_class, BaseClass, BASE_CLASS_TYPE) \
+\
+static void \
+my_class##_instance_init (MyClass *obj) \
+{ \
+} \
+static void \
+my_class##_finalize (GObject *object) \
+{ \
+	MyClass *my_obj = MY_CLASS(object); \
+	G_OBJECT_CLASS (parent_class)->finalize (object); \
+} \
+static void \
+my_class##_class_init (MyClass##Class *klass) \
+{ \
+	G_OBJECT_CLASS (klass)->finalize = my_class##_finalize; \
+	G_OBJECT_CLASS (klass)->dispose = my_class##_dispose; \
+        ClassInitCodeFragment \
 };
 
 #define CONG_DEFINE_EMPTY_DISPOSE(my_class) \

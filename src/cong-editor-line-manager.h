@@ -42,11 +42,8 @@ CONG_DECLARE_CLASS_BEGIN (CongEditorLineManager, cong_editor_line_manager, GObje
 
      /* FIXME: all of these methods are temporary for now: */
 
-     /* Managing nodes; creating and destroying their areas accordingly: */
-     void (*add_node) (CongEditorLineManager *line_manager,
-		       CongEditorNode *node);
-     void (*remove_node) (CongEditorLineManager *line_manager,
-			  CongEditorNode *node);
+     /* Factory method for making an iterator of the appropriate type, at the start of the possible areas for this manager: */
+     CongEditorLineIter* (*make_iter) (CongEditorLineManager *line_manager);
 
      /* Manipulating the lines: */
      void (*begin_line) (CongEditorLineManager *line_manager,
@@ -79,6 +76,7 @@ void
 cong_editor_line_manager_remove_node (CongEditorLineManager *line_manager,
 				      CongEditorNode *node);
 
+/* V-Func invocation: */
 void
 cong_editor_line_manager_begin_line (CongEditorLineManager *line_manager,
 				     CongEditorLineIter *line_iter);

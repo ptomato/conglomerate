@@ -1,5 +1,9 @@
 2004-01-23  Dave Malcolm  <david@davemalcolm.demon.co.uk>
 
+	* Makefile.am, cong-editor-line-manager-simple.c, cong-editor-line-manager-span-wrapper.c, cong-editor-line-manager-span-wrapper.h, cong-editor-line-manager.c, cong-editor-line-manager.h, cong-editor-node-element-span.c, cong-object.h
+
+	Added a hierarchy of CongEditorLineIter classes to mirror that of the CongEditorLineManager classes; node/area management moved into base CongEditorLineManager class from subclasses, now they just invoke a factory method to make an appropriate LineIter; Span tags now work again, with ability to add nodes in arbitrary places (node deletion is still broken)
+	
 	* cong-editor-line-iter-simple.c, cong-editor-line-iter-simple.h, cong-editor-line-iter-span-wrapper.c, cong-editor-line-iter-span-wrapper.h, cong-editor-line-iter.c, cong-editor-line-iter.h
 
 	New files

@@ -41,7 +41,8 @@ CONG_DECLARE_CLASS_END ()
 CongEditorLineManager*
 cong_editor_line_manager_span_wrapper_new (CongEditorWidget3 *widget,
 					   CongEditorNode *editor_node,
-					   CongEditorLineManager *outer_line_manager);
+					   CongEditorLineManager *outer_line_manager,
+					   CongEditorLineIter *outer_iter);
 
 
 G_END_DECLS

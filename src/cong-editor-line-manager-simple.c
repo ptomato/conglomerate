@@ -24,6 +24,7 @@
 
 #include "global.h"
 #include "cong-editor-line-manager-simple.h"
+#include "cong-editor-line-iter-simple.h"
 #include "cong-editor-node.h"
 #include "cong-editor-area.h"
 #include "cong-editor-area-line.h"
@@ -32,13 +33,8 @@
 #include "cong-eel.h"
 
 #define HACKED_WIDTH (150)
-static void 
-add_node (CongEditorLineManager *line_manager,
-	  CongEditorNode *node);
-
-static void 
-remove_node (CongEditorLineManager *line_manager,
-	     CongEditorNode *node);
+static CongEditorLineIter*
+make_iter (CongEditorLineManager *line_manager);
 
 static void 
 begin_line (CongEditorLineManager *line_manager,
@@ -61,60 +57,16 @@ static gint
 get_current_indent (CongEditorLineManager *line_manager,
 		    CongEditorLineIter *line_iter);
 
-/* Definition of CongEditorLineIter is here for now: */
-struct CongEditorLineIter
-{
-	CongEditorAreaLine *current_line;
-	CongEditorAreaLine *current_prev_line;
-	CongEditorArea *current_prev_area;
-};
-
-/* Data stored about each editor node: */
-typedef struct PerNodeData PerNodeData;
-struct PerNodeData
-{
-#if 0
-	/* Cache of data that the areas of this node were created with; if changes occur then the areas may need to be regenerated: */
-	gint line_width;
-	gint line_indent;
-	/* FIXME: perhaps these ought to be added to struct CongAreaCreationInfo ? */
-#endif
-
-	/* Insertion position for areas _after_ this node: */
-	CongEditorLineIter trailing_line_iter;
-};
-
-static void
-my_value_destroy_func (gpointer data)
-{
-	PerNodeData *per_node_data = (PerNodeData*)data;
-
-	g_free (per_node_data);
-}
-
-static PerNodeData*
-get_data_for_node (CongEditorLineManagerSimple *simple,
-		   CongEditorNode *editor_node);
-
 struct CongEditorLineManagerSimplePrivate
 {
 	CongEditorAreaLines *area_lines;
-
-#if 1
-	/* Mapping from editor_node to iter (for insertion after): */
-	GHashTable *hash_of_editor_node_to_data;
-#else
-	/* Position after end of final node's areas: */
-	CongEditorLineIter end_line_iter;
-#endif
 };
 
 CONG_DEFINE_CLASS_BEGIN (CongEditorLineManagerSimple, cong_editor_line_manager_simple, CONG_EDITOR_LINE_MANAGER_SIMPLE, CongEditorLineManager, CONG_EDITOR_LINE_MANAGER_TYPE)
 {
 	CongEditorLineManagerClass *lm_klass = CONG_EDITOR_LINE_MANAGER_CLASS (klass);
 
-	lm_klass->add_node = add_node;
-	lm_klass->remove_node = remove_node;
+	lm_klass->make_iter = make_iter;
 
 	lm_klass->begin_line = begin_line;
 	lm_klass->add_to_line = add_to_line;
@@ -140,13 +92,6 @@ cong_editor_line_manager_simple_construct (CongEditorLineManagerSimple *line_man
 
 	PRIVATE (line_manager)->area_lines = area_lines;
 
-	PRIVATE (line_manager)->hash_of_editor_node_to_data = g_hash_table_new_full (g_direct_hash,
-										     g_direct_equal,
-										     NULL,
-										     my_value_destroy_func);
-
-	
-
 	return CONG_EDITOR_LINE_MANAGER (line_manager);
 }
 
@@ -161,86 +106,13 @@ cong_editor_line_manager_simple_new (CongEditorWidget3 *widget,
 										    area_lines));
 }
 
-static void
-copy_iter (CongEditorLineIter *dst,
-	   const CongEditorLineIter *src)
-{
-	g_assert (dst);
-	g_assert (src);
 
-	*dst = *src;
-}
-
-
-static void 
-add_node (CongEditorLineManager *line_manager,
-	  CongEditorNode *editor_node)
-{
-	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
-	CongEditorNode *editor_node_prev = cong_editor_node_get_prev (editor_node);
-	PerNodeData *per_node_data;
-
-	/* Set up per_node_data for the new editor node: */
-	{
-		per_node_data = g_new0 (PerNodeData, 1);
-
-		if (editor_node_prev) {
-			PerNodeData *per_node_data_prev = get_data_for_node (simple,
-									     editor_node_prev);
-			
-			copy_iter (&per_node_data->trailing_line_iter,
-				   &per_node_data_prev->trailing_line_iter);
-		} else {
-			/* We have a start node: */
-			per_node_data->trailing_line_iter.current_line = NULL;
-			per_node_data->trailing_line_iter.current_prev_line = NULL;
-			per_node_data->trailing_line_iter.current_prev_area = NULL;
-		}
-		
-		/* ...and add to the hash table: */
-		g_hash_table_insert (PRIVATE (simple)->hash_of_editor_node_to_data,
-				     editor_node,
-				     per_node_data);
-	}
-		
-	/* Invoke "create_areas" method for node: */
-	{
-		CongAreaCreationInfo creation_info;
-
-		creation_info.line_manager = line_manager;
-		creation_info.line_iter = &per_node_data->trailing_line_iter; /* note that this will be modified */
-
-		CONG_EEL_CALL_METHOD (CONG_EDITOR_NODE_CLASS,
-				      editor_node,
-				      create_areas,
-				      (editor_node, &creation_info));
-	}
-
-	/* Potentially update successor nodes' area creation info, recreating areas as necessary, which may trigger further updates: */
-	{
-		/* FIXME: unwritten */
-	}
-}
-
-static void 
-remove_node (CongEditorLineManager *line_manager,
-	     CongEditorNode *node)
+static CongEditorLineIter*
+make_iter (CongEditorLineManager *line_manager)
 {
 	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
 
-	/* FIXME: unimplemented */
-	g_assert_not_reached ();
-
-	/* Potentially update successor nodes' area creation info, recreating areas as necessary, which may trigger further updates: */
-	{
-		/* FIXME: unwritten */
-	}
-
-	/* Remove from hash: */
-	{
-		g_hash_table_remove (PRIVATE (simple)->hash_of_editor_node_to_data,
-				     node);
-	}
+	return CONG_EDITOR_LINE_ITER (cong_editor_line_iter_simple_new (simple));
 }
 
 static void 
@@ -249,28 +121,29 @@ begin_line (CongEditorLineManager *line_manager,
 {
 	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
 	CongEditorAreaLine *new_line;
+	CongEditorLineIterSimple *line_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (line_iter);
 
 	new_line = CONG_EDITOR_AREA_LINE (cong_editor_area_line_new (cong_editor_line_manager_get_widget (line_manager),
 								     HACKED_WIDTH)); /* FIXME */
-	if (line_iter->current_line) {
-		line_iter->current_prev_line = line_iter->current_line;
+	if (line_iter_simple->current_line) {
+		line_iter_simple->current_prev_line = line_iter_simple->current_line;
 	}
-	line_iter->current_line = new_line;
-	line_iter->current_prev_area = NULL;
+	line_iter_simple->current_line = new_line;
+	line_iter_simple->current_prev_area = NULL;
 
-	if (line_iter->current_prev_line) {
+	if (line_iter_simple->current_prev_line) {
 		cong_editor_area_composer_pack_after (CONG_EDITOR_AREA_COMPOSER (PRIVATE (simple)->area_lines),
 						      CONG_EDITOR_AREA (new_line),
-						      CONG_EDITOR_AREA (line_iter->current_prev_line),
+						      CONG_EDITOR_AREA (line_iter_simple->current_prev_line),
 						      FALSE,
 						      TRUE,
 						      0);
 	} else {
-		cong_editor_area_composer_pack_end (CONG_EDITOR_AREA_COMPOSER (PRIVATE (simple)->area_lines),
-						    CONG_EDITOR_AREA (new_line),
-						    FALSE,
-						    TRUE,
-						    0);
+		cong_editor_area_composer_pack_start (CONG_EDITOR_AREA_COMPOSER (PRIVATE (simple)->area_lines),
+						      CONG_EDITOR_AREA (new_line),
+						      FALSE,
+						      TRUE,
+						      0);
 	}
 }
 
@@ -280,23 +153,25 @@ add_to_line (CongEditorLineManager *line_manager,
 	     CongEditorArea *area)
 {
 	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
+	CongEditorLineIterSimple *line_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (line_iter);
 
 	/* Ensure we have a line to add the area to: */
-	if (NULL==line_iter->current_line) {
+	if (NULL==line_iter_simple->current_line) {
 		begin_line (line_manager,
 			    line_iter);
 	}
 
-	if (line_iter->current_prev_area) {
-		cong_editor_area_container_add_child_after (CONG_EDITOR_AREA_CONTAINER (line_iter->current_line),
+	if (line_iter_simple->current_prev_area) {
+		cong_editor_area_container_add_child_after (CONG_EDITOR_AREA_CONTAINER (line_iter_simple->current_line),
 							    area,
-							    line_iter->current_prev_area);
+							    line_iter_simple->current_prev_area);
 	} else {
-		cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (line_iter->current_line),
+		/* FIXME: shouldn't we be adding at the start, rather than the end? */
+		cong_editor_area_container_add_child (CONG_EDITOR_AREA_CONTAINER (line_iter_simple->current_line),
 						      area);
 	}
 
-	line_iter->current_prev_area = area;
+	line_iter_simple->current_prev_area = area;
 }
 
 static void 
@@ -304,11 +179,12 @@ end_line (CongEditorLineManager *line_manager,
 	  CongEditorLineIter *line_iter)
 {
 	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
+	CongEditorLineIterSimple *line_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (line_iter);
 
-	if (line_iter->current_line) {
-		line_iter->current_prev_line = line_iter->current_line;
+	if (line_iter_simple->current_line) {
+		line_iter_simple->current_prev_line = line_iter_simple->current_line;
 	}
-	line_iter->current_line = NULL;
+	line_iter_simple->current_line = NULL;
 }
 
 static gint
@@ -316,6 +192,7 @@ get_line_width (CongEditorLineManager *line_manager,
 		CongEditorLineIter *line_iter)
 {
 	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
+	CongEditorLineIterSimple *line_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (line_iter);
 
 	return HACKED_WIDTH; /* FIXME */
 }
@@ -325,10 +202,11 @@ get_current_indent (CongEditorLineManager *line_manager,
 		    CongEditorLineIter *line_iter)
 {
 	CongEditorLineManagerSimple *simple = CONG_EDITOR_LINE_MANAGER_SIMPLE (line_manager);
+	CongEditorLineIterSimple *line_iter_simple = CONG_EDITOR_LINE_ITER_SIMPLE (line_iter);
 
 #if 1
-	if (line_iter->current_line) {
-		cong_editor_area_line_get_width_used (line_iter->current_line);
+	if (line_iter_simple->current_line) {
+		cong_editor_area_line_get_width_used (line_iter_simple->current_line);
 	} else {
 		return 0;
 	}
@@ -338,16 +216,3 @@ get_current_indent (CongEditorLineManager *line_manager,
 						 HACKED_WIDTH); /* FIXME */
 #endif
 }
-
-
-static PerNodeData*
-get_data_for_node (CongEditorLineManagerSimple *simple,
-		   CongEditorNode *editor_node)
-{	
-	g_return_val_if_fail (IS_CONG_EDITOR_LINE_MANAGER_SIMPLE (simple), NULL);
-	g_return_val_if_fail (IS_CONG_EDITOR_NODE (editor_node), NULL);
-
-	return (PerNodeData*)g_hash_table_lookup (PRIVATE (simple)->hash_of_editor_node_to_data,
-						  editor_node);
-}
-

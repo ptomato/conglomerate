@@ -59,6 +59,9 @@ conglomerate_SOURCES =      \
   cong-editor-area-underline.h \
   cong-editor-area-unknown-tag.h   \
   cong-editor-line-fragments.h \
+  cong-editor-line-iter.h \
+  cong-editor-line-iter-simple.h \
+  cong-editor-line-iter-span-wrapper.h \
   cong-editor-line-manager.h \
   cong-editor-line-manager-simple.h \
   cong-editor-line-manager-span-wrapper.h \
@@ -171,6 +174,9 @@ conglomerate_SOURCES =      \
   cong-editor-area-underline.c \
   cong-editor-area-unknown-tag.c   \
   cong-editor-line-fragments.c \
+  cong-editor-line-iter.c \
+  cong-editor-line-iter-simple.c \
+  cong-editor-line-iter-span-wrapper.c \
   cong-editor-line-manager.c \
   cong-editor-line-manager-simple.c \
   cong-editor-line-manager-span-wrapper.c \
