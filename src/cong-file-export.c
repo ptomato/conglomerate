@@ -35,6 +35,7 @@
 #include "cong-app.h"
 #include "cong-file-selection.h"
 #include "cong-service-exporter.h"
+#include "cong-plugin-manager.h"
 
 typedef struct CongExportDialogDetails
 {
@@ -164,7 +165,6 @@ static void setup_description(CongExportDialogDetails *dialog_details)
 static void on_exporter_selection_changed(GtkOptionMenu *optionmenu,
 					  gpointer user_data)
 {
-	GtkWidget* menu = gtk_option_menu_get_menu(optionmenu);
 	CongExportDialogDetails *details = user_data;
 
 	g_message("on_exporter_selection_changed");
@@ -213,7 +213,6 @@ static GtkWidget *cong_document_export_dialog_new(CongDocument *doc,
 						  GtkWindow *parent_window)
 {
 	xmlDocPtr xml_doc;
-	CongDispspec* ds;
 	GtkWidget *dialog;
 	CongDialogContent *content;
 	CongDialogCategory *general_category;
@@ -226,7 +225,6 @@ static GtkWidget *cong_document_export_dialog_new(CongDocument *doc,
 	g_return_val_if_fail(doc, NULL);
 
 	xml_doc = cong_document_get_xml(doc);
-	ds = cong_document_get_dispspec(doc);
 
 	filename = cong_document_get_filename(doc);
 
@@ -322,8 +320,8 @@ static GtkWidget *cong_document_export_dialog_new(CongDocument *doc,
 
 
 void
-cong_ui_file_export(CongDocument *doc,
-		    GtkWindow *toplevel_window)
+cong_ui_hook_file_export (CongDocument *doc,
+			  GtkWindow *toplevel_window)
 {
 	GtkWidget *dialog;
 	gint result;

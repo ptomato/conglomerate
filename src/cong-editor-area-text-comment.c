@@ -27,6 +27,7 @@
 #include <libgnome/gnome-macros.h>
 #include "cong-font.h"
 #include "cong-eel.h"
+#include "cong-ui-hooks.h"
 
 #define PRIVATE(x) ((x)->private)
 
@@ -54,8 +55,10 @@ calc_requisition (CongEditorArea *area,
 		  int width_hint);
 #endif
 
+#if 0
 static void
 allocate_child_space (CongEditorArea *area);
+#endif
 
 
 /* GObject boilerplate stuff: */

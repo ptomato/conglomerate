@@ -92,8 +92,6 @@ typedef struct CongSpanEditor CongSpanEditor;
 typedef xmlNodePtr CongNodePtr;
 typedef xmlChar CongXMLChar;
 
-const gchar* cong_node_name(CongNodePtr node);
-const gchar* cong_node_xmlns(CongNodePtr node);
 CongNodePtr cong_node_prev(CongNodePtr node);
 CongNodePtr cong_node_next(CongNodePtr node);
 CongNodePtr cong_node_first_child(CongNodePtr node);
@@ -102,21 +100,112 @@ CongNodePtr cong_node_parent(CongNodePtr node);
 enum CongNodeType cong_node_type(CongNodePtr node);
 
 /** 
- * cong_node_is_tag:
+ * cong_node_is_element:
  *
- * Handy method for deciding if you've found a tag with the given name, as opposed to text nodes, comments, tags with other names etc.
- *
- * Misnamed; it should be called cong_node_is_element
+ * Handy method for deciding if you've found a element with the given name, as opposed to text nodes, comments, elements with other names etc.
  *
  * Returns: TRUE if the node is an element with the correct name, FALSE otherwise
  */
 gboolean 
-cong_node_is_tag (CongNodePtr node, 
-		  const gchar *xmlns, 
-		  const gchar *tagname);
+cong_node_is_element (CongNodePtr node, 
+		      const gchar *ns_uri, 
+		      const gchar *local_name);
+
+/** 
+ * cong_node_is_element_from_set:
+ *
+ * @ns_uri: URI of the namespace shared by all the element in the search set
+ * @local_name_array: array of element local names within the namespace
+ * @num_local_names: size of search array
+ * @output_index: pointer to write index of result to, or NULL if you don't care
+ *
+ * Handy method for deciding if you've found a element with one of the given names in the set, as opposed to text nodes, comments, elements with other names etc.
+ *
+ * Returns: TRUE if the node is an element with the correct name, FALSE otherwise
+ */
+gboolean 
+cong_node_is_element_from_set (CongNodePtr node, 
+			       const gchar *ns_uri,
+			       const gchar **local_name_array,
+			       guint num_local_names,
+			       guint *output_index);
+
+xmlNsPtr
+cong_node_get_ns (CongNodePtr node);
 
 const gchar*
-cong_node_get_xmlns (CongNodePtr node);
+cong_node_get_ns_uri (CongNodePtr node);
+
+const gchar*
+cong_node_get_ns_prefix (CongNodePtr node);
+
+const gchar*
+cong_node_get_local_name (CongNodePtr node);
+
+/**
+ * cong_node_get_qualified_name:
+ *
+ * @node: an XML element
+ *
+ * Builds a string of the form "ns_prefix:local_name" for an element inside a namespace
+ * or simply "local_name" for the rest.
+ *
+ * Returns: a freshly-allocated string which the caller must g_free
+ *
+ */
+gchar*
+cong_node_get_qualified_name (CongNodePtr node);
+
+/*
+ * cong_node_get_ns_for_uri:
+ *
+ * @node:  the context in which to look for the prefix
+ * @ns_uri: the namespace URI
+ *
+ * Lookup a namespace URI; find the appropriate xmlNsPtr defined, 
+ * or NULL if not found.
+ *
+ * Returns:  the #xmlNsPtr if found, or NULL if not found.
+ *
+ */
+xmlNsPtr
+cong_node_get_ns_for_uri (CongNodePtr node, 
+			  const gchar *ns_uri);
+
+/*
+ * cong_node_get_ns_for_prefix:
+ *
+ * @node:  the context in which to look for the prefix
+ * @prefix: the prefix
+ *
+ * Lookup a namespace prefix; find the appropriate xmlNsPtr defined
+ * for that prefix, or NULL if not found.
+ *
+ * Returns:  the #xmlNsPtr if found, or NULL if not found.
+ *
+ */
+xmlNsPtr
+cong_node_get_ns_for_prefix (CongNodePtr node, 
+			     const gchar *prefix);
+
+/**
+ * conf_node_get_attr_ns:
+ *
+ * @node: an XML element
+ * @qualified_attr_name: An qualified attribute name with an optional namespace prefix.
+ * @output_attr_name: Stores the location of the local_name in @qualified_name.
+ *
+ * Splits the qualified name into the prefix and the local name,
+ * and searches the namespace of the prefix. All namespaces of the
+ * @node are searched. If no prefix is availible NULL is returned.
+ * see: Namespaces in XML / 5.3 Uniqueness of Attributes.
+ *
+ * Returns: A pointer to the namespace, can be NULL.
+ */
+xmlNsPtr
+cong_node_get_attr_ns(CongNodePtr node, 
+		      const char *qualified_name, 
+		      const char **output_name);
 
 /**
  * cong_node_get_path:
@@ -137,8 +226,40 @@ gchar *cong_node_debug_description(CongNodePtr node);
 const gchar *cong_node_type_description(enum CongNodeType node_type);
 
 /* Methods for accessing attribute values: */
-CongXMLChar* cong_node_get_attribute(CongNodePtr node, const CongXMLChar* attribute_name);
-/* caller responsible for freeing; will be NULL if not found in node and no default in DTD available */
+
+/**
+ * cong_node_get_attribute
+ *
+ * @node: XML node which has the attribute.
+ * @ns_ptr: Attribute's namespace, can be NULL
+ *          (if it is the default namespace it MUST NOT be NULL but the coresponding
+ *          xmlNs).
+ * @local_attribute_name: Name of the attribute, without namespace prefix.
+ *
+ * Returns the content of the attribute specified through @local_attribute_name and
+ * @ns_ptr.
+ *
+ * Returns: The content of the attribute, to be freed by the caller.
+ *          Will be NULL if not found in node and no default in DTD available
+ */
+CongXMLChar* cong_node_get_attribute(CongNodePtr node,
+				     xmlNs* ns_ptr, 
+				     const CongXMLChar* local_attribute_name);
+/**
+ * cong_node_has_attribute
+ *
+ * @node: XML node which has the attribute.
+ * @ns_ptr: Attribute's namespace, can be NULL
+ *             (if it is the default namespace it MUST NOT be NULL but the coresponding
+ *              xmlNs).
+ * @local_attribute_name: Name of the attribute, without namespace prefix.
+ *
+ * Returns: Returns TRUE if the attribute specified through @local_attribute_name and
+ *          @ns_ptr is found in the node or as default in the DTD.
+ */
+gboolean cong_node_has_attribute(CongNodePtr node,
+				 xmlNs* ns_ptr, 
+				 const CongXMLChar* local_attribute_name);
 
 /* Selftest methods: */
 void cong_node_self_test(CongNodePtr node);
@@ -166,16 +287,29 @@ gboolean cong_node_should_recurse(CongNodePtr node);
 #define CONG_NODE_SELF_TEST(node) ((void)0)
 #endif
 
-int cong_node_get_length(CongNodePtr node); /* get length of content; does not include the zero terminator (to correspond to the TTREE size field) */
+int 
+cong_node_get_length (CongNodePtr node); /* get length of content; does not include the zero terminator (to correspond to the TTREE size field) */
 
 /* Construction: */
-CongNodePtr cong_node_new_element(const gchar* xmlns, const gchar *tagname, CongDocument *doc);
-CongNodePtr cong_node_new_element_from_dispspec(CongDispspecElement *element, CongDocument *doc);
-CongNodePtr cong_node_new_text(const gchar *text, CongDocument *doc);
-CongNodePtr cong_node_new_text_len(const gchar *text, int len, CongDocument *doc); /* FIXME: what character type ? */
+CongNodePtr
+cong_node_new_element (xmlNsPtr ns,
+		       const gchar *tagname, 
+		       CongDocument *doc);
+CongNodePtr 
+cong_node_new_element_from_dispspec (CongDispspecElement *element,
+				     CongDocument *doc);
+
+CongNodePtr
+cong_node_new_text (const gchar *text, 
+		    CongDocument *doc);
+CongNodePtr 
+cong_node_new_text_len (const gchar *text, 
+			int len, 
+			CongDocument *doc); /* FIXME: what character type ? */
 
 /* Destruction: (the node has to have been unlinked from the tree already): */
-void cong_node_free(CongNodePtr node);
+void 
+cong_node_free (CongNodePtr node);
 
 
 /**
@@ -236,25 +370,30 @@ void cong_node_private_add_after(CongNodePtr node, CongNodePtr older_sibling);
 void cong_node_private_add_before(CongNodePtr node, CongNodePtr younger_sibling);
 void cong_node_private_set_parent(CongNodePtr node, CongNodePtr adoptive_parent); /* added to end of child list */
 void cong_node_private_set_text(CongNodePtr node, const xmlChar *new_content);
-void cong_node_private_set_attribute(CongNodePtr node, const xmlChar *name, const xmlChar *value);
-void cong_node_private_remove_attribute(CongNodePtr node, const xmlChar *name);
+void cong_node_private_set_attribute(CongNodePtr node,
+				     xmlNs *ns_ptr, 
+				     const xmlChar *local_attribute_name,
+				     const xmlChar *value);
+void cong_node_private_remove_attribute(CongNodePtr node,
+					xmlNs *ns_ptr, 
+					const xmlChar *local_attribute_name);
 
 /* Utilities: */
 
 /**
  * cong_node_get_child_by_name:
  * @node:  the parent node
- * @xmlns: namespace to search for, or NULL
- * @tagname: the name of the element to search for
+ * @ns_uri: URI of namespace to search for, or NULL
+ * @tagname: the local name within any namespace of the element to search for
  *
  * This function searches the children of @node looking for elements of the given name.
  *
- * Returns: the first child element matching the given name, or NULL of there are none
+ * Returns: the first child element matching the given name, or NULL if there are none
  */
 CongNodePtr 
 cong_node_get_child_by_name (CongNodePtr node, 
-			     const gchar *xmlns, 
-			     const gchar *tagname);
+			     const gchar *ns_uri, 
+			     const gchar *local_name);
 
 CongNodePtr 
 cong_node_get_first_text_node_descendant (CongNodePtr node);

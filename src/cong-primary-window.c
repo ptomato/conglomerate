@@ -39,6 +39,7 @@
 #include "cong-command-history.h"
 #include "cong-selection.h"
 #include "cong-range.h"
+#include "cong-ui-hooks.h"
 
 #if 0
 #include <libgnome/libgnome.h>
@@ -605,7 +606,7 @@ cong_primary_window_add_doc (CongPrimaryWindow *primary_window, CongDocument *do
 void cong_primary_window_make_gui(CongPrimaryWindow *primary_window)
 {
 	GtkItemFactory *item_factory;
-	gchar *title, *filename;
+	gchar *title;
 
 	g_assert(primary_window);
 

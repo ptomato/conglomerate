@@ -518,9 +518,10 @@ cong_ucs4_concat (gunichar *ucs4_input_1,
 GList*
 merge_lines (GList *list)
 {
+#if 0	
 	GList *iter;
 	GList *next;
-#if 0	
+
 	for (iter=list;iter;iter=next) {
 		gunichar *string = iter->data;
 
@@ -1118,26 +1119,31 @@ GtkWidget* docbook_orderedlist_properties_factory_method(CongServiceNodeProperty
 		cong_bind_radio_button (GTK_RADIO_BUTTON (glade_xml_get_widget(xml, "arabic")),
 					doc,
 					node,
+					NULL,
 					"numeration",
 					"arabic");
 		cong_bind_radio_button (GTK_RADIO_BUTTON (glade_xml_get_widget(xml, "loweralpha")),
 					doc,
 					node,
+					NULL,
 					"numeration",
 					"loweralpha");
 		cong_bind_radio_button (GTK_RADIO_BUTTON (glade_xml_get_widget(xml, "lowerroman")),
 					doc,
 					node,
+					NULL,
 					"numeration",
 					"lowerroman");
 		cong_bind_radio_button (GTK_RADIO_BUTTON (glade_xml_get_widget(xml, "upperalpha")),
 					doc,
 					node,
+					NULL,
 					"numeration",
 					"upperalpha");
 		cong_bind_radio_button (GTK_RADIO_BUTTON (glade_xml_get_widget(xml, "upperroman")),
 					doc,
 					node,
+					NULL,
 					"numeration",
 					"upperroman");
 		
@@ -1145,18 +1151,21 @@ GtkWidget* docbook_orderedlist_properties_factory_method(CongServiceNodeProperty
 		cong_bind_check_button (GTK_CHECK_BUTTON (glade_xml_get_widget(xml, "inheritnum")),
 					doc,
 					node,
+					NULL,
 					"inheritnum",
 					"ignore",
 					"inherit");
 		cong_bind_check_button (GTK_CHECK_BUTTON (glade_xml_get_widget(xml, "spacing")),
 					doc,
 					node,
+					NULL,
 					"spacing",
 					"normal",
 					"compact");
 		cong_bind_check_button (GTK_CHECK_BUTTON (glade_xml_get_widget(xml, "continuation")),
 					doc,
 					node,
+					NULL,
 					"continuation",
 					"restart",
 					"continues");
@@ -1173,11 +1182,9 @@ GtkWidget* docbook_orderedlist_properties_factory_method(CongServiceNodeProperty
 }
 
 static void
-on_test_link_pressed (GtkButton *button,
-		      gpointer user_data)
+open_ulink_in_browser (CongNodePtr node)
 {
-	CongNodePtr node = user_data;
-	gchar *url = cong_node_get_attribute (node, "url");
+	gchar *url = cong_node_get_attribute (node, NULL, "url");
 
 	if (url) {	
 		/* FIXME: should we have some error handling? */
@@ -1186,6 +1193,15 @@ on_test_link_pressed (GtkButton *button,
 	}
 
 	g_free (url);
+}
+
+static void
+on_test_link_pressed (GtkButton *button,
+		      gpointer user_data)
+{
+	CongNodePtr node = user_data;
+
+	open_ulink_in_browser (node);
 }
 
 GtkWidget* docbook_ulink_properties_factory_method(CongServiceNodePropertyDialog *custom_property_dialog, CongDocument *doc, CongNodePtr node)
@@ -1231,72 +1247,111 @@ GtkWidget* docbook_ulink_properties_factory_method(CongServiceNodePropertyDialog
 	return glade_xml_get_widget(xml, "common_dialog");
 }
 
-gboolean 
+static enum NodeToolFilterResult 
+node_filter_browse_url (CongServiceNodeTool *node_tool, 
+			CongDocument *doc, 
+			CongNodePtr node,
+			gpointer user_data)
+{
+	if (cong_node_is_element (node,
+				  NULL,
+				  "ulink")) {
+		gchar *url = cong_node_get_attribute (node, NULL, "url");
+		
+		if (url) {
+			g_free (url);
+
+			return NODE_TOOL_AVAILABLE;
+		} else {
+			return NODE_TOOL_INSENSITIVE;
+		}
+	} else {
+		return NODE_TOOL_HIDDEN;
+	}
+}
+
+static void 
+action_callback_browse_url (CongServiceNodeTool *tool, 
+			    CongDocument *doc, 
+			    CongNodePtr node,
+			    GtkWindow *parent_window,
+			    gpointer user_data)
+{
+	open_ulink_in_browser (node);
+}
+
+static enum NodeToolFilterResult
 node_filter_promote (CongServiceNodeTool *node_tool, 
 		     CongDocument *doc, 
 		     CongNodePtr node,
 		     gpointer user_data)
 {
 	if (cong_util_is_docbook(doc)) {
-		if (cong_node_is_tag(node, NULL, "sect2")) {
-			return TRUE;
-		} else if (cong_node_is_tag(node, NULL, "sect3")) {
-			return TRUE;
-		} else if (cong_node_is_tag(node, NULL, "sect4")) {
-			return TRUE;
-		} else if (cong_node_is_tag(node, NULL, "sect5")) {
-			return TRUE;
+		if (cong_node_is_element(node, NULL, "sect2")) {
+			return NODE_TOOL_AVAILABLE;
+		} else if (cong_node_is_element(node, NULL, "sect3")) {
+			return NODE_TOOL_AVAILABLE;
+		} else if (cong_node_is_element(node, NULL, "sect4")) {
+			return NODE_TOOL_AVAILABLE;
+		} else if (cong_node_is_element(node, NULL, "sect5")) {
+			return NODE_TOOL_AVAILABLE;
 		}
 
 		/* FIXME: handle <sect> tags */
 	}
 
-	return FALSE;
+	return NODE_TOOL_HIDDEN;
 }
 
-void
+static void
 action_callback_promote (CongServiceNodeTool *tool, 
-			 CongPrimaryWindow *primary_window, 
+			 CongDocument *doc, 
 			 CongNodePtr node,
+			 GtkWindow *parent_window,
 			 gpointer user_data)
 {
 	g_message ("action_callback_promote");
 
 	/* Unwritten */
+	CONG_DO_UNIMPLEMENTED_DIALOG (parent_window,
+				      "promote DocBook");
 }
 
-gboolean 
+static enum NodeToolFilterResult
 node_filter_demote (CongServiceNodeTool *node_tool, 
 		    CongDocument *doc, 
 		    CongNodePtr node,
 		    gpointer user_data)
 {
 	if (cong_util_is_docbook(doc)) {
-		if (cong_node_is_tag(node, NULL, "sect1")) {
-			return TRUE;
-		} else if (cong_node_is_tag(node, NULL, "sect2")) {
-			return TRUE;
-		} else if (cong_node_is_tag(node, NULL, "sect3")) {
-			return TRUE;
-		} else if (cong_node_is_tag(node, NULL, "sect4")) {
-			return TRUE;
+		if (cong_node_is_element(node, NULL, "sect1")) {
+			return NODE_TOOL_AVAILABLE;
+		} else if (cong_node_is_element(node, NULL, "sect2")) {
+			return NODE_TOOL_AVAILABLE;
+		} else if (cong_node_is_element(node, NULL, "sect3")) {
+			return NODE_TOOL_AVAILABLE;
+		} else if (cong_node_is_element(node, NULL, "sect4")) {
+			return NODE_TOOL_AVAILABLE;
 		}
 
 		/* FIXME: handle <sect> tags */
 	}
 
-	return FALSE;
+	return NODE_TOOL_HIDDEN;
 }
 
-void
+static void
 action_callback_demote (CongServiceNodeTool *tool, 
-			CongPrimaryWindow *primary_window, 
+			CongDocument *doc, 
 			CongNodePtr node,
+			GtkWindow *parent_window,
 			gpointer user_data)
 {
 	g_message ("action_callback_demote");
 
 	/* Unwritten */
+	CONG_DO_UNIMPLEMENTED_DIALOG (parent_window,
+				      "demote DocBook");
 }
 
 
@@ -1402,7 +1457,18 @@ gboolean plugin_docbook_plugin_register(CongPlugin *plugin)
 								 docbook_ulink_properties_factory_method,
 								 NULL);
 
-#if 0
+	cong_plugin_register_node_tool (plugin,
+					_("Open Link in Browser"), 
+					"",
+					"docbook-browse-to-url",
+					_("Open Link in Browser"),
+					NULL,
+					NULL,
+					node_filter_browse_url,
+					action_callback_browse_url,
+					NULL);
+
+#if 1
 	cong_plugin_register_node_tool (plugin,
 					_("Promote Section"), 
 					_("Promotes a DocBook section to a higher organisational level within the document"),

@@ -105,13 +105,18 @@ cong_dispspec_get_icon(const CongDispspec *ds);
 
 /* Getting at elements within a dispspec */
 CongDispspecElement*
-cong_dispspec_lookup_element(const CongDispspec *ds, const gchar* xmlns, const gchar* tagname);
+cong_dispspec_lookup_element (const CongDispspec *ds, 
+			      const gchar* ns_uri, 
+			      const gchar* local_name);
 
 CongDispspecElement*
-cong_dispspec_lookup_node(const CongDispspec *ds, CongNodePtr node);
+cong_dispspec_lookup_node (const CongDispspec *ds, 
+			   CongNodePtr node);
 
 enum CongElementType
-cong_dispspec_type(CongDispspec *ds, const gchar* xmlns, const gchar* tagname);
+cong_dispspec_type (CongDispspec *ds, 
+		    const gchar* ns_uri, 
+		    const gchar* local_name);
 
 CongDispspecElement*
 cong_dispspec_get_first_element(CongDispspec *ds);
@@ -141,10 +146,10 @@ GdkGC *cong_dispspec_gc_get(CongDispspec *ds, CongNodePtr x, int tog);
 const char *cong_dispspec_name_get(CongDispspec *ds, CongNodePtr x);
 
 #if 1
-gboolean cong_dispspec_element_structural(CongDispspec *ds, const gchar *xmlns, const gchar *name);
-gboolean cong_dispspec_element_collapse(CongDispspec *ds, const gchar *xmlns, const gchar *name);
-gboolean cong_dispspec_element_span(CongDispspec *ds, const gchar *xmlns, const gchar *name);
-gboolean cong_dispspec_element_insert(CongDispspec *ds, const gchar *xmlns, const gchar *name);
+gboolean cong_dispspec_element_structural(CongDispspec *ds, const gchar *ns_uri, const gchar *local_name);
+gboolean cong_dispspec_element_collapse(CongDispspec *ds, const gchar *ns_uri, const gchar *local_name);
+gboolean cong_dispspec_element_span(CongDispspec *ds, const gchar *ns_uri, const gchar *local_name);
+gboolean cong_dispspec_element_insert(CongDispspec *ds, const gchar *ns_uri, const gchar *local_name);
 #endif
 
 
@@ -164,6 +169,21 @@ cong_external_document_model_get_system_id (const CongExternalDocumentModel* mod
 
 xmlNodePtr
 cong_dispspec_get_template(const CongDispspec *ds);
+
+/*
+ * cong_dispspec_calculate_coverage:
+ *
+ * @ds:  The #CongDispspec to use
+ * @xml_doc:  An xml document to be analysed
+ *
+ * Utility function for choosing between different dispspecs to use with a document.
+ *
+ * Returns:  The fraction of the element nodes in the document which are covered by the dispspec (between 0 and 1)
+ *
+ */
+gdouble
+cong_dispspec_calculate_coverage (const CongDispspec *ds,
+				  xmlDocPtr xml_doc);
 
 G_END_DECLS
 

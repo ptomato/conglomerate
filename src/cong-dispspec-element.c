@@ -24,6 +24,7 @@
 #include "cong-dtd.h"
 #include "cong-util.h"
 #include "cong-enum-mapping.h"
+#include "cong-ui-hooks.h"
 
 #if 0
 #define DS_DEBUG_MSG1(x)    g_message((x))
@@ -121,6 +122,7 @@ gxx_callback_construct_dispspec_element(void)
 
 /* Random other stuff: */
 #if NEW_LOOK
+#if 0
 /* Hackish colour calculations in RGB space (ugh!) */
 static void generate_col(GdkColor *dst, const GdkColor *src, float bodge_factor)
 {
@@ -128,6 +130,7 @@ static void generate_col(GdkColor *dst, const GdkColor *src, float bodge_factor)
 	dst->green = src->green / bodge_factor;
 	dst->blue = src->blue / bodge_factor;
 }
+#endif
 
 
 unsigned int hacked_cols[3][CONG_DISPSPEC_GC_USAGE_NUM] =
@@ -225,31 +228,31 @@ static void cong_dispspec_element_init_col(CongDispspecElement* element, unsigne
 
 /* Construction  */
 CongDispspecElement*
-cong_dispspec_element_new (const gchar* xmlns, 
-			   const gchar* tagname, 
+cong_dispspec_element_new (const gchar* ns_uri, 
+			   const gchar* local_name, 
 			   enum CongElementType type,
 			   gboolean autogenerate_username)
 {
 	CongDispspecElement* element;
 
-	g_return_val_if_fail(tagname,NULL);
+	g_return_val_if_fail (local_name, NULL);
 	
-	g_message("cong_dispspec_element_new (\"%s\",\"%s\",)", xmlns, tagname);
+	g_message("cong_dispspec_element_new (\"%s\",\"%s\",)", ns_uri, local_name);
 
 	/* Use shared constructor code: */
 	element = gxx_callback_construct_dispspec_element();
 
-	if (xmlns) {
-		element->xmlns = g_strdup(xmlns);
+	if (ns_uri) {
+		element->ns_uri = g_strdup(ns_uri);
 	}
-	element->tagname = g_strdup(tagname);	
+	element->local_name = g_strdup(local_name);
 
 	if (autogenerate_username) {
 		/* Try to prettify the username if possible; 
 		   FIXME: which language should this go into? */
 		g_hash_table_insert (element->hash_of_language_to_user_name,
 				     "C",
-				     cong_eel_prettify_xml_name_with_header_capitalisation(tagname));
+				     cong_eel_prettify_xml_name_with_header_capitalisation (local_name));
 	} else {
 		/* username remains unset */
 	}
@@ -277,11 +280,11 @@ cong_dispspec_element_destroy (CongDispspecElement *element)
 	g_return_if_fail (element);
 
 	/* FIXME: could autogenerate this code: */
-	if (element->xmlns) {
-		g_free (element->xmlns);
+	if (element->ns_uri) {
+		g_free (element->ns_uri);
 	}
-	if (element->tagname) {
-		g_free (element->tagname);
+	if (element->local_name) {
+		g_free (element->local_name);
 	}
 	g_hash_table_destroy (element->hash_of_language_to_user_name);
 	g_hash_table_destroy (element->hash_of_language_to_short_desc);
@@ -303,11 +306,11 @@ cong_dispspec_element_destroy (CongDispspecElement *element)
 	CongDispspecElementHeaderInfo *header_info;
 #endif
 
-	if (element->editor_plugin_id) {
-		g_free (element->editor_plugin_id);
+	if (element->editor_service_id) {
+		g_free (element->editor_service_id);
 	}
-	if (element->property_dialog_plugin_id) {
-		g_free (element->property_dialog_plugin_id);
+	if (element->property_dialog_service_id) {
+		g_free (element->property_dialog_service_id);
 	}
 
 	g_free (element);
@@ -316,19 +319,19 @@ cong_dispspec_element_destroy (CongDispspecElement *element)
 
 
 const gchar*
-cong_dispspec_element_get_xmlns(CongDispspecElement *element)
+cong_dispspec_element_get_ns_uri (CongDispspecElement *element)
 {
-	g_return_val_if_fail(element, NULL);
+	g_return_val_if_fail (element, NULL);
 
-	return element->xmlns;
+	return element->ns_uri;
 }
 
 const gchar*
-cong_dispspec_element_tagname(CongDispspecElement* element)
+cong_dispspec_element_get_local_name(CongDispspecElement* element)
 {
-	g_return_val_if_fail(element, NULL);
+	g_return_val_if_fail (element, NULL);
 
-	return element->tagname;
+	return element->local_name;
 }
 
 const gchar*
@@ -342,7 +345,7 @@ cong_dispspec_element_username(CongDispspecElement* element)
 	if (result) {
 		return result;
 	} else {
-		return element->tagname;
+		return element->local_name;
 	}
 }
 
@@ -632,19 +635,19 @@ cong_dispspec_element_get_font(CongDispspecElement *element, enum CongFontRole r
 }
 
 const gchar*
-cong_dispspec_element_get_editor_plugin_id(CongDispspecElement *element)
+cong_dispspec_element_get_editor_service_id(CongDispspecElement *element)
 {
 	g_return_val_if_fail(element, NULL);
 
-	return element->editor_plugin_id;
+	return element->editor_service_id;
 }
 
 const gchar*
-cong_dispspec_element_get_property_dialog_plugin_id(CongDispspecElement *element)
+cong_dispspec_element_get_property_dialog_service_id(CongDispspecElement *element)
 {
 	g_return_val_if_fail(element, NULL);
 
-	return element->property_dialog_plugin_id;
+	return element->property_dialog_service_id;
 }
 
 CongDispspecElement*
@@ -652,17 +655,17 @@ cong_dispspec_element_from_xml (xmlNodePtr xml_element)
 {
 	CongDispspecElement* element;
 
-	g_return_val_if_fail (cong_node_is_tag (xml_element, NULL, "element"), NULL);
+	g_return_val_if_fail (cong_node_is_element (xml_element, NULL, "element"), NULL);
 
 	DS_DEBUG_MSG1("got xml element\n");
 
 	element = gxx_generated_object_from_xml_tree_fn_dispspec_element (xml_element);
 
 	if (element->type == CONG_ELEMENT_TYPE_PLUGIN) {
-		xmlChar* id = xmlGetProp(xml_element,"plugin-id");
+		xmlChar* id = xmlGetProp(xml_element,"service-id");
 		
 		if (id) {
-			element->editor_plugin_id = g_strdup(id);
+			element->editor_service_id = g_strdup(id);
 			g_free (id);
 		}
 	}
@@ -688,22 +691,22 @@ cong_dispspec_element_from_xml (xmlNodePtr xml_element)
   			if (0==strcmp(child->name,"property-dialog")) {
   				DS_DEBUG_MSG1("got property-dialog\n");
 				
-				element->property_dialog_plugin_id = cong_node_get_attribute(child, "plugin-id");
+				element->property_dialog_service_id = cong_node_get_attribute(child, NULL, "service-id");
   			}
 
 			/* Handle "key-value-list": */
-			if ( cong_node_is_tag (child, NULL, "key-value-list")) {
+			if ( cong_node_is_element (child, NULL, "key-value-list")) {
 				xmlNodePtr key_value_iter;
 				
   				DS_DEBUG_MSG1("got key-value-list\n");
 				
 				for (key_value_iter = child->children; key_value_iter; key_value_iter=key_value_iter->next) {
-					if (cong_node_is_tag (key_value_iter, NULL, "key-value-pair")) {
+					if (cong_node_is_element (key_value_iter, NULL, "key-value-pair")) {
 						DS_DEBUG_MSG1("got key-value-pair\n");
 						
 						g_hash_table_insert (element->key_value_hash,
-								     cong_node_get_attribute (key_value_iter, "key"),
-								     cong_node_get_attribute (key_value_iter, "value"));
+								     cong_node_get_attribute (key_value_iter, NULL, "key"),
+								     cong_node_get_attribute (key_value_iter, NULL, "value"));
 					}
 				}
 		            	
@@ -724,7 +727,7 @@ cong_dispspec_element_from_xml (xmlNodePtr xml_element)
 		unsigned int col;
 
 		if (col_text) {
-			col = get_rgb_hex(col_text);
+			col = cong_util_get_int_from_rgb_hex (col_text);
 		} else {
 			col = 0x00ffffff;  /* White is default */
 		}
@@ -758,8 +761,8 @@ cong_dispspec_element_to_xml (const CongDispspecElement *element,
 	GdkGC* gc;
 #endif
 
-	gchar *editor_plugin_id;
-	gchar *property_dialog_plugin_id;
+	gchar *editor_service_id;
+	gchar *property_dialog_service_id;
 #endif
 
 	return xml_node;

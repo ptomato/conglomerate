@@ -88,11 +88,13 @@ struct CongDocumentClass
 
 	void (*node_set_attribute) (CongDocument *doc, 
 				    CongNodePtr node, 
+				    xmlNs *ns_ptr,
 				    const xmlChar *name, 
 				    const xmlChar *value);
 
 	void (*node_remove_attribute) (CongDocument *doc, 
 				       CongNodePtr node, 
+				       xmlNs *ns_ptr,
 				       const xmlChar *name);
 	
 	void (*selection_change) (CongDocument *doc);
@@ -193,8 +195,23 @@ const CongXMLChar*
 cong_document_get_dtd_public_identifier(CongDocument *doc);
 /* NULL if not present */
 
+/**
+ * cong_document_get_xml_ns:
+ * @doc:  The #CongDocument of interest
+ * @ns_uri:  The URI of the namespace
+ *
+ * Locates a namespace by URI within a CongDocument
+ *
+ * Returns: the #xmlNsPtr for the namespace, or NULL if not found
+ */
+xmlNsPtr
+cong_document_get_xml_ns (CongDocument *doc, 
+			  const gchar* ns_uri);
+
+#if 0
 xmlNsPtr
 cong_document_get_nsptr (CongDocument *doc, const gchar* xmlns);
+#endif
 
 void
 cong_document_save(CongDocument *doc, 
@@ -324,8 +341,8 @@ void cong_document_private_node_add_before(CongDocument *doc, CongNodePtr node, 
 void cong_document_private_node_set_parent(CongDocument *doc, CongNodePtr node, CongNodePtr adoptive_parent); /* added to end of child list */
 void cong_document_private_node_set_text(CongDocument *doc, CongNodePtr node, const xmlChar *new_content);
 void cong_document_private_tag_remove(CongDocument *doc, CongNodePtr x);
-void cong_document_private_node_set_attribute(CongDocument *doc, CongNodePtr node, const xmlChar *name, const xmlChar *value);
-void cong_document_private_node_remove_attribute(CongDocument *doc, CongNodePtr node, const xmlChar *name);
+void cong_document_private_node_set_attribute(CongDocument *doc, CongNodePtr node,  xmlNs *ns_ptr, const xmlChar *name, const xmlChar *value);
+void cong_document_private_node_remove_attribute(CongDocument *doc, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name);
 void cong_document_private_on_selection_change(CongDocument *doc);
 void cong_document_private_on_cursor_change(CongDocument *doc);
 void 

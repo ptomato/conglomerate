@@ -35,6 +35,7 @@
 #include "cong-app.h"
 #include "cong-file-selection.h"
 #include "cong-service-print-method.h"
+#include "cong-plugin-manager.h"
 
 #if ENABLE_PRINTING
 #include <libgnomeprint/gnome-print-job.h>
@@ -86,6 +87,7 @@ static void add_print_method_to_menu(CongServicePrintMethod *print_method, gpoin
 	}
 }
 
+#if 0
 static void monitor_print_method(CongPrintDialogDetails *dialog_details)
 {
 	CongServicePrintMethod* print_method = get_selected_print_method(dialog_details);
@@ -120,12 +122,15 @@ static void monitor_print_method(CongPrintDialogDetails *dialog_details)
 	}
 #endif
 }
+#endif
 
 static void on_print_method_selection_changed(GtkOptionMenu *optionmenu,
 					  gpointer user_data)
 {
+#if 0
 	GtkWidget* menu = gtk_option_menu_get_menu(optionmenu);
 	CongPrintDialogDetails *details = user_data;
+#endif
 
 	g_message("on_print_method_selection_changed");
 
@@ -175,7 +180,6 @@ cong_document_print_dialog_new (CongDocument *doc,
 				GtkWindow *parent_window)
 {
 	xmlDocPtr xml_doc;
-	CongDispspec* ds;
 	GtkWidget *dialog;
 	CongDialogContent *content;
 	CongDialogCategory *general_category;
@@ -187,7 +191,6 @@ cong_document_print_dialog_new (CongDocument *doc,
 	g_return_val_if_fail(doc, NULL);
 
 	xml_doc = cong_document_get_xml(doc);
-	ds = cong_document_get_dispspec(doc);
 
 	filename = cong_document_get_filename(doc);
 
@@ -341,8 +344,8 @@ do_ui_file_print(CongDocument *doc,
 
 
 void
-cong_ui_file_print_preview(CongDocument *doc,
-			   GtkWindow *toplevel_window)
+cong_ui_hook_file_print_preview (CongDocument *doc,
+				 GtkWindow *toplevel_window)
 {
 	do_ui_file_print(doc,
 			 toplevel_window,
@@ -350,8 +353,8 @@ cong_ui_file_print_preview(CongDocument *doc,
 }
 
 void
-cong_ui_file_print(CongDocument *doc,
-		    GtkWindow *toplevel_window)
+cong_ui_hook_file_print (CongDocument *doc,
+			 GtkWindow *toplevel_window)
 {
 	do_ui_file_print(doc,
 			 toplevel_window,

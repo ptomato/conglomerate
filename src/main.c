@@ -7,6 +7,8 @@
 #include "cong-app.h"
 #include "cong-primary-window.h"
 
+#include "cong-ui-hooks.h"
+
 /*
 #define AUTOGENERATE_DS
 */
@@ -17,10 +19,12 @@ void status_update()
 }
 
 
+#if 0
 static gint popup_deactivate(GtkWidget *widget, GdkEvent *event)
 {
 	return(TRUE);
 }
+#endif
 
 int main( int   argc,
 	  char *argv[] )

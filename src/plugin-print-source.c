@@ -54,10 +54,12 @@ source_print_method_action_callback (CongServicePrintMethod *print_method,
 				     gpointer user_data, 
 				     GtkWindow *toplevel_window)
 {
+#if 0
 	GtkWidget *progress_checklist_dialog;
 	CongProgressChecklist *progress_checklist;
 	xmlDocPtr fo_doc;
-
+#endif
+	
 	g_message("source_print_method_action_callback");
 
 	/* I'd like to use GtkSourceView for printing.  

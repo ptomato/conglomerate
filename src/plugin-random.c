@@ -336,11 +336,12 @@ populate_element_from_content (RandomCreationInfo *rci,
 			       int depth,
 			       xmlElementContentPtr content)
 {
+	gint i;
+	guint count;
+
 	g_assert (content);
 
-	guint count = generate_count_for_ocur (rci,
-					       content->ocur);
-	gint i;
+	count = generate_count_for_ocur (rci, content->ocur);
 	
 #if 0
 	{
@@ -508,9 +509,10 @@ populate_element (RandomCreationInfo *rci,
 										  num_elements));
 			g_assert (ds_element);
 
+			g_assert (NULL==cong_dispspec_element_get_ns_uri (ds_element));
 			child_node = xmlNewDocNode (xml_doc,
 						    NULL, /* fixme: namespaces! */
-						    cong_dispspec_element_tagname (ds_element),
+						    cong_dispspec_element_get_local_name (ds_element),
 						    "");
 			xmlAddChild (xml_node,
 				     child_node);
@@ -538,13 +540,16 @@ make_random_doc (RandomCreationInfo *rci)
 	ds_element_root = cong_dispspec_get_first_element (rci->dispspec); /* FIXME */
 	g_assert (ds_element_root);
 
-	root_element = cong_dispspec_element_tagname (ds_element_root);
+	root_element = cong_dispspec_element_get_local_name (ds_element_root);
 	g_assert (root_element);
 
 	dtd_model = cong_dispspec_get_external_document_model (rci->dispspec,
 							       CONG_DOCUMENT_MODE_TYPE_DTD);
 
 	xml_doc = xmlNewDoc ("1.0");
+
+	/* FIXME: support namespaces! */
+	g_assert (NULL==cong_dispspec_element_get_ns_uri (ds_element_root));
 	root_node = xmlNewDocNode (xml_doc,
 				   NULL, /* xmlNsPtr ns, */
 				   root_element,

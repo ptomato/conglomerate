@@ -81,7 +81,7 @@ cong_editor_line_manager_construct (CongEditorLineManager *line_manager,
 CongEditorWidget3*
 cong_editor_line_manager_get_widget (CongEditorLineManager *line_manager)
 {
-	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_val_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager), NULL);
 
 	return PRIVATE (line_manager)->widget;
 }
@@ -242,7 +242,7 @@ gint
 cong_editor_line_manager_get_current_indent (CongEditorLineManager *line_manager,
 					     CongEditorLineIter *line_iter)
 {
-	g_return_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager));
+	g_return_val_if_fail (IS_CONG_EDITOR_LINE_MANAGER (line_manager), 0);
 	g_return_val_if_fail (line_iter, 0);
 
 	return CONG_EEL_CALL_METHOD_WITH_RETURN_VALUE (CONG_EDITOR_LINE_MANAGER_CLASS,

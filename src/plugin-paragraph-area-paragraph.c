@@ -32,6 +32,8 @@
 #include "cong-editor-area-composer.h"
 #include "cong-editor-area-bin.h"
 
+#include "cong-ui-hooks.h"
+
 #define PRIVATE(x) ((x)->private)
 
 struct CongEditorAreaParagraphDetails
@@ -54,7 +56,6 @@ static void
 cong_editor_area_paragraph_class_init (CongEditorAreaParagraphClass *klass)
 {
 	CongEditorAreaClass *area_klass = CONG_EDITOR_AREA_CLASS(klass);
-	CongEditorAreaContainerClass *container_klass = CONG_EDITOR_AREA_CONTAINER_CLASS(klass);
 
 	area_klass->render_self = render_self;
 

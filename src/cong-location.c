@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "cong-document.h"
 #include "cong-dispspec.h"
+#include "cong-dispspec-element.h"
 #include "cong-error-dialog.h"
 #include "cong-util.h"
 #include "cong-command.h"
@@ -196,17 +197,6 @@ cong_location_get_utf8_pointer(const CongLocation *loc)
 	return NULL;
 }
 
-static gboolean
-has_same_namespace (CongNodePtr n1,
-		    CongNodePtr n2)
-{
-	g_return_val_if_fail (n1, FALSE);
-	g_return_val_if_fail (n2, FALSE);
-
-	/* FIXME: */
-	return TRUE;
-}
-
 /*
   Are both ELEMENT nodes of the same tag type?
 */
@@ -219,7 +209,7 @@ cong_node_is_same_tag (CongNodePtr n1,
 
 	if (CONG_NODE_TYPE_ELEMENT == cong_node_type(n1)) {
 		if (CONG_NODE_TYPE_ELEMENT == cong_node_type(n2)) {
-			if (has_same_namespace(n1,n2)) {
+			if (cong_util_ns_equality (n1->ns,n2->ns)) {
 				if (0==strcmp(n1->name, n2->name)) {
 					return TRUE;
 				}
@@ -960,8 +950,6 @@ void
 cong_location_nullify_with_ref (CongDocument *doc, 
 				CongLocation *loc)
 {
-	CongNodePtr old_node;
-
 	if (loc->node) {
 		cong_document_node_unref (doc, loc->node);
 	}

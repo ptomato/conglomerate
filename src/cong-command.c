@@ -336,6 +336,7 @@ cong_command_add_node_set_text (CongCommand *cmd,
 void 
 cong_command_add_node_set_attribute (CongCommand *cmd, 
 				     CongNodePtr node, 
+				     xmlNs *ns_ptr,
 				     const xmlChar *name, 
 				     const xmlChar *value)
 {
@@ -345,6 +346,7 @@ cong_command_add_node_set_attribute (CongCommand *cmd,
 
 	modification = cong_node_modification_set_attribute_new (cong_command_get_document(cmd),
 								 node,
+								 ns_ptr,
 								 name,
 								 value);
 	cong_command_add_modification (cmd,
@@ -355,6 +357,7 @@ cong_command_add_node_set_attribute (CongCommand *cmd,
 void 
 cong_command_add_node_remove_attribute (CongCommand *cmd, 
 					CongNodePtr node, 
+					xmlNs *ns_ptr,
 					const xmlChar *name)
 {
 	CongModification *modification;
@@ -363,6 +366,7 @@ cong_command_add_node_remove_attribute (CongCommand *cmd,
 
 	modification = cong_node_modification_remove_attribute_new (cong_command_get_document(cmd),
 								    node,
+								    ns_ptr,
 								    name);
 
 	cong_command_add_modification (cmd,
@@ -1052,7 +1056,8 @@ cong_command_add_merge_adjacent_text_children_of_node (CongCommand *cmd,
 }
 
 gboolean
-cong_command_can_add_reparent_selection (CongCommand *cmd)
+cong_command_can_add_reparent_selection (CongCommand *cmd,
+					 CongNodePtr new_parent)
 {
 	CongSelection *selection = cong_document_get_selection (cong_command_get_document (cmd));
 	const CongLocation *logical_start = cong_selection_get_logical_start (selection);
@@ -1064,6 +1069,8 @@ cong_command_can_add_reparent_selection (CongCommand *cmd)
 	g_return_val_if_fail (cong_location_exists (logical_start), FALSE );
 	g_return_val_if_fail (cong_location_exists (logical_end), FALSE );
 	g_return_val_if_fail (cong_location_parent (logical_start) == cong_location_parent (logical_end), FALSE);
+
+	g_return_val_if_fail (new_parent, FALSE);
 
 	return TRUE;
 }

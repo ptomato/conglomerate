@@ -36,6 +36,7 @@
 
 #include "cong-fake-plugin-hooks.h"
 
+#if 0
 gboolean cong_transform_easy(const gchar *filename_src_xml, 
 			     const gchar *filename_dst_xml, 
 			     const gchar *filename_stylesheet,
@@ -182,7 +183,7 @@ static void parse_tocentry(GenerateWebsiteWorkspace *workspace, WebsiteContent *
 
 	for (child=node->children; child; child=child->next) {
 
-		if (cong_node_is_tag(child, NULL, "tocentry")) {
+		if (cong_node_is_element(child, NULL, "tocentry")) {
 			parse_tocentry(workspace, content, child);
 		}
 	}
@@ -199,7 +200,7 @@ static void parse_toc(GenerateWebsiteWorkspace *workspace, xmlNodePtr node) {
 	workspace->toc = toc;
 
 	for (child=node->children; child; child=child->next) {
-		if (cong_node_is_tag(child, NULL, "tocentry")) {
+		if (cong_node_is_element(child, NULL, "tocentry")) {
 			parse_tocentry(workspace, toc, child);
 		}
 	}
@@ -223,17 +224,17 @@ static void traverse_layout(GenerateWebsiteWorkspace *workspace, xmlNodePtr node
 	g_message("traverse_layout <%s>", node->name);
 
 	for (child=node->children; child; child=child->next) {
-		if (cong_node_is_tag(child, NULL, "config")) {
+		if (cong_node_is_element(child, NULL, "config")) {
 			parse_config(workspace, child);
-		} else if (cong_node_is_tag(child, NULL, "copyright")) {
+		} else if (cong_node_is_element(child, NULL, "copyright")) {
 			parse_copyright(workspace, child);
-		} else if (cong_node_is_tag(child, NULL, "headlink")) {
+		} else if (cong_node_is_element(child, NULL, "headlink")) {
 			parse_headlink(workspace, child);
-		} else if (cong_node_is_tag(child, NULL, "style")) {
+		} else if (cong_node_is_element(child, NULL, "style")) {
 			parse_style(workspace, child);
-		} else if (cong_node_is_tag(child, NULL, "toc")) {
+		} else if (cong_node_is_element(child, NULL, "toc")) {
 			parse_toc(workspace, child);
-		} else if (cong_node_is_tag(child, NULL, "notoc")) {
+		} else if (cong_node_is_element(child, NULL, "notoc")) {
 			parse_notoc(workspace, child);
 		}
 	}	
@@ -247,7 +248,7 @@ static void traverse_dom_tree(GenerateWebsiteWorkspace *workspace, xmlNodePtr no
 	g_message("traverse_dom_tree <%s>", node->name);
 
 	for (child=node->children; child; child=child->next) {
-		if (cong_node_is_tag(child, NULL, "layout") ){
+		if (cong_node_is_element(child, NULL, "layout") ){
 			traverse_layout(workspace, child);
 		}
 	}	
@@ -305,7 +306,9 @@ static GnomeVFSURI *content_make_src_uri(WebsiteContent *content, GenerateWebsit
 static gboolean generate_html(CongDependencyNode *node, GError **error)
 {
 	CongDependencyNodeTransformWebsiteContent *node_from_content = (CongDependencyNodeTransformWebsiteContent*)(node);
+#if 0
 	WebsiteContent *content;
+#endif
 	gchar *output_filename;
 	gchar *input_filename;
 	gchar *standard_error;
@@ -484,6 +487,7 @@ static void action_callback(CongServiceDocTool *tool, CongPrimaryWindow *primary
 	/* FIXME: memory leaks here! */
 	g_free(workspace);
 }
+#endif
 
  /* would be exposed as "plugin_register"? */
 gboolean plugin_website_plugin_register(CongPlugin *plugin)

@@ -26,6 +26,7 @@
 #include "cong-attribute-editor-enumeration.h"
 #include "cong-eel.h"
 #include "cong-command.h"
+#include "cong-util.h"
 
 #define PRIVATE(x) ((x)->private)
 
@@ -67,10 +68,11 @@ cong_attribute_editor_enumeration_instance_init (CongAttributeEditorENUMERATION 
 
 CongAttributeEditor*
 cong_attribute_editor_enumeration_construct (CongAttributeEditorENUMERATION *attribute_editor_enumeration,
-				       CongDocument *doc,
-				       CongNodePtr node,
-				       const gchar *attribute_name,
-				       xmlAttributePtr attr)
+					     CongDocument *doc,
+					     CongNodePtr node,
+					     xmlNs *ns_ptr,
+					     const gchar *attribute_name,
+					     xmlAttributePtr attr)
 {
 	xmlEnumerationPtr enum_ptr;
 
@@ -79,6 +81,7 @@ cong_attribute_editor_enumeration_construct (CongAttributeEditorENUMERATION *att
 	cong_attribute_editor_construct (CONG_ATTRIBUTE_EDITOR(attribute_editor_enumeration),
 					 doc,
 					 node,
+					 ns_ptr,
 					 attribute_name,
 					 attr);
 	/* Build widgetry: */
@@ -118,14 +121,16 @@ cong_attribute_editor_enumeration_construct (CongAttributeEditorENUMERATION *att
 
 GtkWidget*
 cong_attribute_editor_enumeration_new (CongDocument *doc,
-				 CongNodePtr node,
-				 const gchar *attribute_name,
-				 xmlAttributePtr attr)
+				       CongNodePtr node,
+				       xmlNs *ns_ptr,
+				       const gchar *attribute_name,
+				       xmlAttributePtr attr)
 {
 	return GTK_WIDGET( cong_attribute_editor_enumeration_construct
 			   (g_object_new (CONG_ATTRIBUTE_EDITOR_ENUMERATION_TYPE, NULL),
 			    doc,
 			    node,
+			    ns_ptr,
 			    attribute_name,
 			    attr));			   
 }
@@ -154,9 +159,11 @@ on_option_menu_changed (GtkOptionMenu *option_menu,
 	CongDocument *doc = cong_attribute_editor_get_document (CONG_ATTRIBUTE_EDITOR(attribute_editor_enumeration));
 	CongNodePtr node = cong_attribute_editor_get_node (CONG_ATTRIBUTE_EDITOR(attribute_editor_enumeration));
 	xmlAttributePtr attr = cong_attribute_editor_get_attribute (CONG_ATTRIBUTE_EDITOR(attribute_editor_enumeration));
+	xmlNs *ns_ptr = cong_attribute_editor_get_ns (CONG_ATTRIBUTE_EDITOR(attribute_editor_enumeration));
 
 	GtkMenuItem *selected_menu_item;
 	const gchar *new_attr_value;
+	gchar *old_attr_value;
 
 	g_assert (doc);
 	g_assert (node);
@@ -165,7 +172,9 @@ on_option_menu_changed (GtkOptionMenu *option_menu,
 	selected_menu_item = cong_eel_option_menu_get_selected_menu_item (option_menu);
 	new_attr_value = g_object_get_data (G_OBJECT(selected_menu_item),
 					    "attr_value");
+	old_attr_value = cong_attribute_editor_get_attribute_value (CONG_ATTRIBUTE_EDITOR(attribute_editor_enumeration));
 
+	if (!cong_util_attribute_value_equality (old_attr_value, new_attr_value))
 	{
 		CongCommand *cmd;
 		gchar *desc;
@@ -184,15 +193,21 @@ on_option_menu_changed (GtkOptionMenu *option_menu,
 		if (new_attr_value) {
 			cong_command_add_node_set_attribute (cmd, 
 							     node, 
+							     ns_ptr,
 							     attr->name, 
 							     new_attr_value);
 		} else {
 			cong_command_add_node_remove_attribute (cmd, 
 								node, 
+								ns_ptr,
 								attr->name);
 		}
 
 		cong_document_end_command (doc,
 					   cmd);
+	}
+
+	if (old_attr_value) {
+		g_free (old_attr_value);
 	}
 }

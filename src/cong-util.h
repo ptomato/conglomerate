@@ -181,6 +181,165 @@ cong_util_draw_blended_line (GtkWidget *w,
 			     const GdkColor *col,
 			     int x0, int y0,
 			     int x1);
+
+/**
+ * cong_util_get_int_from_rgb_hex:
+ * 
+ * Parse a string containing an HTML-style hexadecimal representation of an RGB triplet
+ * into a 32 bit RGB triplet.
+ *
+ * FIXME: it's fundamentally broken to be using ints for this; should use a struct
+ *
+ * Returns: RGB triplet packed into a 32-bit value
+ */
+unsigned int
+cong_util_get_int_from_rgb_hex (const gchar *string);
+
+
+/**
+ * cong_util_ns_equality
+ *
+ * @xml_ns1: A namespace. Can be NULL.
+ * @xml_ns2: Another namespace. Can be NULL.
+ *
+ * Compares the namespace URIs of both namespaces. 
+ * The prefixes are not checked. If both are NULL
+ * they are also equal.
+ */
+gboolean 
+cong_util_ns_equality (const xmlNs *xml_ns1,
+		       const xmlNs *xml_ns2);
+
+/**
+ * cong_util_ns_uri_equality:
+ * 
+ * Compare two namespace URIs, either or both of which can be NULL.
+ *
+ * Currently the comparison is an exact string comparison, which might be too strict,
+ * see p118 of "Effective XML" for a discussion of ambiguities in the spec.
+ *
+ * Returns: TRUE if they are the same URI (or both NULL), FALSE otherwise
+ *
+ */
+gboolean
+cong_util_ns_uri_equality (const gchar* uri0, 
+			   const gchar* uri1);
+
+/**
+ * cong_util_ns_uri_sort_order:
+ * 
+ * Compare two namespace URIs, either or both of which can be NULL.
+ *
+ * Currently the comparison is an exact string comparison, which might be too strict,
+ * see p118 of "Effective XML" for a discussion of ambiguities in the spec.
+ *
+ * Returns: 0 if they are the same URI (or both NULL), otherwise positive or negative to give an ordering
+ *
+ */
+gint
+cong_util_ns_uri_sort_order (const gchar* uri0, 
+			     const gchar* uri1);
+
+/**
+ * cong_util_attribute_value_equality:
+ *
+ * Compare two attribute value strings for equality; either or both might be NULL
+ *
+ * Returns TRUE if they are equal (i.e. the same string, or both are NULL)
+ *
+ */
+gboolean
+cong_util_attribute_value_equality (const gchar *value0,
+				    const gchar *value1);
+
+typedef struct CongElementDescription CongElementDescription;
+
+struct CongElementDescription 
+{
+	gchar *ns_uri;
+	gchar *local_name;
+};
+
+CongElementDescription*
+cong_element_description_new (const gchar *ns_uri,
+			      const gchar *local_name);
+
+CongElementDescription*
+cong_element_description_clone (const CongElementDescription *element_desc);
+
+void
+cong_element_description_free (CongElementDescription *element_desc);
+
+CongNodePtr
+cong_element_description_make_node (const CongElementDescription *element_desc,
+				    CongDocument *doc,
+				    CongNodePtr ns_search_node);
+
+CongDispspecElement*
+cong_element_description_get_dispspec_element_for_doc (const CongElementDescription *element_desc,
+						       CongDocument *doc);
+
+CongDispspecElement*
+cong_element_description_get_dispspec_element_for_dispspec (const CongElementDescription *element_desc,
+							    CongDispspec *ds);
+
+#if 0
+gchar*
+cong_element_description_get_qualified_name (const CongElementDescription *element_desc);
+#endif
+
+void
+cong_element_description_list_free (GList *list_of_element_desc);
+
+/**
+ * cong_util_modal_element_selection_dialog:
+ *
+ * @title: Title for the dialog
+ * @description: Descriptive text for the dialog
+ * @doc: The document, so that dispspecs can be searched for descriptions
+ * @elements: A GList of #CongElementDescription
+ *
+ * Runs a modal element selection dialog.
+ *
+ * Returns: the selected element (which the caller must free), or NULL if the dialog was cancelled
+ */
+CongElementDescription*
+cong_util_modal_element_selection_dialog (const gchar *title, 
+					  const gchar *description,
+					  CongDocument *doc,
+					  GList *elements);
+
+/* Simple UI manipulation: */
+GtkMenuItem* 
+cong_util_make_menu_item (const gchar *label,
+			  const gchar *tip,
+			  GdkPixbuf *pixbuf);
+GtkMenuItem* 
+cong_util_make_stock_menu_item (const gchar *stock_id);
+
+GtkMenuItem* 
+cong_util_make_menu_item_for_dispspec_element (CongDispspecElement *element);
+
+GtkMenuItem* 
+cong_util_make_menu_item_for_element_desc (const CongElementDescription *element_desc,
+					   CongDocument *doc);
+
+GtkWidget*
+cong_util_add_menu_separator (GtkMenu *menu);
+
+
+/**
+ * cong_util_attribute_name_qualified
+ *
+ * @namespace: Namespace of attribute (can be NULL).
+ * @local_attribute_name: Local name of attribute.
+ *
+ * Returns: 
+ */
+char *
+cong_util_get_qualified_attribute_name(const xmlNs *namespace,
+				       const xmlChar *local_attribute_name);
+
 G_END_DECLS
 
 #endif

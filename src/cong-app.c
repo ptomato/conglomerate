@@ -39,6 +39,8 @@
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
 
+#include "cong-ui-hooks.h"
+
 #define TEST_BIG_FONTS 0
 
 #define LOG_SELECTIONS 0
@@ -176,7 +178,7 @@ typedef gchar*
 (CongSelectionDataToXMLSourceConversionFn) (guchar *data, 
 					    gint length);
 
-
+#if 0
 static void
 debug_selection_data (GtkSelectionData *selection_data, 
 		      const gchar *type,
@@ -270,6 +272,7 @@ debug_target_list (GtkClipboard *clipboard,
 		g_free (atom_name);
 	}
 }
+#endif
 
 gchar*
 convert_ucs2_to_utf8 (guchar *data,
@@ -344,6 +347,7 @@ convert_application_rtf (guchar *data,
 	return NULL;
 }
 
+#if 0
 static void
 debug_well_known_targets (GtkClipboard *clipboard)
 {
@@ -376,6 +380,7 @@ debug_well_known_targets (GtkClipboard *clipboard)
 	  So how do we distinguish between UTF-8 and UCS-2???
 	 */
 }
+#endif
 
 /* This is a simple copy-and-paste of gtk_clipboard_wait_for_targets, which was added to GTK in version 2.4: */
 gboolean
@@ -436,8 +441,6 @@ cong_app_get_clipboard_xml_source (CongApp *app,
 				   CongDocument *target_doc)
 {
 	GtkClipboard* clipboard;
-	GdkAtom *targets;
-	gint n_targets;
 
 	g_return_val_if_fail (app, NULL);
 	g_return_val_if_fail ((selection == GDK_SELECTION_CLIPBOARD)||(selection == GDK_SELECTION_PRIMARY), NULL);
@@ -497,6 +500,8 @@ cong_app_get_clipboard_xml_source (CongApp *app,
 	return NULL;
 
 #if 0
+	GdkAtom *targets;
+	gint n_targets;
 	if (cong_eel_gtk_clipboard_wait_for_targets (clipboard,
 						     &targets,
 						     &n_targets)) {
@@ -964,6 +969,10 @@ static void
 cong_app_private_load_plugins (CongApp *app)
 {
 	/* For the moment, there aren't any actual plugins; instead we fake it. */
+	register_plugin(app,"abiword",
+			plugin_abiword_plugin_register,
+			plugin_abiword_plugin_configure);
+
 	register_plugin(app,"admonition",
 			plugin_admonition_plugin_register,
 			plugin_admonition_plugin_configure);
@@ -980,6 +989,10 @@ cong_app_private_load_plugins (CongApp *app)
 			plugin_fo_plugin_register,
 			plugin_fo_plugin_configure);
 
+	register_plugin(app,"html",
+			plugin_html_plugin_register,
+			plugin_html_plugin_configure);
+
 	register_plugin(app,"lists",
 			plugin_lists_plugin_register,
 			plugin_lists_plugin_configure);
@@ -988,9 +1001,17 @@ cong_app_private_load_plugins (CongApp *app)
 			plugin_random_plugin_register,
 			plugin_random_plugin_configure);
 
+	register_plugin(app,"relaxng",
+			plugin_relaxng_plugin_register,
+			plugin_relaxng_plugin_configure);
+
 	register_plugin(app,"sgml",
 			plugin_sgml_plugin_register,
 			plugin_sgml_plugin_configure);
+
+	register_plugin(app,"tei",
+			plugin_tei_plugin_register,
+			plugin_tei_plugin_configure);
 
 	register_plugin(app,"tests",
 			plugin_tests_plugin_register,

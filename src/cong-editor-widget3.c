@@ -42,6 +42,8 @@
 #include "cong-editor-line-manager.h"
 #include "cong-editor-line-manager-simple.h"
 #include "cong-editor-area-lines.h"
+#include "cong-dispspec-element.h"
+#include "cong-ui-hooks.h"
 
 #define SHOW_CURSOR_SPEW 0
 #define DEBUG_IM_CONTEXT 1
@@ -132,9 +134,11 @@ struct CongEditorWidget3Details
 #endif
 
 /* Declarations of misc stuff: */
+#if 0
 static void 
 render_area (CongEditorArea *area,
 	     gpointer user_data);
+#endif
 
 static void 
 populate_widget3(CongEditorWidget3 *widget);
@@ -659,6 +663,7 @@ cong_editor_widget3_get_preedit_data (CongEditorWidget3 *editor_widget,
 
 /* Internal function implementations: */
 /* Definitions of misc stuff: */
+#if 0
 static void 
 render_area (CongEditorArea *area,
 	     gpointer user_data)
@@ -668,6 +673,7 @@ render_area (CongEditorArea *area,
 					   (GdkRectangle*)user_data);
 #endif
 }
+#endif
 
 /* Definitions of the GObject handlers: */
 static void
@@ -723,7 +729,6 @@ add_typing_command (CongDocument *doc,
 		    const gchar *str)
 {
 	CongCommand *cmd;
-	CongCursor *cursor = cong_document_get_cursor (doc);
 	CongSelection *selection = cong_document_get_selection  (doc);
 
 	cmd = cong_document_begin_command (doc, 
@@ -1288,9 +1293,6 @@ key_release_event_handler (GtkWidget *w,
 			 gpointer user_data)
 {
 	CongEditorWidget3 *editor_widget = CONG_EDITOR_WIDGET3 (w);
-	CongDocument *doc = cong_editor_widget3_get_document (editor_widget);
-	CongCursor *cursor = cong_document_get_cursor (doc);
-	CongSelection *selection = cong_document_get_selection  (doc);
 
 	LOG_GTK_WIDGET_SIGNAL1("key_release_event_handler");
 

@@ -65,6 +65,7 @@ static void debug_log_view_details_add_message (CongDebugLogViewDetails *details
 			    -1);
 }
 
+#if 0
 static void debug_log_view_add_message (CongDebugLogView *debug_log_view,
 					const gchar *description, 
 					gboolean before_event,
@@ -85,6 +86,7 @@ static void debug_log_view_add_message (CongDebugLogView *debug_log_view,
 					   node_id, 
 					   extra_info);
 }
+#endif
 
 void log_begin_edit (CongDebugLogViewDetails *details,
 		     gboolean before_event)
@@ -146,14 +148,17 @@ void log_set_text (CongDebugLogViewDetails *details,
 void log_set_attribute (CongDebugLogViewDetails *details, 
 			gboolean before_event, 
 			CongNodePtr node, 
+			xmlNs *ns_ptr, 
 			const xmlChar *name, 
 			const xmlChar *value) 
 { 
+	gchar *qualified_name = cong_util_get_qualified_attribute_name(ns_ptr, name);
 	gchar *node_name = cong_node_get_path(node);
-	gchar *extra_info = g_strdup_printf("%s=\"%s\"", name, value);
+	gchar *extra_info = g_strdup_printf("%s=\"%s\"", qualified_name, value);
 
 	debug_log_view_details_add_message(details, "Set attribute", before_event, node_name, extra_info);
 
+	g_free(qualified_name);
 	g_free(node_name);
 	g_free(extra_info);
 }
@@ -161,13 +166,18 @@ void log_set_attribute (CongDebugLogViewDetails *details,
 void log_remove_attribute (CongDebugLogViewDetails *details, 
 			   gboolean before_event, 
 			   CongNodePtr node, 
+			   xmlNs *ns_ptr, 
 			   const xmlChar *name)
 { 
+	gchar *qualified_name = cong_util_get_qualified_attribute_name(ns_ptr, name);
 	gchar *node_name = cong_node_get_path(node);
 
-	debug_log_view_details_add_message(details, "Remove attribute", before_event, node_name, name);
+	debug_log_view_details_add_message(details, 
+					   "Remove attribute", 
+					   before_event, node_name, qualified_name);
 
 	g_free(node_name);
+	g_free(qualified_name);
 }
 
 void log_selection_change (CongDebugLogViewDetails *details, 
@@ -189,8 +199,8 @@ static void on_document_node_add_after(CongView *view, gboolean before_event, Co
 static void on_document_node_add_before(CongView *view, gboolean before_event, CongNodePtr node, CongNodePtr younger_sibling);
 static void on_document_node_set_parent(CongView *view, gboolean before_event, CongNodePtr node, CongNodePtr adoptive_parent); /* added to end of child list */
 static void on_document_node_set_text(CongView *view, gboolean before_event, CongNodePtr node, const xmlChar *new_content);
-static void on_document_node_set_attribute(CongView *view, gboolean before_event, CongNodePtr node, const xmlChar *name, const xmlChar *value);
-static void on_document_node_remove_attribute(CongView *view, gboolean before_event, CongNodePtr node, const xmlChar *name);
+static void on_document_node_set_attribute(CongView *view, gboolean before_event, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name, const xmlChar *value);
+static void on_document_node_remove_attribute(CongView *view, gboolean before_event, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name);
 static void on_selection_change(CongView *view);
 static void on_cursor_change(CongView *view);
 
@@ -275,7 +285,7 @@ static void on_document_node_set_text(CongView *view, gboolean before_event, Con
 	log_set_text (details, before_event, node, new_content);
 }
 
-static void on_document_node_set_attribute(CongView *view, gboolean before_event, CongNodePtr node, const xmlChar *name, const xmlChar *value)
+static void on_document_node_set_attribute(CongView *view, gboolean before_event, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name, const xmlChar *value)
 {
 	CongDebugLogView *debug_log_view;
 	CongDebugLogViewDetails* details;
@@ -289,10 +299,10 @@ static void on_document_node_set_attribute(CongView *view, gboolean before_event
 	details = debug_log_view->private;
 	g_assert(details);
 
-	log_set_attribute (details, before_event, node, name, value);
+	log_set_attribute (details, before_event, node, ns_ptr, name, value);
 }
 
-static void on_document_node_remove_attribute(CongView *view, gboolean before_event, CongNodePtr node, const xmlChar *name)
+static void on_document_node_remove_attribute(CongView *view, gboolean before_event, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name)
 {
 	CongDebugLogView *debug_log_view;
 	CongDebugLogViewDetails* details;
@@ -305,7 +315,7 @@ static void on_document_node_remove_attribute(CongView *view, gboolean before_ev
 	details = debug_log_view->private;
 	g_assert(details);
 
-	log_remove_attribute (details, before_event, node, name);
+	log_remove_attribute (details, before_event, node, ns_ptr, name);
 }
 
 static void on_selection_change(CongView *view)
@@ -495,24 +505,26 @@ static void on_signal_set_text_notify_before (CongDocument *doc,
 }
 
 static void on_signal_set_attribute_notify_before (CongDocument *doc, 
-					    CongNodePtr node, 
-					    const xmlChar *name, 
-					    const xmlChar *value, 
-					    gpointer user_data) 
+						   CongNodePtr node, 
+						   xmlNs *ns_ptr,
+						   const xmlChar *name, 
+						   const xmlChar *value, 
+						   gpointer user_data) 
 { 
 	CongDebugLogViewDetails *details = (CongDebugLogViewDetails*)user_data; 
 
-	log_set_attribute (details, TRUE, node, name, value);
+	log_set_attribute (details, TRUE, node, ns_ptr, name, value);
 }
 
 static void on_signal_remove_attribute_notify_before (CongDocument *doc, 
-					       CongNodePtr node, 
-					       const xmlChar *name, 
-					       gpointer user_data) 
+						      CongNodePtr node, 
+						      xmlNs *ns_ptr,
+						      const xmlChar *name, 
+						      gpointer user_data) 
 { 
 	CongDebugLogViewDetails *details = (CongDebugLogViewDetails*)user_data; 
 
-	log_remove_attribute (details, TRUE, node, name);
+	log_remove_attribute (details, TRUE, node, ns_ptr, name);
 }
 
 static void on_signal_selection_change_notify_before (CongDocument *doc, 
@@ -599,24 +611,26 @@ static void on_signal_set_text_notify_after (CongDocument *doc,
 }
 
 static void on_signal_set_attribute_notify_after (CongDocument *doc, 
-					   CongNodePtr node, 
-					   const xmlChar *name, 
-					   const xmlChar *value, 
-					   gpointer user_data) 
+						  CongNodePtr node, 
+						  xmlNs *ns_ptr,
+						  const xmlChar *name, 
+						  const xmlChar *value, 
+						  gpointer user_data) 
 { 
 	CongDebugLogViewDetails *details = (CongDebugLogViewDetails*)user_data; 
 
-	log_set_attribute (details, FALSE, node, name, value);
+	log_set_attribute (details, FALSE, node, ns_ptr, name, value);
 }
 
 static void on_signal_remove_attribute_notify_after (CongDocument *doc, 
-					       CongNodePtr node, 
-					       const xmlChar *name, 
-					       gpointer user_data) 
+						     CongNodePtr node, 
+						     xmlNs *ns_ptr,
+						     const xmlChar *name, 
+						     gpointer user_data) 
 { 
 	CongDebugLogViewDetails *details = (CongDebugLogViewDetails*)user_data; 
 
-	log_remove_attribute (details, FALSE, node, name);
+	log_remove_attribute (details, FALSE, node, ns_ptr, name);
 }
 
 static void on_signal_selection_change_notify_after (CongDocument *doc, 

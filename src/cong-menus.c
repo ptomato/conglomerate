@@ -40,6 +40,7 @@
 #include "cong-command-history.h"
 #include "cong-selection.h"
 #include "cong-range.h"
+#include "cong-ui-hooks.h"
 
 #if 1
 #include <libgnome/libgnome.h>
@@ -214,7 +215,7 @@ static void menu_callback_file_import(gpointer callback_data,
 
 	/* FIXME: this option should be disabled if there are no importers installed */
 
-	cong_ui_file_import(cong_primary_window_get_toplevel(primary_window));
+	cong_ui_hook_file_import (cong_primary_window_get_toplevel (primary_window));
 }
 
 static void menu_callback_file_export(gpointer callback_data,
@@ -226,8 +227,8 @@ static void menu_callback_file_export(gpointer callback_data,
 
 	/* FIXME: this option should be disabled if there are no exporters installed that are appropriate for this FPI */
 
-	cong_ui_file_export(doc,
-			    cong_primary_window_get_toplevel(primary_window));
+	cong_ui_hook_file_export (doc,
+				  cong_primary_window_get_toplevel (primary_window));
 }
 
 #if ENABLE_PRINTING
@@ -240,8 +241,8 @@ static void menu_callback_file_print_preview(gpointer callback_data,
 
 	/* FIXME: this option should be disabled if there are no print routines installed that are appropriate for this FPI */
 
-	cong_ui_file_print_preview(doc,
-				   cong_primary_window_get_toplevel(primary_window));
+	cong_ui_hook_file_print_preview (doc,
+					 cong_primary_window_get_toplevel (primary_window));
 }
 
 static void menu_callback_file_print(gpointer callback_data,
@@ -253,8 +254,8 @@ static void menu_callback_file_print(gpointer callback_data,
 
 	/* FIXME: this option should be disabled if there are no print routines installed that are appropriate for this FPI */
 
-	cong_ui_file_print(doc,
-			   cong_primary_window_get_toplevel(primary_window));
+	cong_ui_hook_file_print (doc,
+				 cong_primary_window_get_toplevel (primary_window));
 }
 #endif /* #if ENABLE_PRINTING */
 
@@ -295,6 +296,8 @@ static void menu_callback_file_quit(gpointer callback_data,
 	CongPrimaryWindow *primary_window = callback_data;
 	GList *current;
 	gboolean canceled = FALSE;
+
+	(void)primary_window; /* suppress warnings */
 
 	current = g_list_first(cong_app_singleton()->primary_windows);
 
@@ -385,7 +388,19 @@ static void menu_callback_view_source(gpointer callback_data,
 	dispatch_document_command(cong_document_view_source, callback_data);
 }
 
+static void
+menu_callback_preferences (gpointer callback_data,
+			   guint callback_action,
+			   GtkWidget *widget)
+{
+	CongPrimaryWindow *primary_window = callback_data;
+	g_assert(primary_window);
+
+	cong_ui_hook_edit_preferences (cong_primary_window_get_toplevel (primary_window));
+}
+
 /* Callbacks for "Debug" menu: */
+#if ENABLE_DEBUG_MENU
 void debug_error(CongPrimaryWindow *primary_window)
 {
 	cong_error_tests(cong_primary_window_get_toplevel(primary_window));
@@ -398,94 +413,6 @@ void menu_callback_debug_error(gpointer callback_data,
 	CongPrimaryWindow *primary_window = callback_data;
 
 	debug_error(primary_window); 
-}
-
-enum
-{
-	DOCTYPELIST_NAME_COLUMN,
-	DOCTYPELIST_DESCRIPTION_COLUMN,
-	DOCTYPELIST_N_COLUMNS
-};
-
-gint debug_document_types(/*GtkWidget *w, gpointer data, */GtkWindow *parent_window)
-{
-	GtkWidget* dialog;
-	GtkWidget* list_view;
-
-	GtkListStore *store;
-	GtkTreeViewColumn *column;
-	GtkCellRenderer *renderer;
-
-	dialog = gtk_dialog_new();
-
-	gtk_window_set_title(GTK_WINDOW(dialog), _("Document Types"));
-
-	store = gtk_list_store_new (DOCTYPELIST_N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING);
-
-	list_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (store));
-
-	/* The view now holds a reference.  We can get rid of our own
-	 * reference */
-	g_object_unref (G_OBJECT (store));
-
-	/* Populate the store based on the ds-registry: */
-	{
-		CongDispspecRegistry* registry = cong_app_get_dispspec_registry (cong_app_singleton());
-		int i;
-
-		for (i=0;i<cong_dispspec_registry_get_num(registry);i++) {
-			const CongDispspec* ds = cong_dispspec_registry_get(registry,i);
-			
-			GtkTreeIter iter;
-			gtk_list_store_append (store, &iter);  /* Acquire an iterator */
-			
-			gtk_list_store_set (store, &iter,
-					    DOCTYPELIST_NAME_COLUMN, cong_dispspec_get_name(ds),
-					    DOCTYPELIST_DESCRIPTION_COLUMN, cong_dispspec_get_description(ds),
-					    -1);
-		}
-	}
-
-	renderer = gtk_cell_renderer_text_new ();
-
-	column = gtk_tree_view_column_new_with_attributes (_("Name"), renderer,
-							   "text", DOCTYPELIST_NAME_COLUMN,
-							   NULL);
-
-	/* Add the column to the view. */
-	gtk_tree_view_append_column (GTK_TREE_VIEW (list_view), column);
-
-	column = gtk_tree_view_column_new_with_attributes (_("Description"), renderer,
-							   "text", DOCTYPELIST_DESCRIPTION_COLUMN,
-							   NULL);
-
-	/* Add the column to the view. */
-	gtk_tree_view_append_column (GTK_TREE_VIEW (list_view), column);
-
-	gtk_widget_show (GTK_WIDGET(list_view));
-
-	gtk_container_add (GTK_CONTAINER( GTK_DIALOG (dialog)->vbox ),
-			   list_view);
-
-	gtk_dialog_add_button(GTK_DIALOG(dialog),
-			      "gtk-ok",
-			      GTK_RESPONSE_OK);
-
-	gtk_window_set_transient_for(GTK_WINDOW(dialog), 
-				     parent_window);
-	gtk_dialog_run(GTK_DIALOG(dialog));
-	gtk_widget_destroy(GTK_WIDGET(dialog));
-
-	return TRUE;
-}
-
-void menu_callback_debug_document_types(gpointer callback_data,
-					guint callback_action,
-					GtkWidget *widget)
-{
-	CongPrimaryWindow *primary_window = callback_data;
-
-	debug_document_types(cong_primary_window_get_toplevel(primary_window)); 
 }
 
 void open_preview_window_for_doc(xmlDocPtr doc)
@@ -644,8 +571,8 @@ void menu_callback_debug_transform_docbook_to_html(gpointer callback_data,
 {
 	CongPrimaryWindow *primary_window = callback_data;
 
-	debug_transform(callback_data,
-		       DOCBOOK_TO_HTML_STYLESHEET_FILE);
+	debug_transform (primary_window,
+			 DOCBOOK_TO_HTML_STYLESHEET_FILE);
 }
 void menu_callback_debug_transform_docbook_to_xhtml(gpointer callback_data,
 						  guint callback_action,
@@ -653,8 +580,8 @@ void menu_callback_debug_transform_docbook_to_xhtml(gpointer callback_data,
 {
 	CongPrimaryWindow *primary_window = callback_data;
 
-	debug_transform(callback_data,
-		       DOCBOOK_TO_XHTML_STYLESHEET_FILE);
+	debug_transform (primary_window,
+			 DOCBOOK_TO_XHTML_STYLESHEET_FILE);
 }
 void menu_callback_debug_transform_docbook_to_html_help(gpointer callback_data,
 						  guint callback_action,
@@ -662,8 +589,8 @@ void menu_callback_debug_transform_docbook_to_html_help(gpointer callback_data,
 {
 	CongPrimaryWindow *primary_window = callback_data;
 
-	debug_transform(callback_data,
-		       DOCBOOK_TO_HTML_HELP_STYLESHEET_FILE);
+	debug_transform (primary_window,
+			 DOCBOOK_TO_HTML_HELP_STYLESHEET_FILE);
 }
 void menu_callback_debug_transform_docbook_to_javahelp(gpointer callback_data,
 						  guint callback_action,
@@ -671,8 +598,8 @@ void menu_callback_debug_transform_docbook_to_javahelp(gpointer callback_data,
 {
 	CongPrimaryWindow *primary_window = callback_data;
 
-	debug_transform(callback_data,
-		       DOCBOOK_TO_JAVAHELP_STYLESHEET_FILE);
+	debug_transform (primary_window,
+			 DOCBOOK_TO_JAVAHELP_STYLESHEET_FILE);
 }
 void menu_callback_debug_transform_docbook_to_fo(gpointer callback_data,
 				  guint callback_action,
@@ -680,8 +607,8 @@ void menu_callback_debug_transform_docbook_to_fo(gpointer callback_data,
 {
 	CongPrimaryWindow *primary_window = callback_data;
 
-	debug_transform(callback_data,
-		       DOCBOOK_TO_FO_STYLESHEET_FILE);
+	debug_transform (primary_window,
+			 DOCBOOK_TO_FO_STYLESHEET_FILE);
 }
 
 #if PRINT_TESTS
@@ -1148,6 +1075,109 @@ void menu_callback_debug_glade_test(gpointer callback_data,
 	glade_xml_signal_autoconnect(xml);
 
 	g_free(glade_filename);
+
+	(void)primary_window; /* suppress warnings */
+}
+
+/* Code for dumping an XML representation of the loaded plugins: */
+static void 
+add_xml_for_service (CongService *service,
+		     gpointer user_data)
+{
+	xmlNodePtr plugin_node = (xmlNodePtr)user_data;
+	xmlNodePtr service_node;
+	
+	g_assert (IS_CONG_SERVICE (service));
+
+	service_node = xmlNewDocNode (plugin_node->doc,
+				      NULL,
+				      "CongService",
+				      NULL);	
+	xmlAddChild (plugin_node,
+		     service_node);
+
+
+	xmlSetProp (service_node, 
+		    "serviceID", 
+		    cong_service_get_id (service));
+
+	xmlSetProp (service_node, 
+		    "serviceClass", 
+		    G_OBJECT_TYPE_NAME (G_OBJECT (service)));
+
+	xmlAddChild (service_node,
+		     xmlNewDocNode (service_node->doc,
+				    NULL,
+				    "Name",
+				    cong_service_get_name (service)));
+
+	xmlAddChild (service_node,
+		     xmlNewDocNode (service_node->doc,
+				    NULL,
+				    "Description",
+				    cong_service_get_description (service)));
+}
+
+static void
+add_xml_for_plugin (CongPlugin *plugin,
+		    gpointer user_data)
+{
+	xmlNodePtr root_node = (xmlNodePtr)user_data;
+	xmlNodePtr plugin_node;
+
+	g_assert (IS_CONG_PLUGIN (plugin));
+
+	plugin_node = xmlNewDocNode (root_node->doc,
+				     NULL,
+				     "CongPlugin",
+				     NULL);	
+	xmlAddChild (root_node, 
+		     plugin_node);
+
+	xmlSetProp (plugin_node, 
+		    "pluginID", 
+		    cong_plugin_get_id (plugin));
+
+	cong_plugin_for_each_service (plugin, 
+				      add_xml_for_service,
+				      plugin_node);
+}
+
+static xmlDocPtr
+make_plugin_info_xml (CongPluginManager *plugin_manager)
+{
+	xmlDocPtr xml_doc;
+	xmlNodePtr root_node;
+
+	g_return_val_if_fail (plugin_manager, NULL);
+
+	xml_doc = xmlNewDoc("1.0");
+	
+	root_node = xmlNewDocNode(xml_doc,
+				  NULL, /* xmlNsPtr ns, */
+				  "CongPluginData",
+				  NULL);
+	
+	xmlDocSetRootElement (xml_doc,
+			      root_node);
+
+	cong_plugin_manager_for_each_plugin (plugin_manager, 
+					     add_xml_for_plugin,
+					     root_node);
+	return xml_doc;	
+
+	
+}
+
+static void 
+menu_callback_debug_plugin_info (gpointer callback_data,
+				 guint callback_action,
+				 GtkWidget *widget)
+{
+	CongPrimaryWindow *primary_window = callback_data;
+
+	cong_ui_new_document_from_imported_xml (make_plugin_info_xml (cong_app_get_plugin_manager (cong_app_singleton ())),
+						cong_primary_window_get_toplevel (primary_window));
 }
 
 
@@ -1194,6 +1224,7 @@ void menu_callback_debug_command_test (gpointer callback_data,
 	cong_document_end_command (doc,
 				   cmd);
 }
+#endif /* #if ENABLE_DEBUG_MENU */
 
 /* Callbacks for "Help" menu: */
 static void menu_callback_about(gpointer callback_data,
@@ -1307,11 +1338,12 @@ static GtkItemFactoryEntry menu_items_with_doc[] =
 	{ N_("/Edit/"), NULL, NULL, 0, "<Separator>" },
 #endif /* #if ENABLE_UNIMPLEMENTED_MENUS */
 	{ N_("/Edit/View _Source"),     "<control>U", menu_callback_view_source, 0, NULL },
+	{ N_("/Edit/"), NULL, NULL, 0, "<Separator>" },
+	{ N_("/Edit/Prefere_nces"),     NULL, menu_callback_preferences, 0, NULL },
 
 #if ENABLE_DEBUG_MENU
 	{ N_("/Debug"),                 NULL, NULL, 0, "<Branch>" },
 	{ N_("/Debug/Begin self-test of error-reporting system..."),           NULL, menu_callback_debug_error, 0, NULL },
-	{ N_("/Debug/Document Types"),  NULL, menu_callback_debug_document_types, 0, NULL },
 	{ N_("/Debug/Transform DocBook to HTML"),       NULL, menu_callback_debug_transform_docbook_to_html, 0, NULL },
 	{ N_("/Debug/Transform DocBook to XHTML"),       NULL, menu_callback_debug_transform_docbook_to_xhtml, 0, NULL },
 	{ N_("/Debug/Transform DocBook to HTML Help"),       NULL, menu_callback_debug_transform_docbook_to_html_help, 0, NULL },
@@ -1351,14 +1383,17 @@ static GtkItemFactoryEntry menu_items_without_doc[] =
 	{ N_("/File/_Close"),         "<control>W", menu_callback_file_close, 0, "<StockItem>", GTK_STOCK_CLOSE },
 	{ N_("/File/_Quit"),         "<control>Q", menu_callback_file_quit, 0, "<StockItem>", GTK_STOCK_QUIT },
 
+	{ N_("/_Edit"),                 NULL, 0, 0, "<Branch>" },
+	{ N_("/Edit/Prefere_nces"),     NULL, menu_callback_preferences, 0, NULL },
+
 #if ENABLE_DEBUG_MENU
-	{ N_("/Debug"),                 NULL, NULL, 0, "<Branch>" },
-	{ N_("/Debug/Begin self-test of error-reporting system..."),           NULL, menu_callback_debug_error, 0, NULL },
-	{ N_("/Debug/Document Types"),  NULL, menu_callback_debug_document_types, 0, NULL },
-	{ N_("/Debug/Dialog"),             NULL, menu_callback_debug_dialog, 0, NULL },
-	{ N_("/Debug/Progress Checklist"),             NULL, menu_callback_debug_progress_checklist, 0, NULL },
-	{ N_("/Debug/Information Alert"),           NULL, menu_callback_debug_information_alert, 0, NULL },	
-	{ N_("/Debug/Glade Test"),           NULL, menu_callback_debug_glade_test, 0, NULL },	
+	{ ("/Debug"),                 NULL, NULL, 0, "<Branch>" },
+	{ ("/Debug/Begin self-test of error-reporting system..."),           NULL, menu_callback_debug_error, 0, NULL },
+	{ ("/Debug/Dialog"),             NULL, menu_callback_debug_dialog, 0, NULL },
+	{ ("/Debug/Progress Checklist"),             NULL, menu_callback_debug_progress_checklist, 0, NULL },
+	{ ("/Debug/Information Alert"),           NULL, menu_callback_debug_information_alert, 0, NULL },	
+	{ ("/Debug/Glade Test"),           NULL, menu_callback_debug_glade_test, 0, NULL },	
+	{ ("/Debug/Get Plugin Information as XML"),           NULL, menu_callback_debug_plugin_info, 0, NULL },	
 #endif /* #if ENABLE_DEBUG_MENU */
 
 	{ N_("/_Help"),        NULL, NULL, 0, "<Branch>" },

@@ -27,6 +27,7 @@
 #include "cong-tree-view.h"
 #include "cong-document.h"
 #include "cong-selection.h"
+#include "cong-ui-hooks.h"
 
 #define PRIVATE(tree_view) ((tree_view)->private)
 
@@ -113,8 +114,8 @@ static void on_document_node_add_after(CongView *view, gboolean before_change, C
 static void on_document_node_add_before(CongView *view, gboolean before_change, CongNodePtr node, CongNodePtr younger_sibling);
 static void on_document_node_set_parent(CongView *view, gboolean before_change, CongNodePtr node, CongNodePtr adoptive_parent); /* added to end of child list */
 static void on_document_node_set_text(CongView *view, gboolean before_change, CongNodePtr node, const xmlChar *new_content);
-static void on_document_node_set_attribute(CongView *view, gboolean before_event, CongNodePtr node, const xmlChar *name, const xmlChar *value);
-static void on_document_node_remove_attribute(CongView *view, gboolean before_event, CongNodePtr node, const xmlChar *name);
+static void on_document_node_set_attribute(CongView *view, gboolean before_event, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name, const xmlChar *value);
+static void on_document_node_remove_attribute(CongView *view, gboolean before_event, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name);
 static void on_selection_change(CongView *view);
 static void on_cursor_change(CongView *view);
 
@@ -720,7 +721,7 @@ static void on_document_node_set_text(CongView *view, gboolean before_change, Co
 	}
 }
 
-static void on_document_node_set_attribute(CongView *view, gboolean before_event, CongNodePtr node, const xmlChar *name, const xmlChar *value)
+static void on_document_node_set_attribute(CongView *view, gboolean before_event, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name, const xmlChar *value)
 {
 	CongTreeView *cong_tree_view;
 
@@ -738,7 +739,7 @@ static void on_document_node_set_attribute(CongView *view, gboolean before_event
 	}
 }
 
-static void on_document_node_remove_attribute(CongView *view, gboolean before_event, CongNodePtr node, const xmlChar *name)
+static void on_document_node_remove_attribute(CongView *view, gboolean before_event, CongNodePtr node, xmlNs *ns_ptr, const xmlChar *name)
 {
 	CongTreeView *cong_tree_view;
 
@@ -802,31 +803,6 @@ static void on_selection_change(CongView *view)
 static void on_cursor_change(CongView *view)
 {
 }
-
-#if 0
-CongNodePtr tree_editor_elements_skip(CongNodePtr x, CongDispspec *ds)
-{
-	for ( ; x; x = cong_node_next(x))
-	{
-		enum CongNodeType node_type = cong_node_type(x);
-		const gchar *xmlns = cong_node_xmlns(x);
-		const gchar *name = xml_frag_name_nice(x);
-		CongDispspecElement* element = cong_dispspec_lookup_element(ds, xmlns, name);
-
-		if (element) {
-			if (node_type == CONG_NODE_TYPE_ELEMENT && cong_dispspec_element_is_structural(element)) {
-				return(cong_node_prev(x));
-			}
-
-			if (CONG_ELEMENT_TYPE_EMBED_EXTERNAL_FILE==cong_dispspec_element_type(element)) {
-				return(cong_node_prev(x));
-			}
-		}
-	}
-
-	return(x);
-}
-#endif
 
 static void
 set_pixbuf (GtkTreeViewColumn *tree_column,

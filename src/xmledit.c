@@ -104,7 +104,6 @@ void cong_document_copy_selection(CongDocument *doc)
 
 void cong_document_paste_clipboard_or_selection(CongDocument *doc, GtkWidget *widget)
 {
-	CongDispspec *ds;
 	CongSelection *selection;
 	CongCursor *curs;
 	const gchar *source_fragment;
@@ -115,15 +114,7 @@ void cong_document_paste_clipboard_or_selection(CongDocument *doc, GtkWidget *wi
 	curs = cong_document_get_cursor(doc);
 	
 	if (!cong_location_exists(&curs->location)) return;
-	ds = cong_document_get_dispspec(doc);
 
-#if 0
-	if (!cong_app_get_clipboard(cong_app_singleton()))
-	{
-#error		cong_selection_import(selection, widget);
-		return;
-	}
-#endif
 	source_fragment = cong_app_get_clipboard_xml_source (cong_app_singleton (),
 							     GDK_SELECTION_CLIPBOARD,
 							     doc);
@@ -142,7 +133,7 @@ cong_document_paste_source_at (CongDocument *doc,
 			       const gchar *source_fragment)
 {
 	CongNodePtr new_nodes; 
-	CongNodePtr node_after;
+	CongNodePtr node_after = NULL; /* shut compiler up */
 	CongNodePtr iter, iter_next;
 
 	g_return_if_fail (doc);
